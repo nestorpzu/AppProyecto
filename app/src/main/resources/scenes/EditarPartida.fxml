@@ -32,19 +32,19 @@
 
             <!-- Fecha -->
             <VBox spacing="5">
-                <CheckBox fx:id="checkFecha" text="Fecha:" />
+                <Label text="Fecha:" />
                 <DatePicker fx:id="dateFecha" promptText="dd/mm/aa" />
             </VBox>
 
             <!-- KDA -->
             <VBox spacing="5">
-                <CheckBox fx:id="checkKDA" text="KDA:" />
+                <Label text="KDA:" />
                 <TextField fx:id="txtKDA" promptText="Selecciona un KDA" />
             </VBox>
 
             <!-- Resultado -->
             <VBox spacing="5">
-                <CheckBox fx:id="checkResultado" text="Resultado:" />
+                <Label text="Resultado:" />
                 <ComboBox fx:id="cmbResultado" promptText="Selecciona un resultado" />
             </VBox>
 

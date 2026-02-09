@@ -18,6 +18,11 @@ public class main extends Application {
        
         // Configurar la escena
         Scene scene = new Scene(root);
+        scene.getStylesheets().add(
+        getClass().getResource("/estilos/estiloMain.css").toExternalForm()
+        );
+        
+        
         
         // Agregar un ícono a la ventana
         Image icono = new Image(getClass().getResourceAsStream("/icons/icon.png")); // Ruta del ícono
@@ -30,6 +35,8 @@ public class main extends Application {
         
         // Establecer el tamaño de la ventana (ancho y alto)
         primaryStage.setWidth(1200); // Establecer el ancho
+        
+        
         
         // Obtener el tamaño de la pantalla
     Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -48,6 +55,8 @@ public class main extends Application {
     // Ajustar la posición después de mostrar la ventana
     primaryStage.setX((screenBounds.getWidth() - primaryStage.getWidth()) / 2);
     primaryStage.setY((screenBounds.getHeight() - primaryStage.getHeight()) / 2);
+    
+   
         
     }
 

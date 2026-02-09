@@ -1,0 +1,192 @@
+/* =========================
+   PALETA + TIPOGRAFÍA
+   ========================= */
+.root{
+    /* Fuente: */
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", "SF Pro Display", "Roboto", "Arial";
+    -fx-font-size: 13px;
+
+    /* Colores base */
+    -fx-accent: #3B82F6;                 /* azul principal */
+    -fx-focus-color: #3B82F6;
+    -fx-faint-focus-color: rgba(59,130,246,0.18);
+
+    -fx-background-color: #F5F7FB;       /* fondo app */
+}
+
+/* Si tu root es TabPane y te “tapa” el fondo */
+.tab-pane, .tab-pane .tab-content-area{
+    -fx-background-color: #F5F7FB;
+}
+
+/* =========================
+   TEXTOS
+   ========================= */
+.label{
+    -fx-text-fill: #0F172A; /* slate-900 */
+}
+
+.text{
+    -fx-fill: #0F172A;
+}
+
+/* =========================
+   INPUTS (TextField, etc.)
+   ========================= */
+.text-field, .text-area{
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #D7DCE7;
+    -fx-padding: 8 10 8 10;
+}
+
+.text-field:focused, .text-area:focused{
+    -fx-border-color: -fx-accent;
+}
+
+/* =========================
+   BOTONES
+   ========================= */
+.button{
+    -fx-background-color: white;
+    -fx-text-fill: #0F172A;
+    -fx-font-weight: 600;
+
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #D7DCE7;
+
+    -fx-padding: 8 14 8 14;
+    -fx-cursor: hand;
+}
+
+.button:hover{
+    -fx-background-color: #F1F5FF;
+    -fx-border-color: rgba(59,130,246,0.55);
+}
+
+.button:pressed{
+    -fx-background-color: #E8EEFF;
+}
+
+/* Botón primario: ponle styleClass "primary" en Scene Builder */
+.button.primary{
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.button.primary:hover{
+    -fx-background-color: #2563EB; /* azul un poco más fuerte */
+}
+
+/* Botón “peligro” (borrar): styleClass "danger" */
+.button.danger{
+    -fx-background-color: #EF4444;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.button.danger:hover{
+    -fx-background-color: #DC2626;
+}
+
+/* =========================
+   TABPANE / TABS
+   ========================= */
+.tab-pane .tab-header-area{
+    -fx-padding: 10 12 6 12;
+}
+
+.tab-pane .tab-header-background{
+    -fx-background-color: transparent;
+}
+
+.tab{
+    -fx-background-color: transparent;
+    -fx-padding: 8 14 8 14;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.tab:selected{
+    -fx-background-color: white;
+    -fx-border-color: #E6EAF2;
+    -fx-border-width: 1 1 0 1;
+    -fx-border-radius: 10 10 0 0;
+}
+
+.tab .tab-label{
+    -fx-font-weight: 700;
+    -fx-text-fill: #334155;
+}
+
+.tab:selected .tab-label{
+    -fx-text-fill: #0F172A;
+}
+
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-radius: 10 10 10 10, 10 10 10 10;
+}
+
+
+/* =========================
+   TABLA (TableView)
+   ========================= */
+.table-view{
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #E6EAF2;
+    -fx-padding: 0;
+}
+
+/* Cabecera */
+.table-view .column-header-background{
+    -fx-background-color: #F3F6FC;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.table-view .column-header{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #E6EAF2 #E6EAF2 transparent; /* separadores suaves */
+}
+
+.table-view .column-header .label{
+    -fx-font-weight: 800;
+    -fx-text-fill: #1F2937;
+}
+
+/* Filas */
+.table-row-cell{
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #EFF2F7 transparent;
+}
+
+.table-row-cell:odd{
+    -fx-background-color: #FBFCFF;
+}
+
+/* Selección */
+.table-row-cell:selected{
+    -fx-background-color: rgba(59,130,246,0.18);
+}
+
+.table-cell{
+    -fx-padding: 10 8 10 8;
+    -fx-text-fill: #0F172A;
+}
+
+/* =========================
+   SCROLLBARS (opcional)
+   ========================= */
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb{
+    -fx-background-color: rgba(15,23,42,0.18);
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical, .scroll-bar:horizontal{
+    -fx-background-color: transparent;
+}
+
+    

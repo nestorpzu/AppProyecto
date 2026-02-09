@@ -21,7 +21,7 @@
             <!-- Jugador -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="chkJugador" text="Jugador" />
+                    <Label text="Jugador" />
                 </HBox>
                 <TextField fx:id="txtJugador" promptText="Ej: Juan" />
             </VBox>
@@ -29,7 +29,7 @@
             <!-- Campeón -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="chkCampeon" text="Campeón" />
+                    <Label text="Campeón" />
                 </HBox>
                 <TextField fx:id="txtCampeon" promptText="Ej: Yasuo" />
             </VBox>
@@ -37,7 +37,7 @@
             <!-- Fecha -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="chkFecha" text="Fecha" />
+                    <Label text="Fecha" />
                 </HBox>
                 <DatePicker fx:id="dateFecha" />
             </VBox>
@@ -45,7 +45,7 @@
             <!-- KDA -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="chkKDA" text="KDA" />
+                    <Label text="KDA" />
                 </HBox>
                 <TextField fx:id="txtKDA" promptText="Ej: 10/3/5"/>
             </VBox>
@@ -53,7 +53,7 @@
             <!-- Resultado -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="chkResultado" text="Resultado" />
+                    <Label text="Resultado" />
                 </HBox>
                 <ComboBox fx:id="cmbResultado" />
             </VBox>

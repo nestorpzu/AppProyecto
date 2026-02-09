@@ -36,15 +36,10 @@ import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 public class AddControllerPartida {
 
     // Referencias a los elementos en el FXML
-    @FXML private CheckBox checkJugador;
     @FXML private TextField txtJugador;
-    @FXML private CheckBox checkCampeon;
     @FXML private TextField txtCampeon;
-    @FXML private CheckBox checkFecha;
     @FXML private DatePicker dateFecha;
-    @FXML private CheckBox checkKDA;
     @FXML private TextField txtKDA;
-    @FXML private CheckBox checkResultado;
     @FXML private ComboBox<String> comboResultado;
     @FXML private Button btnAnadir;
     @FXML private Button btnCancelar;
@@ -65,8 +60,7 @@ public class AddControllerPartida {
     public void initialize() {
         comboResultado.setItems(FXCollections.observableArrayList("Victoria", "Derrota"));
         dateFecha.getEditor().setDisable(true); // Evitar que el usuario escriba directamente
-
-        configurarCheckBoxes();
+        
         inicializarValidaciones();
         configurarAutocompletado();
     }
@@ -112,17 +106,6 @@ public class AddControllerPartida {
         });
 
         vResultado.registerValidator(comboResultado, true, Validator.createEmptyValidator("Selecciona un resultado"));
-    }
-
-    /**
-     * Deshabilita campos si no están seleccionados sus respectivos checkboxes.
-     */
-    private void configurarCheckBoxes() {
-        txtJugador.disableProperty().bind(checkJugador.selectedProperty().not());
-        txtCampeon.disableProperty().bind(checkCampeon.selectedProperty().not());
-        dateFecha.disableProperty().bind(checkFecha.selectedProperty().not());
-        txtKDA.disableProperty().bind(checkKDA.selectedProperty().not());
-        comboResultado.disableProperty().bind(checkResultado.selectedProperty().not());
     }
 
     /**
@@ -221,112 +204,78 @@ public class AddControllerPartida {
      */
     @FXML
     private void anadirPartida() {
-        StringBuilder mensajeError = new StringBuilder();
 
-        // Validación de campos seleccionados
-        if (checkJugador.isSelected() && (txtJugador.getText() == null || txtJugador.getText().trim().isEmpty())) {
-            mensajeError.append("- Debe ingresar un nombre de jugador.\n");
-        }
-        if (checkCampeon.isSelected() && (txtCampeon.getText() == null || txtCampeon.getText().trim().isEmpty())) {
-            mensajeError.append("- Debe ingresar un campeón.\n");
-        }
-        if (checkFecha.isSelected() && (dateFecha.getValue() == null)) {
-            mensajeError.append("- Debe seleccionar una fecha.\n");
-        }
-        if (checkKDA.isSelected() && (txtKDA.getText() == null || txtKDA.getText().trim().isEmpty())) {
-            mensajeError.append("- Debe ingresar un KDA válido.\n");
-        }
-        if (checkResultado.isSelected() && (comboResultado.getValue() == null || comboResultado.getValue().trim().isEmpty())) {
-            mensajeError.append("- Debe seleccionar un resultado.\n");
-        }
+        // Revalidar todo
+        vJugador.revalidate();
+        vCampeon.revalidate();
+        vFecha.revalidate();
+        vKDA.revalidate();
+        vResultado.revalidate();
 
-        // Validaciones visuales
-        boolean valido = true;
-        if (checkJugador.isSelected()) valido &= vJugador.getValidationResult().getErrors().isEmpty();
-        if (checkCampeon.isSelected()) valido &= vCampeon.getValidationResult().getErrors().isEmpty();
-        if (checkFecha.isSelected()) valido &= vFecha.getValidationResult().getErrors().isEmpty();
-        if (checkKDA.isSelected()) valido &= vKDA.getValidationResult().getErrors().isEmpty();
-        if (checkResultado.isSelected()) valido &= vResultado.getValidationResult().getErrors().isEmpty();
+        boolean valido = vJugador.getValidationResult().getErrors().isEmpty()
+                && vCampeon.getValidationResult().getErrors().isEmpty()
+                && vFecha.getValidationResult().getErrors().isEmpty()
+                && vKDA.getValidationResult().getErrors().isEmpty()
+                && vResultado.getValidationResult().getErrors().isEmpty();
 
         if (!valido) {
             mostrarAlerta("Error de validación", "Revisa los campos marcados con errores.", Alert.AlertType.WARNING);
             return;
         }
 
-        if (!checkJugador.isSelected() && !checkCampeon.isSelected() && !checkFecha.isSelected() &&
-            !checkKDA.isSelected() && !checkResultado.isSelected()) {
-            mostrarAlerta("Sin selección", "No hay ningún campo seleccionado. Por favor, marque al menos uno.", Alert.AlertType.WARNING);
+        // Leer datos
+        String jugador = txtJugador.getText().trim();
+        String campeon = txtCampeon.getText().trim();
+        LocalDate fecha = dateFecha.getValue();
+        String kda = txtKDA.getText().trim();
+        String resultado = comboResultado.getValue();
+
+        // Buscar IDs
+        final int idJugador;
+        final int idCampeon;
+        try {
+            idJugador = obtenerIDJugador(jugador);
+            idCampeon = obtenerIDCampeon(campeon);
+        } catch (SQLException e) {
+            mostrarAlerta("Error", e.getMessage(), Alert.AlertType.WARNING);
             return;
         }
 
-        // Captura de datos
-        String jugador = checkJugador.isSelected() ? txtJugador.getText().trim() : "Sin Jugador";
-        String campeon = checkCampeon.isSelected() ? txtCampeon.getText().trim() : null;
-        LocalDate fecha = checkFecha.isSelected() ? dateFecha.getValue() : null;
-        String kda = checkKDA.isSelected() ? txtKDA.getText().trim() : "0/0/0";
-        String resultado = checkResultado.isSelected() ? comboResultado.getValue() : "Desconocido";
-
-        try {
-            int idJugador = -1;
-            int idCampeon = -1;
-            StringBuilder errores = new StringBuilder();
-
-            // Buscar IDs
-            try {
-                if (checkJugador.isSelected()) {
-                    idJugador = obtenerIDJugador(jugador);
-                }
-            } catch (SQLException e) {
-                errores.append("❌ Jugador no encontrado: ").append(jugador).append("\n");
-            }
-
-            try {
-                if (checkCampeon.isSelected()) {
-                    idCampeon = obtenerIDCampeon(campeon);
-                }
-            } catch (SQLException e) {
-                errores.append("❌ Campeón no encontrado: ").append(campeon).append("\n");
-            }
-
-            if (errores.length() > 0) {
-                mostrarAlerta("Error de búsqueda", errores.toString() + "Por favor, escoge otro jugador o campeón.", Alert.AlertType.WARNING);
-                return;
-            }
-
-            // Inserción en BD
-            try (Connection connection = baseDatos.DataBaseMain.getConnection();
-                 PreparedStatement stmt = connection.prepareStatement(
+        // Insertar en BD y recuperar ID autogenerado
+        try (Connection connection = baseDatos.DataBaseMain.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(
                      "INSERT INTO juegan (ID_Jugador, ID_Campeon, Fecha_jugada, KDA, Resultado) VALUES (?, ?, ?, ?, ?)",
                      Statement.RETURN_GENERATED_KEYS)) {
 
-                stmt.setInt(1, idJugador);
-                if (idCampeon == -1) {
-                    stmt.setNull(2, java.sql.Types.INTEGER);
-                } else {
-                    stmt.setInt(2, idCampeon);
-                }
-                stmt.setDate(3, fecha != null ? java.sql.Date.valueOf(fecha) : null);
-                stmt.setString(4, kda);
-                stmt.setString(5, resultado);
+            stmt.setInt(1, idJugador);
+            stmt.setInt(2, idCampeon);
+            stmt.setDate(3, java.sql.Date.valueOf(fecha));
+            stmt.setString(4, kda);
+            stmt.setString(5, resultado);
 
-                int filasInsertadas = stmt.executeUpdate();
-                if (filasInsertadas > 0) {
-                    ResultSet generatedKeys = stmt.getGeneratedKeys();
+            int filasInsertadas = stmt.executeUpdate();
+            if (filasInsertadas > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     int idJuegan = generatedKeys.next() ? generatedKeys.getInt(1) : -1;
 
-                    Partida nueva = new Partida(idJuegan, jugador, campeon != null ? campeon : "Sin Campeón", fecha, kda, resultado);
-                    listaPartidas.add(nueva);
-                    tablaPartidas.getItems().add(nueva);
-                    tablaPartidas.refresh();
+                    Partida nueva = new Partida(idJuegan, jugador, campeon, fecha, kda, resultado);
+
+                    if (listaPartidas != null) listaPartidas.add(nueva);
+                    if (tablaPartidas != null) {
+                        tablaPartidas.getItems().add(nueva);
+                        tablaPartidas.refresh();
+                    }
                 }
             }
 
+            partidaAgregada = true;
             cerrarVentana();
 
         } catch (SQLException e) {
             mostrarAlerta("Error", "Error en base de datos: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
+
 
     @FXML
     private void cancelar() {

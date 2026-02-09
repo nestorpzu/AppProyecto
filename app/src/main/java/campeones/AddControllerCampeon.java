@@ -39,18 +39,14 @@ import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 public class AddControllerCampeon {
 
     // Controles FXML
-    @FXML private CheckBox checkNombre;
     @FXML private TextField txtNombre;
-    @FXML private CheckBox checkDescripcion;
     @FXML private TextArea txtDescripcion;
-    @FXML private CheckBox checkRol;
     @FXML private ComboBox<String> comboRol;
-    @FXML private CheckBox checkDificultad;
     @FXML private ComboBox<String> comboDificultad;
     @FXML private Button btnAnadir;
     @FXML private Button btnCancelar;
 
-    // ?Datos y tabla principal
+    // Datos y tabla principal
     private ObservableList<Campeon> listaCampeones;
     private ObservableList<Campeon> listaOriginalCampeones;
     private TableView<Campeon> tablaCampeones;
@@ -74,7 +70,6 @@ public class AddControllerCampeon {
         comboDificultad.setPromptText("Selecciona una Dificultad");
 
         // Configuraciones
-        configurarCheckBoxes();
         inicializarValidaciones();
     }
 
@@ -131,29 +126,22 @@ public class AddControllerCampeon {
             Validator.createEmptyValidator("Selecciona una dificultad"));
     }
 
-    /**
-     * Desactiva campos si sus CheckBoxes no están marcados.
-     */
-    private void configurarCheckBoxes() {
-        txtNombre.disableProperty().bind(checkNombre.selectedProperty().not());
-        txtDescripcion.disableProperty().bind(checkDescripcion.selectedProperty().not());
-        comboRol.disableProperty().bind(checkRol.selectedProperty().not());
-        comboDificultad.disableProperty().bind(checkDificultad.selectedProperty().not());
-    }
+    
 
     /**
      * Acción del botón "Añadir".
      */
     @FXML
     private void anadirCampeon() {
-        // Validación manual para campos vacíos
+        
         if (!validarFormulario()) return;
-
+        
         // Captura de datos
-        String nombre = checkNombre.isSelected() ? txtNombre.getText() : "Sin Nombre";
-        String descripcion = checkDescripcion.isSelected() ? txtDescripcion.getText() : "Sin Descripción";
-        String rol = checkRol.isSelected() ? comboRol.getValue() : "Sin Rol";
-        String dificultad = checkDificultad.isSelected() ? comboDificultad.getValue() : "Sin Dificultad";
+        String nombre = txtNombre.getText();
+        String descripcion = txtDescripcion.getText();
+        String rol = comboRol.getValue();
+        String dificultad = comboDificultad.getValue();
+    
 
         // Inserción en la base de datos
         try (Connection connection = baseDatos.DataBaseMain.getConnection();
@@ -196,29 +184,26 @@ public class AddControllerCampeon {
      * Validaciones manuales del formulario.
      */
     private boolean validarFormulario() {
-        boolean valido = true;
+            boolean valido = true;
 
-        if (!checkNombre.isSelected() && !checkDescripcion.isSelected() &&
-            !checkRol.isSelected() && !checkDificultad.isSelected()) {
-            mostrarAlerta("Sin selección", "Selecciona al menos un campo para añadir.", Alert.AlertType.WARNING);
-            return false;
-        }
+            // Fuerza revalidación (por si no ha cambiado el valor)
+            vNombre.revalidate();
+            vDescripcion.revalidate();
+            vRol.revalidate();
+            vDificultad.revalidate();
 
-        if (checkNombre.isSelected())
             valido &= vNombre.getValidationResult().getErrors().isEmpty();
-        if (checkDescripcion.isSelected())
             valido &= vDescripcion.getValidationResult().getErrors().isEmpty();
-        if (checkRol.isSelected())
             valido &= vRol.getValidationResult().getErrors().isEmpty();
-        if (checkDificultad.isSelected())
             valido &= vDificultad.getValidationResult().getErrors().isEmpty();
 
-        if (!valido) {
-            mostrarAlerta("Error de validación", "Revisa los campos marcados con errores.", Alert.AlertType.WARNING);
-        }
+            if (!valido) {
+                mostrarAlerta("Error de validación", "Revisa los campos marcados con errores.", Alert.AlertType.WARNING);
+            }
 
-        return valido;
-    }
+            return valido;
+}
+
 
     @FXML
     private void cancelar() {

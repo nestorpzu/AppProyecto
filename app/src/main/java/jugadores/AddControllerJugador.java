@@ -23,17 +23,12 @@ import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 public class AddControllerJugador {
 
     // Referencias a los elementos en el FXML
-    @FXML private CheckBox checkNombre;
+  
     @FXML private TextField txtNombre;
-    @FXML private CheckBox checkEdad;
     @FXML private Spinner<Integer> spinnerEdad;
-    @FXML private CheckBox checkEmail;
     @FXML private TextField txtEmail;
-    @FXML private CheckBox checkNacionalidad;
     @FXML private TextField txtNacionalidad;
-    @FXML private CheckBox checkPosicion;
     @FXML private ComboBox<String> comboPosicion;
-    @FXML private CheckBox checkDescripcion;
     @FXML private TextArea txtDescripcion;
     @FXML private Button btnAplicarFiltros;
     @FXML private Button btnCancelar;
@@ -68,7 +63,6 @@ public class AddControllerJugador {
             return newText.matches("\\d{0,2}") ? change : null;
         }));
 
-        configurarCheckBoxes();
         inicializarValidaciones();
     }
 
@@ -128,18 +122,6 @@ public class AddControllerJugador {
     }
 
     /**
-     * Habilita o deshabilita campos según CheckBoxes.
-     */
-    private void configurarCheckBoxes() {
-        txtNombre.disableProperty().bind(checkNombre.selectedProperty().not());
-        spinnerEdad.disableProperty().bind(checkEdad.selectedProperty().not());
-        txtEmail.disableProperty().bind(checkEmail.selectedProperty().not());
-        txtNacionalidad.disableProperty().bind(checkNacionalidad.selectedProperty().not());
-        comboPosicion.disableProperty().bind(checkPosicion.selectedProperty().not());
-        txtDescripcion.disableProperty().bind(checkDescripcion.selectedProperty().not());
-    }
-
-    /**
      * Recibe lista original y tabla principal para actualizar datos.
      */
     public void setListaYTablaJugadores(ObservableList<Jugador> listaJugadores, TableView<Jugador> tablaJugadores) {
@@ -152,44 +134,32 @@ public class AddControllerJugador {
      */
     @FXML
     private void anadirJugador() {
-        StringBuilder mensajeError = new StringBuilder();
+            vNombre.revalidate();
+            vEdad.revalidate();
+            vEmail.revalidate();
+            vNacionalidad.revalidate();
+            vPosicion.revalidate();
+            vDescripcion.revalidate();
 
-        // Validación manual de campos obligatorios según selección
-        if (checkNombre.isSelected() && txtNombre.getText().trim().isEmpty()) mensajeError.append("- Campo 'Nombre' vacío.\n");
-        if (checkEdad.isSelected() && spinnerEdad.getValue() == null) mensajeError.append("- Campo 'Edad' vacío.\n");
-        if (checkEmail.isSelected() && txtEmail.getText().trim().isEmpty()) mensajeError.append("- Campo 'Email' vacío.\n");
-        if (checkNacionalidad.isSelected() && txtNacionalidad.getText().trim().isEmpty()) mensajeError.append("- Campo 'Nacionalidad' vacío.\n");
-        if (checkPosicion.isSelected() && comboPosicion.getValue() == null) mensajeError.append("- Campo 'Posición' vacío.\n");
-        if (checkDescripcion.isSelected() && txtDescripcion.getText().trim().isEmpty()) mensajeError.append("- Campo 'Descripción' vacío.\n");
+            boolean valido = vNombre.getValidationResult().getErrors().isEmpty()
+                    && vEdad.getValidationResult().getErrors().isEmpty()
+                    && vEmail.getValidationResult().getErrors().isEmpty()
+                    && vNacionalidad.getValidationResult().getErrors().isEmpty()
+                    && vPosicion.getValidationResult().getErrors().isEmpty()
+                    && vDescripcion.getValidationResult().getErrors().isEmpty();
 
-        // Validar campos con ControlsFX si están seleccionados
-        boolean valido = true;
-        if (checkNombre.isSelected()) valido &= vNombre.getValidationResult().getErrors().isEmpty();
-        if (checkEdad.isSelected()) valido &= vEdad.getValidationResult().getErrors().isEmpty();
-        if (checkEmail.isSelected()) valido &= vEmail.getValidationResult().getErrors().isEmpty();
-        if (checkNacionalidad.isSelected()) valido &= vNacionalidad.getValidationResult().getErrors().isEmpty();
-        if (checkPosicion.isSelected()) valido &= vPosicion.getValidationResult().getErrors().isEmpty();
-        if (checkDescripcion.isSelected()) valido &= vDescripcion.getValidationResult().getErrors().isEmpty();
+            if (!valido) {
+                mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+                return;
+            }
 
-        if (!valido) {
-            mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
-            return;
-        }
-
-        // Si no hay ningún campo marcado
-        if (!checkNombre.isSelected() && !checkEdad.isSelected() && !checkEmail.isSelected() &&
-            !checkNacionalidad.isSelected() && !checkPosicion.isSelected() && !checkDescripcion.isSelected()) {
-            mostrarAlerta("Sin selección", "Debe marcar al menos un campo.", Alert.AlertType.WARNING);
-            return;
-        }
-
-        // Capturar datos ingresados (o usar valores por defecto)
-        String nombre = checkNombre.isSelected() ? txtNombre.getText() : "Sin Nombre";
-        int edad = checkEdad.isSelected() ? spinnerEdad.getValue() : 0;
-        String email = checkEmail.isSelected() ? txtEmail.getText() : "Sin Email";
-        String nacionalidad = checkNacionalidad.isSelected() ? txtNacionalidad.getText() : "Sin Nacionalidad";
-        String posicion = checkPosicion.isSelected() ? comboPosicion.getValue() : "Sin Posición";
-        String descripcion = checkDescripcion.isSelected() ? txtDescripcion.getText() : "Sin Descripción";
+            // Capturar datos (ya sin defaults por checkbox)
+            String nombre = txtNombre.getText().trim();
+            int edad = spinnerEdad.getValue();
+            String email = txtEmail.getText().trim();
+            String nacionalidad = txtNacionalidad.getText().trim();
+            String posicion = comboPosicion.getValue();
+            String descripcion = txtDescripcion.getText().trim();
 
         // Insertar en base de datos
         try (Connection connection = baseDatos.DataBaseMain.getConnection();

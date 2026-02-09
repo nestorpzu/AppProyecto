@@ -25,7 +25,7 @@
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     
-                    <CheckBox fx:id="checkNombre" text="Nombre del Jugador" />
+                    <Label text="Nombre del Jugador" />
                 </HBox>
                 <TextField fx:id="txtNombree" promptText="Ej. Juan" />
             </VBox>
@@ -33,7 +33,7 @@
             <!-- Descripción -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkDescripcion" text="Descripción" />
+                    <Label text="Descripción" />
                 </HBox>
                 <TextArea fx:id="txtDescripcion" promptText="Descripción" prefRowCount="2" />
             </VBox>
@@ -41,7 +41,7 @@
             <!-- Edad -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkEdad" text="Edad (>18)" />
+                    <Label text="Edad (>18)" />
                 </HBox>
                 <Spinner fx:id="spinnerEdad" editable="true" />
             </VBox>
@@ -49,7 +49,7 @@
             <!-- Email -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkEmail" text="Email" />
+                    <Label text="Email" />
                 </HBox>
                 <TextField fx:id="txtEmail" promptText="Ej. juan@example.com" />
             </VBox>
@@ -57,7 +57,7 @@
             <!-- Nacionalidad -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkNacionalidad" text="Nacionalidad" />
+                    <Label text="Nacionalidad" />
                 </HBox>
                 <TextField fx:id="txtNacionalidad" promptText="Ej. España" />
             </VBox>
@@ -65,7 +65,7 @@
             <!-- Posición -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkPosicion" text="Posición" />
+                    <Label text="Posición" />
                 </HBox>
                 <ComboBox fx:id="comboPosicion" promptText="Selecciona Posición" />
                 

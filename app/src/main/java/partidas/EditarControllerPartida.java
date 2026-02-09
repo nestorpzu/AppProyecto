@@ -37,7 +37,6 @@ import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 
 public class EditarControllerPartida {
 
-    @FXML private CheckBox checkJugador, checkCampeon, checkFecha, checkKDA, checkResultado;
     @FXML private TextField txtJugador, txtCampeon, txtKDA;
     @FXML private DatePicker dateFecha;
     @FXML private ComboBox<String> cmbResultado;
@@ -56,7 +55,6 @@ public class EditarControllerPartida {
         cmbResultado.getItems().addAll("Victoria", "Derrota", "Empate");
         cmbResultado.setPromptText("Selecciona un resultado");
 
-        configurarCheckBoxes();
         inicializarValidaciones();
 
         txtJugador.setEditable(false);
@@ -116,13 +114,6 @@ public class EditarControllerPartida {
 }
 
     
-    private void configurarCheckBoxes() {
-        
-        dateFecha.disableProperty().bind(checkFecha.selectedProperty().not());
-        txtKDA.disableProperty().bind(checkKDA.selectedProperty().not());
-        cmbResultado.disableProperty().bind(checkResultado.selectedProperty().not());
-    }
-
    public void setPartida(Partida partida) {
     this.partidaSeleccionada = partida;
     this.jugadorOriginal = partida.getJugador();
@@ -147,89 +138,59 @@ public class EditarControllerPartida {
     }
 
     @FXML
-private void editarPartida() {
-    StringBuilder mensajeError = new StringBuilder();
+        private void editarPartida() {
+        vFecha.revalidate();
+        vKDA.revalidate();
+        vResultado.revalidate();
 
-    if (checkFecha.isSelected() && dateFecha.getValue() == null) {
-        mensajeError.append("- Debe seleccionar una fecha.\n");
-    }
-    if (checkKDA.isSelected() && (txtKDA.getText() == null || txtKDA.getText().trim().isEmpty())) {
-        mensajeError.append("- Debe ingresar un KDA.\n");
-    }
-    if (checkResultado.isSelected() && (cmbResultado.getValue() == null || cmbResultado.getValue().trim().isEmpty())) {
-        mensajeError.append("- Debe seleccionar un resultado.\n");
-    }
+        boolean todoOK = vFecha.getValidationResult().getErrors().isEmpty()
+                && vKDA.getValidationResult().getErrors().isEmpty()
+                && vResultado.getValidationResult().getErrors().isEmpty();
 
-    boolean todoOK = vFecha.getValidationResult().getErrors().isEmpty()
-              && vKDA.getValidationResult().getErrors().isEmpty()
-              && vResultado.getValidationResult().getErrors().isEmpty();
-
-    if (!todoOK) {
-        mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
-        return;
-    }
-
-
-    Partida partidaSeleccionada = tablaPartidas.getSelectionModel().getSelectedItem();
-    if (partidaSeleccionada == null) {
-        mostrarAlerta("Error", "No se seleccionó ninguna partida.", Alert.AlertType.WARNING);
-        return;
-    }
-
-    int idJuegan = partidaSeleccionada.getIdJuegan();  // ✅ Ahora obtenemos directamente el ID_juegan
-
-    try (Connection connection = baseDatos.DataBaseMain.getConnection();
-         PreparedStatement stmt = connection.prepareStatement(
-                 "UPDATE juegan SET Fecha_jugada=?, KDA=?, Resultado=? WHERE ID_juegan=?")) {
-
-        stmt.setObject(1, dateFecha.getValue() != null ? dateFecha.getValue() : null);
-        stmt.setString(2, txtKDA.getText());
-        stmt.setString(3, cmbResultado.getValue());
-        stmt.setInt(4, idJuegan);  // ✅ Se usa ID único
-
-        int filasAfectadas = stmt.executeUpdate();
-
-        if (filasAfectadas > 0) {
-            // ✅ Actualizamos los valores en el TableView
-            partidaSeleccionada.setFecha(dateFecha.getValue());
-            partidaSeleccionada.setKda(txtKDA.getText());
-            partidaSeleccionada.setResultado(cmbResultado.getValue());
-            tablaPartidas.refresh();
-            mostrarAlerta("Edición exitosa", "Los datos de la partida han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
-        } else {
-            mostrarAlerta("Error", "No se encontró la partida en la base de datos para actualizar.", Alert.AlertType.ERROR);
+        if (!todoOK) {
+            mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+            return;
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-        mostrarAlerta("Error", "Ocurrió un error al actualizar la partida: " + e.getMessage(), Alert.AlertType.ERROR);
-    }
-
-    Stage stage = (Stage) btnGuardar.getScene().getWindow();
-    stage.close();
-}
 
 
-private int obtenerIDJuegan(String nombreJugador, String nombreCampeon) {
-    String query = "SELECT ID_juegan FROM juegan j " +
-                   "JOIN jugadores ju ON j.ID_Jugador = ju.idJugadores " +
-                   "JOIN campeones c ON j.ID_Campeon = c.idCampeones " +
-                   "WHERE ju.nombre_jugador = ? AND c.nombre_campeon = ?";
-
-    try (Connection connection = baseDatos.DataBaseMain.getConnection();
-         PreparedStatement stmt = connection.prepareStatement(query)) {
-        stmt.setString(1, nombreJugador);
-        stmt.setString(2, nombreCampeon);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            return rs.getInt("ID_juegan");
+       Partida partidaSeleccionada = this.partidaSeleccionada;
+        if (partidaSeleccionada == null) {
+            mostrarAlerta("Error", "No se seleccionó ninguna partida.", Alert.AlertType.WARNING);
+            return;
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return -1; // Retorna -1 si la partida no se encuentra
-}
 
-    
+        int idJuegan = partidaSeleccionada.getIdJuegan();  // ✅ Ahora obtenemos directamente el ID_juegan
+
+        try (Connection connection = baseDatos.DataBaseMain.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(
+                     "UPDATE juegan SET Fecha_jugada=?, KDA=?, Resultado=? WHERE ID_juegan=?")) {
+
+            stmt.setObject(1, dateFecha.getValue() != null ? dateFecha.getValue() : null);
+            stmt.setString(2, txtKDA.getText());
+            stmt.setString(3, cmbResultado.getValue());
+            stmt.setInt(4, idJuegan);  // ✅ Se usa ID único
+
+            int filasAfectadas = stmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                // ✅ Actualizamos los valores en el TableView
+                partidaSeleccionada.setFecha(dateFecha.getValue());
+                partidaSeleccionada.setKda(txtKDA.getText());
+                partidaSeleccionada.setResultado(cmbResultado.getValue());
+                tablaPartidas.refresh();
+                mostrarAlerta("Edición exitosa", "Los datos de la partida han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
+            } else {
+                mostrarAlerta("Error", "No se encontró la partida en la base de datos para actualizar.", Alert.AlertType.ERROR);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error", "Ocurrió un error al actualizar la partida: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+
+        Stage stage = (Stage) btnGuardar.getScene().getWindow();
+        stage.close();
+    }
+
     @FXML
     private void cancelar() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();

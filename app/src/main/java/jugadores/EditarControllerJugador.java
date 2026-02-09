@@ -36,10 +36,6 @@ import org.controlsfx.validation.decoration.GraphicValidationDecoration;
  * @author nestor
  */
 public class EditarControllerJugador {
-
-    @FXML
-    private CheckBox checkNombre, checkDescripcion, checkEdad, checkEmail, checkNacionalidad, checkPosicion;
-
     @FXML
     private TextField txtNombree, txtEmail, txtNacionalidad;
 
@@ -74,7 +70,6 @@ public class EditarControllerJugador {
 
         comboPosicion.getItems().addAll("Top", "Jungla", "Mid", "ADC", "Soporte");
         comboPosicion.setPromptText("Selecciona una Posición");
-        configurarCheckBoxes();
         inicializarValidaciones();
     }
 
@@ -143,17 +138,6 @@ public class EditarControllerJugador {
     vPosicion.registerValidator(comboPosicion, true,
             Validator.createEmptyValidator("Selecciona una posición"));
 }
-
-    
-    private void configurarCheckBoxes() {
-    // Los campos se habilitan sólo si el CheckBox correspondiente está marcado
-    txtNombree.disableProperty().bind(checkNombre.selectedProperty().not());
-    txtDescripcion.disableProperty().bind(checkDescripcion.selectedProperty().not());
-    spinnerEdad.disableProperty().bind(checkEdad.selectedProperty().not());
-    txtEmail.disableProperty().bind(checkEmail.selectedProperty().not());
-    txtNacionalidad.disableProperty().bind(checkNacionalidad.selectedProperty().not());
-    comboPosicion.disableProperty().bind(checkPosicion.selectedProperty().not());
-}
     
     // Otros métodos del controlador
     public void setJugador(Jugador jugador) {
@@ -183,115 +167,78 @@ public class EditarControllerJugador {
     
     @FXML
     private void editarJugador() {
-    StringBuilder mensajeError = new StringBuilder();
 
-    // Verificar que los CheckBox marcados tengan datos válidos
-    if (checkNombre.isSelected() && (txtNombree.getText() == null || txtNombree.getText().trim().isEmpty())) {
-        mensajeError.append("- Debe ingresar un valor para el campo Nombre.\n");
-    }
-    if (checkEdad.isSelected() && (spinnerEdad.getValue() == null)) {
-        mensajeError.append("- Debe seleccionar un valor para el campo Edad.\n");
-    }
-    if (checkEmail.isSelected() && (txtEmail.getText() == null || txtEmail.getText().trim().isEmpty())) {
-        mensajeError.append("- Debe ingresar un valor para el campo Email.\n");
-    }
-    if (checkNacionalidad.isSelected() && (txtNacionalidad.getText() == null || txtNacionalidad.getText().trim().isEmpty())) {
-        mensajeError.append("- Debe ingresar un valor para el campo Nacionalidad.\n");
-    }
-    if (checkPosicion.isSelected() && (comboPosicion.getValue() == null || comboPosicion.getValue().trim().isEmpty())) {
-        mensajeError.append("- Debe seleccionar un valor para el campo Posición.\n");
-    }
-    if (checkDescripcion.isSelected() && (txtDescripcion.getText() == null || txtDescripcion.getText().trim().isEmpty())) {
-        mensajeError.append("- Debe ingresar un valor para el campo Descripción.\n");
-    }
+        // Revalidar y cortar si hay errores
+        vNombre.revalidate();
+        vDescripcion.revalidate();
+        vEdad.revalidate();
+        vEmail.revalidate();
+        vNacionalidad.revalidate();
+        vPosicion.revalidate();
 
-    // Si hay errores, mostrar un mensaje y detener la ejecución
-    boolean todoOK = vNombre.getValidationResult().getErrors().isEmpty()
-              && vDescripcion.getValidationResult().getErrors().isEmpty()
-              && vEmail.getValidationResult().getErrors().isEmpty()
-              && vEdad.getValidationResult().getErrors().isEmpty()
-              && vNacionalidad.getValidationResult().getErrors().isEmpty()
-              && vPosicion.getValidationResult().getErrors().isEmpty();
+        boolean todoOK = vNombre.getValidationResult().getErrors().isEmpty()
+                && vDescripcion.getValidationResult().getErrors().isEmpty()
+                && vEmail.getValidationResult().getErrors().isEmpty()
+                && vEdad.getValidationResult().getErrors().isEmpty()
+                && vNacionalidad.getValidationResult().getErrors().isEmpty()
+                && vPosicion.getValidationResult().getErrors().isEmpty();
 
-    if (!todoOK) {
-        mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
-        return;
-    }
-
-
-    // Verificar que hay un jugador seleccionado
-    if (jugadorSeleccionado == null) {
-        mostrarAlerta("Error", "No se seleccionó ningún jugador para editar.", Alert.AlertType.WARNING);
-        return;
-    }
-    
-    // Si ningún CheckBox está marcado, mostrar advertencia
-    if (!checkNombre.isSelected() && !checkEdad.isSelected() && !checkEmail.isSelected() &&
-        !checkNacionalidad.isSelected() && !checkPosicion.isSelected() && !checkDescripcion.isSelected()) {
-        mostrarAlerta("Sin selección", "No hay ningún campo seleccionado. Por favor, marque al menos uno.", Alert.AlertType.WARNING);
-        return;
-    }
-
-    // Verificar que tablaJugadores no sea null antes de usarla
-    if (tablaJugadores == null) {
-        System.out.println("tablaJugadores no está inicializada.");
-        return;
-    }
-
-    // Obtener el jugador seleccionado
-    Jugador jugadorSeleccionado = tablaJugadores.getSelectionModel().getSelectedItem();
-    if (jugadorSeleccionado == null) {
-        mostrarAlerta("Error", "No se seleccionó ningún jugador. Por favor, seleccione un jugador de la tabla.", Alert.AlertType.WARNING);
-        System.out.println("No se seleccionó ningún jugador.");
-        return;
-    }
-
-    // Guardar los datos antiguos para la actualización en la base de datos
-    String nombreAnterior = jugadorSeleccionado.getNombre();
-
-    // Actualizar los datos del objeto en memoria
-    if (checkNombre.isSelected()) jugadorSeleccionado.setNombre(txtNombree.getText());
-    if (checkDescripcion.isSelected()) jugadorSeleccionado.setDescripcion(txtDescripcion.getText());
-    if (checkEdad.isSelected()) jugadorSeleccionado.setEdad(spinnerEdad.getValue());
-    if (checkEmail.isSelected()) jugadorSeleccionado.setEmail(txtEmail.getText());
-    if (checkNacionalidad.isSelected()) jugadorSeleccionado.setNacionalidad(txtNacionalidad.getText());
-    if (checkPosicion.isSelected()) jugadorSeleccionado.setPosicion(comboPosicion.getValue());
-
-        
-    
-    // **Actualizar en la base de datos**
-    try (Connection connection = baseDatos.DataBaseMain.getConnection();
-         PreparedStatement stmt = connection.prepareStatement(
-                 "UPDATE jugadores SET nombre_jugador=?, descripcion_jugador=?, edad=?, email=?, nacionalidad=?, posicion_jugador=? WHERE nombre_jugador=?")) {
-
-        stmt.setString(1, jugadorSeleccionado.getNombre());
-        stmt.setString(2, jugadorSeleccionado.getDescripcion());
-        stmt.setInt(3, jugadorSeleccionado.getEdad());
-        stmt.setString(4, jugadorSeleccionado.getEmail());
-        stmt.setString(5, jugadorSeleccionado.getNacionalidad());
-        stmt.setString(6, jugadorSeleccionado.getPosicion());
-        stmt.setString(7, nombreAnterior); // Buscar por el nombre antiguo
-
-        int filasAfectadas = stmt.executeUpdate();
-
-        if (filasAfectadas > 0) {
-            tablaJugadores.refresh(); // Actualizar la vista
-            mostrarAlerta("Edición exitosa", "Los datos del jugador han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
-        } else {
-            mostrarAlerta("Error", "No se encontró el jugador en la base de datos para actualizar.", Alert.AlertType.ERROR);
+        if (!todoOK) {
+            mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+            return;
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-        mostrarAlerta("Error", "Ocurrió un error al actualizar el jugador: " + e.getMessage(), Alert.AlertType.ERROR);
-    }
 
-    // Cerrar la ventana después de la edición
-    Stage stage = (Stage) btnEditar.getScene().getWindow();
-    stage.close();
+        if (jugadorSeleccionado == null) {
+            mostrarAlerta("Error", "No se seleccionó ningún jugador para editar.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        String nombreAnterior = jugadorSeleccionado.getNombre();
+
+        //  Actualizar siempre desde los campos
+        jugadorSeleccionado.setNombre(txtNombree.getText().trim());
+        jugadorSeleccionado.setDescripcion(txtDescripcion.getText().trim());
+        jugadorSeleccionado.setEdad(spinnerEdad.getValue());
+        jugadorSeleccionado.setEmail(txtEmail.getText().trim());
+        jugadorSeleccionado.setNacionalidad(txtNacionalidad.getText().trim());
+        jugadorSeleccionado.setPosicion(comboPosicion.getValue());
+
+
+
+        // **Actualizar en la base de datos**
+        try (Connection connection = baseDatos.DataBaseMain.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(
+                     "UPDATE jugadores SET nombre_jugador=?, descripcion_jugador=?, edad=?, email=?, nacionalidad=?, posicion_jugador=? WHERE nombre_jugador=?")) {
+
+            stmt.setString(1, jugadorSeleccionado.getNombre());
+            stmt.setString(2, jugadorSeleccionado.getDescripcion());
+            stmt.setInt(3, jugadorSeleccionado.getEdad());
+            stmt.setString(4, jugadorSeleccionado.getEmail());
+            stmt.setString(5, jugadorSeleccionado.getNacionalidad());
+            stmt.setString(6, jugadorSeleccionado.getPosicion());
+            stmt.setString(7, nombreAnterior); // Buscar por el nombre antiguo
+
+            int filasAfectadas = stmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                tablaJugadores.refresh(); // Actualizar la vista
+                mostrarAlerta("Edición exitosa", "Los datos del jugador han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
+            } else {
+                mostrarAlerta("Error", "No se encontró el jugador en la base de datos para actualizar.", Alert.AlertType.ERROR);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error", "Ocurrió un error al actualizar el jugador: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+
+        // Cerrar la ventana después de la edición
+        Stage stage = (Stage) btnEditar.getScene().getWindow();
+        stage.close();
 }
 
     
 private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+    
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);

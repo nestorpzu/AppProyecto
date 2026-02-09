@@ -20,32 +20,32 @@
 
             <!-- Jugador -->
             <VBox spacing="5">
-                <CheckBox fx:id="checkJugador" text="Jugador:" />
+                <Label text="Jugador:" />
                 <TextField fx:id="txtJugador" promptText="Ej. Juan" />
             </VBox>
 
             <!-- Campeón -->
             <VBox spacing="5">
-                <CheckBox fx:id="checkCampeon" text="Campeón:" />
+                <Label text="Campeón:" />
                 <TextField fx:id="txtCampeon" promptText="Ej. Darius" />
             </VBox>
 
             <!-- Fecha -->
             <VBox spacing="5">
-                <CheckBox fx:id="checkFecha" text="Fecha:" />
+                <Label text="Fecha:" />
                 <DatePicker fx:id="dateFecha" promptText="dd/mm/aa" />
             </VBox>
 
             <!-- KDA -->
             <VBox spacing="5">
-                <CheckBox fx:id="checkKDA" text="KDA:" />
+                <Label text="KDA:" />
                 <TextField fx:id="txtKDA" promptText="Ej: 10/3/5"/>
 
             </VBox>
 
             <!-- Resultado -->
             <VBox spacing="5">
-                <CheckBox fx:id="checkResultado" text="Resultado:" />
+                <Label text="Resultado:" />
                 <ComboBox fx:id="comboResultado" promptText="Selecciona un resultado" />
             </VBox>
 

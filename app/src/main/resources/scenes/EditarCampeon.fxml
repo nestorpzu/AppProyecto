@@ -23,7 +23,7 @@
             <!-- Nombre del Campeón -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkNombre" text="Nombre del Campeón" />
+                    <Label text="Nombre del Campeón" />
                 </HBox>
                 <TextField fx:id="txtNombre" promptText="Ej. Ahri" />
             </VBox>
@@ -31,7 +31,7 @@
             <!-- Descripción -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkDescripcion" text="Descripción" />
+                    <Label text="Descripción" />
                 </HBox>
                 <TextArea fx:id="txtDescripcion" promptText="Descripción del campeón" prefRowCount="2" />
             </VBox>
@@ -39,7 +39,7 @@
             <!-- Rol -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkRol" text="Rol" />
+                    <Label text="Rol" />
                 </HBox>
                 <TextField fx:id="txtRol" promptText="Ej. Mago" />
             </VBox>
@@ -47,7 +47,7 @@
             <!-- Dificultad -->
             <VBox spacing="5">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="checkDificultad" text="Dificultad" />
+                    <Label text="Dificultad" />
                 </HBox>
                 <ComboBox fx:id="comboDificultad" promptText="Selecciona dificultad" />
             </VBox>

@@ -35,7 +35,6 @@ import org.controlsfx.validation.decoration.GraphicValidationDecoration;
  */
 public class EditarControllerCampeon {
 
-    @FXML private CheckBox checkNombre, checkDescripcion, checkRol, checkDificultad;
     @FXML private TextField txtNombre, txtRol;
     @FXML private TextArea txtDescripcion;
     @FXML private ComboBox<String> comboDificultad;
@@ -51,7 +50,7 @@ public class EditarControllerCampeon {
        comboDificultad.getItems().addAll("Baja", "Media", "Alta");
     comboDificultad.setPromptText("Selecciona una Dificultad");
 
-    configurarCheckBoxes();
+  
     inicializarValidaciones();
     }
 
@@ -89,22 +88,24 @@ private void inicializarValidaciones() {
     vDescripcion.setValidationDecorator(decorador);
     vRol.setValidationDecorator(decorador);
     vDificultad.setValidationDecorator(decorador);
-
-    vNombre.registerValidator(txtNombre, (Control c, String text) -> {
+       
+    // registerValidator
+    
+    vNombre.registerValidator(txtNombre, true, (Control c, String text) -> {
         if (text == null || text.trim().isEmpty()) {
             return ValidationResult.fromError(c, "Nombre vacío");
         }
         return ValidationResult.fromInfo(c, "OK");
     });
 
-    vDescripcion.registerValidator(txtDescripcion, (Control c, String text) -> {
+    vDescripcion.registerValidator(txtDescripcion, true, (Control c, String text) -> {
         if (text == null || text.trim().isEmpty()) {
             return ValidationResult.fromError(c, "Descripción vacía");
         }
         return ValidationResult.fromInfo(c, "OK");
     });
 
-    vRol.registerValidator(txtRol, (Control c, String text) -> {
+    vRol.registerValidator(txtRol,  true,(Control c, String text) -> {
         if (text == null || text.trim().isEmpty()) {
             return ValidationResult.fromError(c, "Rol vacío");
         }
@@ -116,12 +117,6 @@ private void inicializarValidaciones() {
 }
 
     
-    private void configurarCheckBoxes() {
-        txtNombre.disableProperty().bind(checkNombre.selectedProperty().not());
-        txtDescripcion.disableProperty().bind(checkDescripcion.selectedProperty().not());
-        txtRol.disableProperty().bind(checkRol.selectedProperty().not());
-        comboDificultad.disableProperty().bind(checkDificultad.selectedProperty().not());
-    }
 
     public void setCampeon(Campeon campeon) {
         this.campeonSeleccionado = campeon;
@@ -142,47 +137,31 @@ private void inicializarValidaciones() {
 
     @FXML
     private void editarCampeon() {
-        StringBuilder mensajeError = new StringBuilder();
-
      
+        vNombre.revalidate();
+        vDescripcion.revalidate();
+        vRol.revalidate();
+        vDificultad.revalidate();
 
-    // Validación con estilos visuales
-    if (checkNombre.isSelected() && (txtNombre.getText() == null || txtNombre.getText().trim().isEmpty())) {
-        mensajeError.append("- El campo 'Nombre' está vacío.\n");
-        
-    }
-    if (checkDescripcion.isSelected() && (txtDescripcion.getText() == null || txtDescripcion.getText().trim().isEmpty())) {
-        mensajeError.append("- El campo 'Descripción' está vacío.\n");
-        
-    }
-    if (checkRol.isSelected() && (txtRol.getText() == null || txtRol.getText().trim().isEmpty())) {
-        mensajeError.append("- Debes ingresar un Rol.\n");
-       
-    }
-    if (checkDificultad.isSelected() && (comboDificultad.getValue() == null || comboDificultad.getValue().trim().isEmpty())) {
-        mensajeError.append("- Debes seleccionar una Dificultad.\n");
-       
-    }
+        boolean todoOk = vNombre.getValidationResult().getErrors().isEmpty()
+                && vDescripcion.getValidationResult().getErrors().isEmpty()
+                && vRol.getValidationResult().getErrors().isEmpty()
+                && vDificultad.getValidationResult().getErrors().isEmpty();
 
-    boolean todoOk = vNombre.getValidationResult().getErrors().isEmpty()
-              && vDescripcion.getValidationResult().getErrors().isEmpty()
-              && vRol.getValidationResult().getErrors().isEmpty()
-              && vDificultad.getValidationResult().getErrors().isEmpty();
-
-if (!todoOk) {
-    mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
-    return;
-}
-
+        if (!todoOk) {
+            mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+            return;
+        }
 
         // Obtener el nombre anterior para actualizar en la base de datos
         String nombreAnterior = campeonSeleccionado.getNombre();
 
         // Actualizar los datos del objeto en memoria
-        if (checkNombre.isSelected()) campeonSeleccionado.setNombre(txtNombre.getText());
-        if (checkDescripcion.isSelected()) campeonSeleccionado.setDescripcion(txtDescripcion.getText());
-        if (checkRol.isSelected()) campeonSeleccionado.setRol(txtRol.getText());
-        if (checkDificultad.isSelected()) campeonSeleccionado.setDificultad(comboDificultad.getValue());
+        campeonSeleccionado.setNombre(txtNombre.getText());
+        campeonSeleccionado.setDescripcion(txtDescripcion.getText());
+        campeonSeleccionado.setRol(txtRol.getText());
+        campeonSeleccionado.setDificultad(comboDificultad.getValue());       
+
 
         // **Actualizar en la base de datos**
         try (Connection connection = baseDatos.DataBaseMain.getConnection();
@@ -210,11 +189,6 @@ if (!todoOk) {
 
         cerrarVentana();
     }
-    
-  
-
-
-
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);

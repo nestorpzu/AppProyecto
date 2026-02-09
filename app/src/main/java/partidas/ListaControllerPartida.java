@@ -4,6 +4,7 @@
  */
 package partidas;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -32,23 +33,13 @@ public class ListaControllerPartida {
 
     // Referencias a los elementos en el FXML
     @FXML
-    private CheckBox chkJugador;
-    @FXML
     private TextField txtJugador;
-    @FXML
-    private CheckBox chkCampeon;
     @FXML
     private TextField txtCampeon;
     @FXML
-    private CheckBox chkFecha;
-    @FXML
     private DatePicker dateFecha;
     @FXML
-    private CheckBox chkKDA;
-    @FXML
     private TextField txtKDA; // Ahora es un campo de texto en lugar de un ComboBox
-    @FXML   
-    private CheckBox chkResultado;
     @FXML
     private ComboBox<String> cmbResultado;
     @FXML
@@ -72,19 +63,9 @@ public class ListaControllerPartida {
         cmbResultado.getItems().addAll("Victoria", "Derrota", "Empate");
         dateFecha.getEditor().setDisable(true);
 
-
         // Configurar la lógica de los CheckBox
-        configurarCheckBoxes();
         inicializarValidaciones();
 
-    }
-
-    private void configurarCheckBoxes() {
-        txtJugador.disableProperty().bind(chkJugador.selectedProperty().not());
-        txtCampeon.disableProperty().bind(chkCampeon.selectedProperty().not());
-        dateFecha.disableProperty().bind(chkFecha.selectedProperty().not());
-        txtKDA.disableProperty().bind(chkKDA.selectedProperty().not()); // Se actualiza para el TextField
-        cmbResultado.disableProperty().bind(chkResultado.selectedProperty().not());
     }
 
     private void inicializarValidaciones() {
@@ -147,105 +128,52 @@ public class ListaControllerPartida {
      * Método para aplicar filtros
      */
     @FXML
-private void aplicarFiltros() {
-    if (listaOriginal == null || listaOriginal.isEmpty()) {
-        mostrarAlerta("Sin datos", "No hay partidas disponibles para filtrar.", Alert.AlertType.WARNING);
-        return;
-    }
-
-    StringBuilder mensajeAlertas = new StringBuilder();
-
-    // Verificar que al menos un checkbox esté seleccionado
-    if (!chkJugador.isSelected() && !chkCampeon.isSelected() && !chkFecha.isSelected() &&
-        !chkKDA.isSelected() && !chkResultado.isSelected()) {
-        mostrarAlerta("Sin selección", "No hay ningún filtro seleccionado. Por favor, marque al menos uno.", Alert.AlertType.WARNING);
-        return;
-    }
-
-    // Validaciones de los campos seleccionados
-    if (chkJugador.isSelected() && (txtJugador.getText() == null || txtJugador.getText().trim().isEmpty())) {
-        mensajeAlertas.append("- El campo 'Jugador' está vacío.\n");
-    }
-    if (chkCampeon.isSelected() && (txtCampeon.getText() == null || txtCampeon.getText().trim().isEmpty())) {
-        mensajeAlertas.append("- El campo 'Campeón' está vacío.\n");
-    }
-    if (chkFecha.isSelected() && dateFecha.getValue() == null) {
-        mensajeAlertas.append("- Debe seleccionar una fecha.\n");
-    }
-    if (chkKDA.isSelected()) {
-        String kdaIngresado = txtKDA.getText().trim();
-        if (kdaIngresado.isEmpty()) {
-            mensajeAlertas.append("- El campo 'KDA' está vacío.\n");
-        } else if (!kdaIngresado.matches("\\d+/\\d+/\\d+")) { 
-            mensajeAlertas.append("- Formato incorrecto para 'KDA'. Debe ser en formato 'n/n/n' (Ej: 10/3/5).\n");
+    private void aplicarFiltros() {
+        if (listaOriginal == null || listaOriginal.isEmpty()) {
+            mostrarAlerta("Sin datos", "No hay partidas disponibles para filtrar.", Alert.AlertType.WARNING);
+            return;
         }
-    }
-    if (chkResultado.isSelected() && (cmbResultado.getValue() == null || cmbResultado.getValue().trim().isEmpty())) {
-        mensajeAlertas.append("- Debe seleccionar un valor para el campo 'Resultado'.\n");
-    }
 
-    // Si hay errores, mostrar alerta
-    boolean valido = true;
+        String jugador = txtJugador.getText() == null ? "" : txtJugador.getText().trim();
+        String campeon = txtCampeon.getText() == null ? "" : txtCampeon.getText().trim();
+        LocalDate fecha = dateFecha.getValue();              // null = no filtra por fecha
+        String kda = txtKDA.getText() == null ? "" : txtKDA.getText().trim();
+        String resultado = cmbResultado.getValue() == null ? "" : cmbResultado.getValue().trim();
 
-    if (chkJugador.isSelected())
-        valido &= vJugador.getValidationResult().getErrors().isEmpty();
-    if (chkCampeon.isSelected())
-        valido &= vCampeon.getValidationResult().getErrors().isEmpty();
-    if (chkFecha.isSelected())
-        valido &= vFecha.getValidationResult().getErrors().isEmpty();
-    if (chkKDA.isSelected())
-        valido &= vKDA.getValidationResult().getErrors().isEmpty();
-    if (chkResultado.isSelected())
-        valido &= vResultado.getValidationResult().getErrors().isEmpty();
+        boolean algunFiltro = !jugador.isEmpty() || !campeon.isEmpty() || fecha != null || !kda.isEmpty() || !resultado.isEmpty();
+        if (!algunFiltro) {
+            mostrarAlerta("Sin filtros", "Rellena al menos un campo para filtrar.", Alert.AlertType.WARNING);
+            return;
+        }
 
-    if (!valido) {
-        mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
-        return;
-    }
+        // (Opcional) validar KDA solo si se ha escrito algo:
+        if (!kda.isEmpty() && !kda.matches("\\d+/\\d+/\\d+")) {
+            mostrarAlerta("KDA inválido", "Formato debe ser n/n/n (Ej: 10/3/5).", Alert.AlertType.WARNING);
+            return;
+        }
 
-
-    // 🚀 Aplicar filtros sobre listaOriginal sin modificarla
-    System.out.println("🔍 Filtrando partidas...");
-    System.out.println("Número de partidas antes del filtro: " + listaOriginal.size());
-
-    ObservableList<Partida> filtradas = listaOriginal.stream()
-            .filter(this::cumpleFiltros)
+        ObservableList<Partida> filtradas = listaOriginal.stream()
+            .filter(p -> {
+                boolean ok = true;
+                if (!jugador.isEmpty())   ok &= p.getJugador() != null && p.getJugador().toLowerCase().contains(jugador.toLowerCase());
+                if (!campeon.isEmpty())   ok &= p.getCampeon() != null && p.getCampeon().toLowerCase().contains(campeon.toLowerCase());
+                if (fecha != null)        ok &= p.getFecha() != null && p.getFecha().equals(fecha);
+                if (!kda.isEmpty())       ok &= p.getKda() != null && p.getKda().equals(kda);
+                if (!resultado.isEmpty()) ok &= p.getResultado() != null && p.getResultado().equals(resultado);
+                return ok;
+            })
             .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-    System.out.println("Número de partidas después del filtro: " + filtradas.size());
+        if (filtradas.isEmpty()) {
+            mostrarAlerta("Sin resultados", "No se encontraron partidas con esos filtros.", Alert.AlertType.INFORMATION);
+            return;
+        }
 
-    if (filtradas.isEmpty()) {
-    System.out.println("⚠️ Ninguna partida coincide con los filtros.");
-
-    StringBuilder filtrosAplicados = new StringBuilder("No se encontraron partidas con los siguientes filtros:\n\n");
-
-    if (chkJugador.isSelected()) {
-        filtrosAplicados.append("- Jugador: ").append(txtJugador.getText().trim()).append("\n");
-    }
-    if (chkCampeon.isSelected()) {
-        filtrosAplicados.append("- Campeón: ").append(txtCampeon.getText().trim()).append("\n");
-    }
-    if (chkFecha.isSelected()) {
-        filtrosAplicados.append("- Fecha: ").append(dateFecha.getValue()).append("\n");
-    }
-    if (chkKDA.isSelected()) {
-        filtrosAplicados.append("- KDA: ").append(txtKDA.getText().trim()).append("\n");
-    }
-    if (chkResultado.isSelected()) {
-        filtrosAplicados.append("- Resultado: ").append(cmbResultado.getValue()).append("\n");
+        tablaPartidas.setItems(filtradas);
+        tablaPartidas.refresh();
+        cerrarVentana();
     }
 
-    mostrarAlerta("Sin resultados", filtrosAplicados.toString(), Alert.AlertType.INFORMATION);
-    return; // ⛔ Detenemos el cierre de ventana
-} else {
-    System.out.println("✅ Filtrado exitoso, actualizando tabla.");
-    tablaPartidas.setItems(filtradas);
-    tablaPartidas.refresh();
-}
-
-
-    cerrarVentana();
-}
 
 
     /**
@@ -267,32 +195,6 @@ public void borrarFiltrosPartida() {
 
     mostrarAlerta("Filtros eliminados", "Se han eliminado los filtros y restaurado todas las partidas.", Alert.AlertType.INFORMATION);
 }
-
-    /**
-     * Método para verificar si una partida cumple con los filtros seleccionados.
-     */
-    private boolean cumpleFiltros(Partida partida) {
-    if (chkJugador.isSelected() && (partida.getJugador() == null || !partida.getJugador().equalsIgnoreCase(txtJugador.getText().trim()))) {
-        return false;
-    }
-    if (chkCampeon.isSelected() && (partida.getCampeon() == null || !partida.getCampeon().equalsIgnoreCase(txtCampeon.getText().trim()))) {
-        return false;
-    }
-    if (chkFecha.isSelected() && (partida.getFecha() == null || !partida.getFecha().equals(dateFecha.getValue()))) {
-        return false;
-    }
-    if (chkKDA.isSelected() && (partida.getKda() == null || !partida.getKda().equals(txtKDA.getText().trim()))) {
-        return false;
-    }
-    if (chkResultado.isSelected() && (partida.getResultado() == null || !partida.getResultado().trim().equalsIgnoreCase(cmbResultado.getValue().trim()))) {
-    return false;
-    }
-
-    return true;
-}
-
-
-
 
     /**
      * Método para cerrar la ventana sin aplicar filtros
