@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="jugadores.ListaControllerJugadores" >
+    <children>
+        <VBox spacing="10" alignment="CENTER">
+            <!-- Título -->
+            <Label text="Filtrar Jugadores" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+            
+            <!-- Nombre del Jugador -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkNombre" />
+                    <Label text="Nombre del Jugador" />
+                </HBox>
+                <TextField promptText="Ej. Juan" fx:id="txtNombreJugador" />
+            </VBox>
+
+            <!-- Descripción -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkDescripcion" />
+                    <Label text="Descripción" />
+                </HBox>
+                <TextField promptText="Descripción" fx:id="txtDescripcion" />
+            </VBox>
+
+            <!-- Edad -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkEdad" />
+                    <Label text="Edad (>18)" />
+                </HBox>
+                <Spinner fx:id="spinnerEdad" />
+            </VBox>
+
+            <!-- Email -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkEmail" />
+                    <Label text="Email" />
+                </HBox>
+                <TextField promptText="Ej. Juan@example.com" fx:id="txtEmail" />
+            </VBox>
+
+            <!-- Nacionalidad -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkNacionalidad" />
+                    <Label text="Nacionalidad" />
+                </HBox>
+                <TextField promptText="Ej. España" fx:id="txtNacionalidad" />
+            </VBox>
+
+            <!-- Posición -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkPosicion" />
+                    <Label text="Posición" />
+                </HBox>
+                <ComboBox fx:id="cmbPosicion" promptText="Selecciona Posición" />
+            </VBox>
+            
+            <!-- Botones -->
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Aplicar Filtros" fx:id="btnListaFiltros" onAction="#aplicarFiltros" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+            </HBox>
+        </VBox>
+    </children>
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15" />
+    </padding>
+</StackPane>
+

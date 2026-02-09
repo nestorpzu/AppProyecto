@@ -1,0 +1,266 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package campeones;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.Validator;
+import org.controlsfx.validation.ValidationMessage;
+import org.controlsfx.validation.ValidationResult;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+
+
+/**
+ *
+ * @author nestor
+ */
+
+public class AddControllerCampeon {
+
+    // Controles FXML
+    @FXML private CheckBox checkNombre;
+    @FXML private TextField txtNombre;
+    @FXML private CheckBox checkDescripcion;
+    @FXML private TextArea txtDescripcion;
+    @FXML private CheckBox checkRol;
+    @FXML private ComboBox<String> comboRol;
+    @FXML private CheckBox checkDificultad;
+    @FXML private ComboBox<String> comboDificultad;
+    @FXML private Button btnAnadir;
+    @FXML private Button btnCancelar;
+
+    // ?Datos y tabla principal
+    private ObservableList<Campeon> listaCampeones;
+    private ObservableList<Campeon> listaOriginalCampeones;
+    private TableView<Campeon> tablaCampeones;
+
+    // Estado y validaciones
+    private boolean campeonAgregado = false;
+    private ValidationSupport vNombre, vDescripcion, vRol, vDificultad;
+    private ImageView iconoOk, iconoErr;
+
+    /**
+     * Se ejecuta al cargar la ventana.
+     */
+    
+    @FXML
+    public void initialize() {
+        // ComboBox roles y dificultad
+        comboRol.getItems().addAll("Asesino", "Tanque", "Mago", "Tirador", "Luchador", "Soporte");
+        comboRol.setPromptText("Selecciona un Rol");
+
+        comboDificultad.getItems().addAll("Baja", "Media", "Alta");
+        comboDificultad.setPromptText("Selecciona una Dificultad");
+
+        // Configuraciones
+        configurarCheckBoxes();
+        inicializarValidaciones();
+    }
+
+    /**
+     * Inicializa validaciones visuales y lógicas.
+     */
+    
+    private void inicializarValidaciones() {
+        // Cargar iconos
+        iconoOk = new ImageView(new Image(getClass().getResourceAsStream("/icons/ok_icon.png")));
+        iconoErr = new ImageView(new Image(getClass().getResourceAsStream("/icons/error_icon.png")));
+        iconoOk.setFitWidth(16); iconoOk.setFitHeight(16);
+        iconoErr.setFitWidth(16); iconoErr.setFitHeight(16);
+
+        // Crear validadores
+        vNombre = new ValidationSupport();
+        vDescripcion = new ValidationSupport();
+        vRol = new ValidationSupport();
+        vDificultad = new ValidationSupport();
+
+        // Decorador de validación personalizado
+        GraphicValidationDecoration decorador = new GraphicValidationDecoration() {
+            @Override
+            public void applyValidationDecoration(ValidationMessage message) {
+                super.applyValidationDecoration(message);
+                Control control = message.getTarget();
+                control.setStyle(
+                    message.getSeverity() == Severity.ERROR ? "-fx-border-color: red;" :
+                    message.getSeverity() == Severity.INFO ? "-fx-border-color: green;" : null
+                );
+            }
+        };
+
+        // Aplicar decorador
+        vNombre.setValidationDecorator(decorador);
+        vDescripcion.setValidationDecorator(decorador);
+        vRol.setValidationDecorator(decorador);
+        vDificultad.setValidationDecorator(decorador);
+
+        // Validaciones por campo
+        vNombre.registerValidator(txtNombre, true, (Control c, String valor) -> {
+            if (valor == null || valor.trim().isEmpty()) return ValidationResult.fromError(c, "El nombre no puede estar vacío");
+            if (!valor.matches("^[a-zA-ZÁÉÍÓÚáéíóúñÑ ]+$")) return ValidationResult.fromError(c, "Solo letras permitidas");
+            return ValidationResult.fromInfo(c, "Nombre válido");
+        });
+
+        vDescripcion.registerValidator(txtDescripcion, true,
+            Validator.createEmptyValidator("La descripción no puede estar vacía"));
+
+        vRol.registerValidator(comboRol, true,
+            Validator.createEmptyValidator("Selecciona un rol"));
+
+        vDificultad.registerValidator(comboDificultad, true,
+            Validator.createEmptyValidator("Selecciona una dificultad"));
+    }
+
+    /**
+     * Desactiva campos si sus CheckBoxes no están marcados.
+     */
+    private void configurarCheckBoxes() {
+        txtNombre.disableProperty().bind(checkNombre.selectedProperty().not());
+        txtDescripcion.disableProperty().bind(checkDescripcion.selectedProperty().not());
+        comboRol.disableProperty().bind(checkRol.selectedProperty().not());
+        comboDificultad.disableProperty().bind(checkDificultad.selectedProperty().not());
+    }
+
+    /**
+     * Acción del botón "Añadir".
+     */
+    @FXML
+    private void anadirCampeon() {
+        // Validación manual para campos vacíos
+        if (!validarFormulario()) return;
+
+        // Captura de datos
+        String nombre = checkNombre.isSelected() ? txtNombre.getText() : "Sin Nombre";
+        String descripcion = checkDescripcion.isSelected() ? txtDescripcion.getText() : "Sin Descripción";
+        String rol = checkRol.isSelected() ? comboRol.getValue() : "Sin Rol";
+        String dificultad = checkDificultad.isSelected() ? comboDificultad.getValue() : "Sin Dificultad";
+
+        // Inserción en la base de datos
+        try (Connection connection = baseDatos.DataBaseMain.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO campeones (nombre_campeon, descripcion_campeon, rol_mapa, dificultad) VALUES (?, ?, ?, ?)")) {
+
+            stmt.setString(1, nombre);
+            stmt.setString(2, descripcion);
+            stmt.setString(3, rol);
+            stmt.setString(4, dificultad);
+
+            if (stmt.executeUpdate() > 0) {
+                mostrarAlerta("Éxito", "Campeón añadido correctamente.", Alert.AlertType.INFORMATION);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error", "No se pudo añadir el campeón: " + e.getMessage(), Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Añadir a lista y refrescar tabla
+        Campeon nuevoCampeon = new Campeon(nombre, descripcion, rol, dificultad, false);
+
+        if (listaOriginalCampeones != null) {
+            listaOriginalCampeones.add(nuevoCampeon);
+        }
+
+        if (tablaCampeones != null) {
+            tablaCampeones.setItems(FXCollections.observableArrayList(listaOriginalCampeones));
+            tablaCampeones.refresh();
+        }
+
+        // Estado y cierre
+        campeonAgregado = true;
+        cerrarVentana();
+    }
+
+    /**
+     * Validaciones manuales del formulario.
+     */
+    private boolean validarFormulario() {
+        boolean valido = true;
+
+        if (!checkNombre.isSelected() && !checkDescripcion.isSelected() &&
+            !checkRol.isSelected() && !checkDificultad.isSelected()) {
+            mostrarAlerta("Sin selección", "Selecciona al menos un campo para añadir.", Alert.AlertType.WARNING);
+            return false;
+        }
+
+        if (checkNombre.isSelected())
+            valido &= vNombre.getValidationResult().getErrors().isEmpty();
+        if (checkDescripcion.isSelected())
+            valido &= vDescripcion.getValidationResult().getErrors().isEmpty();
+        if (checkRol.isSelected())
+            valido &= vRol.getValidationResult().getErrors().isEmpty();
+        if (checkDificultad.isSelected())
+            valido &= vDificultad.getValidationResult().getErrors().isEmpty();
+
+        if (!valido) {
+            mostrarAlerta("Error de validación", "Revisa los campos marcados con errores.", Alert.AlertType.WARNING);
+        }
+
+        return valido;
+    }
+
+    @FXML
+    private void cancelar() {
+        cerrarVentana();
+    }
+
+    private void cerrarVentana() {
+        Stage stage = (Stage) btnCancelar.getScene().getWindow();
+        stage.close();
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+
+        alerta.setOnShown(event -> Platform.runLater(() -> {
+            Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
+            stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
+        }));
+
+        alerta.showAndWait();
+    }
+
+    // Setters y getters
+    public boolean isCampeonAgregado() {
+        return campeonAgregado;
+    }
+
+    public void setListaOriginalCampeones(ObservableList<Campeon> listaOriginalCampeones) {
+        this.listaOriginalCampeones = listaOriginalCampeones;
+    }
+
+    public void setTablaCampeones(TableView<Campeon> tablaCampeones) {
+        this.tablaCampeones = tablaCampeones;
+    }
+
+    public void setListaYTablaCampeones(ObservableList<Campeon> listaCampeones, TableView<Campeon> tablaCampeones) {
+        this.listaCampeones = listaCampeones;
+        this.tablaCampeones = tablaCampeones;
+    }
+}

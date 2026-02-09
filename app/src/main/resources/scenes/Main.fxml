@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<TabPane prefHeight="550.0" prefWidth="668.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.appProyecto.Controller">
+   <tabs>
+        <!-- Tab: Jugadores -->
+        <Tab closable="close" text="Jugadores">      
+            <AnchorPane>  
+                <children>
+                    <VBox spacing="10" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+                        <!-- Botones superiores -->
+                        <!-- HBox con el Label y el Botón alineados a la izquierda y derecha respectivamente -->
+                        <HBox spacing="10">
+                            <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Lista de Jugadores" />
+                            <Region fx:id="spacer" HBox.hgrow="ALWAYS" /> <!-- Espaciador que empuja el botón hacia la derecha -->
+                            <Button text="Añadir Jugador" fx:id="btnAnadir" onAction="#abrirBtnAnadir" />
+                        </HBox>
+
+                        <!-- HBox con los botones de filtros y campo de búsqueda -->
+                        <HBox spacing="10">
+                            <Button text="Lista de filtros" fx:id="btnListaFiltros" onAction="#abrirListaDeFiltros1" />
+                            <Button text="Borrar filtros" fx:id="btnBorrar" onAction="#borrarFiltros1" />
+                            <Region fx:id="spacer2" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
+                            <TextField promptText="Buscar jugador..." fx:id="txtBuscarJugador"/>
+                        </HBox>
+                        
+                        <!-- Tabla de jugadores -->
+                        <TableView fx:id="tablaJugadores">
+                            <columns>                          
+                               <TableColumn fx:id="colNombreJugador" text="Nombre" />
+                                <TableColumn fx:id="colDescripcionJugador" text="Descripción" />
+                                <TableColumn fx:id="colEdadJugador" text="Edad" />
+                                <TableColumn fx:id="colEmailJugador" text="Email" />
+                                <TableColumn fx:id="colNacionalidadJugador" text="Nacionalidad" />
+                                <TableColumn fx:id="colPosicionJugador" text="Posición" />
+                                <TableColumn fx:id="columnaAcciones1" text="Acciones">
+                                    <!-- Columna para acciones como editar o borrar -->
+                                </TableColumn>
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                    </VBox>
+                </children>
+            </AnchorPane>
+        </Tab>
+
+        <!-- Tab: Campeones -->
+        <Tab closable="close" text="Campeones">
+            <AnchorPane>
+                <children>
+                    <VBox spacing="10" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+                        <!-- Botones superiores -->
+                         <!-- HBox con el Label y el Botón alineados a la izquierda y derecha respectivamente -->
+                        <HBox spacing="10">
+                            <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Lista de Campeones" />
+                            <Region fx:id="spacer3" HBox.hgrow="ALWAYS" /> <!-- Espaciador que empuja el botón hacia la derecha -->
+                            <Button text="Añadir Campeon" fx:id="btnAnadir2" onAction="#abrirBtnAnadirCampeon"/>
+                        </HBox>
+                         
+                        <HBox spacing="10">
+                            <Button text="Lista de filtros" fx:id="btnListaFiltro2" onAction="#abrirListaDeFiltros2" />
+                            <Button text="Borrar filtros" fx:id="btnBorrar2" onAction="#borrarFiltros2"/>
+                            <Region fx:id="spacer4" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
+                            <TextField promptText="Buscar campeón..." fx:id="txtBuscarCampeon"/>
+                        </HBox>
+
+                        <!-- Tabla de jugadores -->
+                        <TableView fx:id="tablaCampeones">
+                            <columns>
+                                <TableColumn fx:id="colNombreCampeon" text="Nombre" />
+                                <TableColumn fx:id="colDescripcionCampeon" text="Descripción" />
+                                <TableColumn fx:id="colRolCampeon" text="Rol" />
+                                <TableColumn fx:id="colDificultadCampeon" text="Dificultad" />
+                                <TableColumn fx:id="columnaAccionesCampeones" text="Acciones"/>
+                            </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+
+                        </TableView>
+
+                        
+                    </VBox>
+                </children>
+            </AnchorPane>
+        </Tab>
+
+        <!-- Tab: Partidas -->
+        <Tab closable="close" text="Partidas">
+            <AnchorPane>
+                <children>
+                    <VBox spacing="10" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
+                        <!-- Botones superiores -->
+                        <HBox spacing="10">
+                            <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Lista de Partidas" />
+                            <Region fx:id="spacer6" HBox.hgrow="ALWAYS" /> <!-- Espaciador que empuja el botón hacia la derecha -->
+                            <Button text="Añadir Partida" fx:id="btnAnadir3" onAction="#abrirBtnAnadirPartida"/>
+                        </HBox>
+                        <HBox spacing="10">
+                             <Button text="Lista de filtros" fx:id="btnListaFiltros3" onAction="#abrirListaDeFiltros3" />
+                            <Button text="Borrar filtros"  fx:id="btnBorrar3" onAction="#borrarFiltros3"/>
+                            <Region fx:id="spacer5" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
+                            <TextField promptText="Buscar partidas..." fx:id="txtBuscarPartida"/>
+                        </HBox>
+
+                        <!-- Tabla de jugadores -->
+                        <TableView fx:id="tablaPartidas">
+                            <columns>                                 
+                                <TableColumn fx:id="colJugadorPartida" text="Jugadores" />
+                                <TableColumn fx:id="colCampeonesPartida" text="Campeones" />
+                                <TableColumn fx:id="colFechaPartida" text="Fecha" />
+                                <TableColumn fx:id="colKDA" text="KDA" />
+                                <TableColumn fx:id="colResultadoPartida" text="Resultado" />                                
+                                <TableColumn fx:id="columnaAccionesPartida" text="Acciones"/>
+                            </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                        </TableView>
+
+                        
+                    </VBox>
+                </children>
+            </AnchorPane>
+        </Tab>
+    </tabs>
+</TabPane>

@@ -1,0 +1,256 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package partidas;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TableView;
+import javafx.stage.Stage;
+import java.time.LocalDate;
+import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.Screen;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationMessage;
+import org.controlsfx.validation.ValidationResult;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
+import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+/**
+ *
+ * @author nestor
+ */
+
+
+public class EditarControllerPartida {
+
+    @FXML private CheckBox checkJugador, checkCampeon, checkFecha, checkKDA, checkResultado;
+    @FXML private TextField txtJugador, txtCampeon, txtKDA;
+    @FXML private DatePicker dateFecha;
+    @FXML private ComboBox<String> cmbResultado;
+    @FXML private Button btnGuardar, btnCancelar;
+    @FXML private TableView<Partida> tablaPartidas;
+
+    private Partida partidaSeleccionada;
+    private String jugadorOriginal, campeonOriginal;
+    private ValidationSupport vFecha, vKDA, vResultado;
+    private ImageView iconoOk, iconoErr;
+
+
+    @FXML
+    public void initialize() {
+        // Inicializar ComboBox con valores predefinidos
+        cmbResultado.getItems().addAll("Victoria", "Derrota", "Empate");
+        cmbResultado.setPromptText("Selecciona un resultado");
+
+        configurarCheckBoxes();
+        inicializarValidaciones();
+
+        txtJugador.setEditable(false);
+        txtCampeon.setEditable(false);
+    }
+
+    private void inicializarValidaciones() {
+    iconoOk = new ImageView(new Image(getClass().getResourceAsStream("/icons/ok_icon.png")));
+    iconoErr = new ImageView(new Image(getClass().getResourceAsStream("/icons/error_icon.png")));
+    iconoOk.setFitWidth(16); iconoOk.setFitHeight(16);
+    iconoErr.setFitWidth(16); iconoErr.setFitHeight(16);
+
+    vFecha = new ValidationSupport();
+    vKDA = new ValidationSupport();
+    vResultado = new ValidationSupport();
+
+    GraphicValidationDecoration decorador = new GraphicValidationDecoration() {
+        @Override
+        public void applyValidationDecoration(ValidationMessage message) {
+            super.applyValidationDecoration(message);
+            message.getTarget().setStyle(
+                message.getSeverity() == Severity.ERROR ?
+                "-fx-border-color: red;" :
+                "-fx-border-color: green;"
+            );
+        }
+    };
+
+    vFecha.setValidationDecorator(decorador);
+    vKDA.setValidationDecorator(decorador);
+    vResultado.setValidationDecorator(decorador);
+
+    vFecha.registerValidator(dateFecha, true, Validator.createEmptyValidator("La fecha es obligatoria"));
+
+    vResultado.registerValidator(cmbResultado, true, Validator.createEmptyValidator("Selecciona un resultado"));
+
+    // Validación de KDA como texto con formato tipo "2/1/3"
+    vKDA.registerValidator(txtKDA, true, (control, value) -> {
+    if (!(value instanceof String)) {
+        return ValidationResult.fromError(control, "Entrada no válida");
+    }
+
+    String texto = (String) value;
+
+    if (texto.trim().isEmpty()) {
+        return ValidationResult.fromError(control, "El KDA es obligatorio");
+    }
+
+    if (!texto.matches("\\d+/\\d+/\\d+")) {
+        return ValidationResult.fromError(control, "Formato debe ser x/y/z (ej: 3/1/2)");
+    }
+
+    return ValidationResult.fromInfo(control, "Formato correcto");
+});
+
+
+}
+
+    
+    private void configurarCheckBoxes() {
+        
+        dateFecha.disableProperty().bind(checkFecha.selectedProperty().not());
+        txtKDA.disableProperty().bind(checkKDA.selectedProperty().not());
+        cmbResultado.disableProperty().bind(checkResultado.selectedProperty().not());
+    }
+
+   public void setPartida(Partida partida) {
+    this.partidaSeleccionada = partida;
+    this.jugadorOriginal = partida.getJugador();
+    this.campeonOriginal = partida.getCampeon();
+
+    Platform.runLater(() -> {
+        txtJugador.setText(partida.getJugador());
+        txtCampeon.setText(partida.getCampeon());
+        dateFecha.setValue(partida.getFecha());
+        txtKDA.setText(partida.getKda());
+        cmbResultado.setValue(partida.getResultado());
+
+        
+        txtJugador.setEditable(false);
+        txtCampeon.setEditable(false);
+    });
+}
+
+
+    public void setTablaPartidas(TableView<Partida> tablaPartidas) {
+        this.tablaPartidas = tablaPartidas;
+    }
+
+    @FXML
+private void editarPartida() {
+    StringBuilder mensajeError = new StringBuilder();
+
+    if (checkFecha.isSelected() && dateFecha.getValue() == null) {
+        mensajeError.append("- Debe seleccionar una fecha.\n");
+    }
+    if (checkKDA.isSelected() && (txtKDA.getText() == null || txtKDA.getText().trim().isEmpty())) {
+        mensajeError.append("- Debe ingresar un KDA.\n");
+    }
+    if (checkResultado.isSelected() && (cmbResultado.getValue() == null || cmbResultado.getValue().trim().isEmpty())) {
+        mensajeError.append("- Debe seleccionar un resultado.\n");
+    }
+
+    boolean todoOK = vFecha.getValidationResult().getErrors().isEmpty()
+              && vKDA.getValidationResult().getErrors().isEmpty()
+              && vResultado.getValidationResult().getErrors().isEmpty();
+
+    if (!todoOK) {
+        mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+        return;
+    }
+
+
+    Partida partidaSeleccionada = tablaPartidas.getSelectionModel().getSelectedItem();
+    if (partidaSeleccionada == null) {
+        mostrarAlerta("Error", "No se seleccionó ninguna partida.", Alert.AlertType.WARNING);
+        return;
+    }
+
+    int idJuegan = partidaSeleccionada.getIdJuegan();  // ✅ Ahora obtenemos directamente el ID_juegan
+
+    try (Connection connection = baseDatos.DataBaseMain.getConnection();
+         PreparedStatement stmt = connection.prepareStatement(
+                 "UPDATE juegan SET Fecha_jugada=?, KDA=?, Resultado=? WHERE ID_juegan=?")) {
+
+        stmt.setObject(1, dateFecha.getValue() != null ? dateFecha.getValue() : null);
+        stmt.setString(2, txtKDA.getText());
+        stmt.setString(3, cmbResultado.getValue());
+        stmt.setInt(4, idJuegan);  // ✅ Se usa ID único
+
+        int filasAfectadas = stmt.executeUpdate();
+
+        if (filasAfectadas > 0) {
+            // ✅ Actualizamos los valores en el TableView
+            partidaSeleccionada.setFecha(dateFecha.getValue());
+            partidaSeleccionada.setKda(txtKDA.getText());
+            partidaSeleccionada.setResultado(cmbResultado.getValue());
+            tablaPartidas.refresh();
+            mostrarAlerta("Edición exitosa", "Los datos de la partida han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se encontró la partida en la base de datos para actualizar.", Alert.AlertType.ERROR);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        mostrarAlerta("Error", "Ocurrió un error al actualizar la partida: " + e.getMessage(), Alert.AlertType.ERROR);
+    }
+
+    Stage stage = (Stage) btnGuardar.getScene().getWindow();
+    stage.close();
+}
+
+
+private int obtenerIDJuegan(String nombreJugador, String nombreCampeon) {
+    String query = "SELECT ID_juegan FROM juegan j " +
+                   "JOIN jugadores ju ON j.ID_Jugador = ju.idJugadores " +
+                   "JOIN campeones c ON j.ID_Campeon = c.idCampeones " +
+                   "WHERE ju.nombre_jugador = ? AND c.nombre_campeon = ?";
+
+    try (Connection connection = baseDatos.DataBaseMain.getConnection();
+         PreparedStatement stmt = connection.prepareStatement(query)) {
+        stmt.setString(1, nombreJugador);
+        stmt.setString(2, nombreCampeon);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("ID_juegan");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return -1; // Retorna -1 si la partida no se encuentra
+}
+
+    
+    @FXML
+    private void cancelar() {
+        Stage stage = (Stage) btnCancelar.getScene().getWindow();
+        stage.close();
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+
+        alerta.setOnShown(event -> {
+            Platform.runLater(() -> {
+                Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
+                Screen screen = Screen.getPrimary();
+                Rectangle2D bounds = screen.getVisualBounds();
+                stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
+                stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
+            });
+        });
+        alerta.showAndWait();
+    }
+}

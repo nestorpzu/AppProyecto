@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="partidas.ListaControllerPartida">
+    <children>
+        <VBox spacing="10" alignment="CENTER">
+            <!-- Título -->
+            <Label text="Filtrar Partidas" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+
+            <!-- Jugador -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkJugador" text="Jugador" />
+                </HBox>
+                <TextField fx:id="txtJugador" promptText="Ej: Juan" />
+            </VBox>
+
+            <!-- Campeón -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkCampeon" text="Campeón" />
+                </HBox>
+                <TextField fx:id="txtCampeon" promptText="Ej: Yasuo" />
+            </VBox>
+
+            <!-- Fecha -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkFecha" text="Fecha" />
+                </HBox>
+                <DatePicker fx:id="dateFecha" />
+            </VBox>
+
+            <!-- KDA -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkKDA" text="KDA" />
+                </HBox>
+                <TextField fx:id="txtKDA" promptText="Ej: 10/3/5"/>
+            </VBox>
+
+            <!-- Resultado -->
+            <VBox spacing="5">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="chkResultado" text="Resultado" />
+                </HBox>
+                <ComboBox fx:id="cmbResultado" />
+            </VBox>
+
+            <!-- Botones -->
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Aplicar Filtros" fx:id="btnAplicarFiltros" onAction="#aplicarFiltros" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
+                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+            </HBox>
+        </VBox>
+    </children>
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15" />
+    </padding>
+</StackPane>
