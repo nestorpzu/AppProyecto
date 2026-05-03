@@ -28,6 +28,7 @@ import org.controlsfx.validation.ValidationMessage;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+import utils.AlertUtils;
 /**
  *
  * @author nestor
@@ -219,7 +220,7 @@ public class AddControllerPartida {
                 && vResultado.getValidationResult().getErrors().isEmpty();
 
         if (!valido) {
-            mostrarAlerta("Error de validación", "Revisa los campos marcados con errores.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Error de validación", "Revisa los campos marcados con errores.", Alert.AlertType.WARNING);
             return;
         }
 
@@ -237,7 +238,7 @@ public class AddControllerPartida {
             idJugador = obtenerIDJugador(jugador);
             idCampeon = obtenerIDCampeon(campeon);
         } catch (SQLException e) {
-            mostrarAlerta("Error", e.getMessage(), Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Error", e.getMessage(), Alert.AlertType.WARNING);
             return;
         }
 
@@ -272,7 +273,7 @@ public class AddControllerPartida {
             cerrarVentana();
 
         } catch (SQLException e) {
-            mostrarAlerta("Error", "Error en base de datos: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertUtils.mostrarAlerta("Error", "Error en base de datos: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -287,21 +288,6 @@ public class AddControllerPartida {
         stage.close();
     }
 
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-
-        alerta.setOnShown(event -> Platform.runLater(() -> {
-            Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
-            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-            stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-            stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
-        }));
-
-        alerta.showAndWait();
-    }
 
     public boolean isPartidaAgregada() {
         return partidaAgregada;

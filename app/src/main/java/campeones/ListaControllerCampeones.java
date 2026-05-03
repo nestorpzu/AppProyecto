@@ -26,6 +26,7 @@ import org.controlsfx.validation.ValidationMessage;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+import utils.AlertUtils;
 
 /**
  *
@@ -127,7 +128,7 @@ private void aplicarFiltros() {
 
     boolean algunFiltro = !nombre.isEmpty() || !desc.isEmpty() || !rol.isEmpty() || !dif.isEmpty();
     if (!algunFiltro) {
-        mostrarAlerta("Sin filtros", "Rellena al menos un campo para filtrar.", Alert.AlertType.WARNING);
+        AlertUtils.mostrarAlerta("Sin filtros", "Rellena al menos un campo para filtrar.", Alert.AlertType.WARNING);
         return;
     }
 
@@ -145,7 +146,7 @@ private void aplicarFiltros() {
     );
 
     if (filtrados.isEmpty()) {
-        mostrarAlerta("Sin resultados", "No se encontraron campeones con esos filtros.", Alert.AlertType.INFORMATION);
+        AlertUtils.mostrarAlerta("Sin resultados", "No se encontraron campeones con esos filtros.", Alert.AlertType.INFORMATION);
         return;
     }
 
@@ -161,13 +162,13 @@ private void aplicarFiltros() {
     @FXML
         public void borrarFiltrosCampeones() {
         if (listaOriginal == null) {
-            mostrarAlerta("Error", "La lista original de campeones no está inicializada.", Alert.AlertType.ERROR);
+            AlertUtils.mostrarAlerta("Error", "La lista original de campeones no está inicializada.", Alert.AlertType.ERROR);
             System.out.println("⚠️ Error: listaOriginal es null.");
             return;
         }
 
         if (listaOriginal.isEmpty()) {
-            mostrarAlerta("Error", "No hay datos originales disponibles para restaurar.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Error", "No hay datos originales disponibles para restaurar.", Alert.AlertType.WARNING);
             System.out.println("⚠️ Error: listaOriginal está vacía.");
             return;
         }
@@ -175,7 +176,7 @@ private void aplicarFiltros() {
         // Verificar si la tabla ya muestra la lista original
         if (tablaCampeones.getItems().size() == listaOriginal.size() &&
             tablaCampeones.getItems().containsAll(listaOriginal)) {
-            mostrarAlerta("Filtros no aplicados", "No hay filtros activos para borrar.", Alert.AlertType.INFORMATION);
+            AlertUtils.mostrarAlerta("Filtros no aplicados", "No hay filtros activos para borrar.", Alert.AlertType.INFORMATION);
             System.out.println("ℹ️ No hay filtros activos en la tabla de campeones.");
             return;
         }
@@ -187,7 +188,7 @@ private void aplicarFiltros() {
         tablaCampeones.setItems(FXCollections.observableArrayList(listaOriginal));
         tablaCampeones.refresh();
 
-        mostrarAlerta("Filtros eliminados", "Se han eliminado los filtros y restaurado todos los campeones.", Alert.AlertType.INFORMATION);
+        AlertUtils.mostrarAlerta("Filtros eliminados", "Se han eliminado los filtros y restaurado todos los campeones.", Alert.AlertType.INFORMATION);
     }
 
     /**
@@ -201,33 +202,6 @@ private void aplicarFiltros() {
     private void cerrarVentana() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
-    }
-
-    /**
-     * Mostrar una alerta
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Platform.runLater(() -> {
-            Alert alerta = new Alert(tipo);
-            alerta.setTitle(titulo);
-            alerta.setHeaderText(null);
-            alerta.setContentText(mensaje);
-
-            // Centrar la alerta en la pantalla
-            alerta.setOnShown(event -> {
-                Platform.runLater(() -> {
-                    Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
-                    if (stage != null) {
-                        Screen screen = Screen.getPrimary();
-                        Rectangle2D bounds = screen.getVisualBounds();
-                        stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-                        stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
-                    }
-                });
-            });
-
-            alerta.showAndWait();
-        });
     }
 
     /**

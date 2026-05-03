@@ -2,6 +2,8 @@ package jugadores;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +17,7 @@ import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+import utils.AlertUtils;
 /**
  *
  * @author nestor
@@ -149,7 +152,7 @@ public class AddControllerJugador {
                     && vDescripcion.getValidationResult().getErrors().isEmpty();
 
             if (!valido) {
-                mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+                AlertUtils.mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
                 return;
             }
 
@@ -164,23 +167,28 @@ public class AddControllerJugador {
         // Insertar en base de datos
         try (Connection connection = baseDatos.DataBaseMain.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO jugadores (nombre_jugador, descripcion_jugador, edad, email, nacionalidad, posicion_jugador) VALUES (?, ?, ?, ?, ?, ?)")) {
+                     "INSERT INTO jugadores (nombre_jugador, descripcion_jugador, edad, email, nacionalidad, posicion_jugador) VALUES (?, ?, ?, ?, ?, ?)", 
+                     Statement.RETURN_GENERATED_KEYS)) { //Pedir que devuelva el ID generado           
+            
             preparedStatement.setString(1, nombre);
             preparedStatement.setString(2, descripcion);
             preparedStatement.setInt(3, edad);
             preparedStatement.setString(4, email);
             preparedStatement.setString(5, nacionalidad);
             preparedStatement.setString(6, posicion);
+            
             preparedStatement.executeUpdate();
-            System.out.println("Jugador añadido correctamente.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            mostrarAlerta("Error", "Error al guardar el jugador: " + e.getMessage(), Alert.AlertType.ERROR);
-            return;
-        }
+            
+            //Cada objeto que creas sabe cuál es su ID único en la base de datos.
+            int idNuevo = 0;
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            if (rs.next()) {
+                idNuevo = rs.getInt(1);  
+            }
+        System.out.println("Jugador añadido correctamente.");
 
         // Agregar a lista y refrescar tabla
-        Jugador nuevoJugador = new Jugador(nombre, descripcion, edad, email, nacionalidad, posicion, false);
+        Jugador nuevoJugador = new Jugador(idNuevo, nombre, descripcion, edad, email, nacionalidad, posicion, false);
         if (listaOriginal != null) {
             listaOriginal.add(nuevoJugador);
         }
@@ -189,6 +197,11 @@ public class AddControllerJugador {
             tablaJugadores.refresh();
         }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertUtils.mostrarAlerta("Error", "Error al guardar el jugador: " + e.getMessage(), Alert.AlertType.ERROR);
+            return;
+        }
         jugadorAgregado = true;
         cerrarVentana();
     }
@@ -207,25 +220,6 @@ public class AddControllerJugador {
     private void cerrarVentana() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
-    }
-
-    /**
-     * Muestra una alerta con título, mensaje y tipo.
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.setOnShown(event -> {
-            Platform.runLater(() -> {
-                Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
-                Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-                stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-                stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
-            });
-        });
-        alerta.showAndWait();
     }
 
     // Getter para saber si se agregó el jugador correctamente

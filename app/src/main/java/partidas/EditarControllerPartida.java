@@ -29,6 +29,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+import utils.AlertUtils;
 /**
  *
  * @author nestor
@@ -148,14 +149,14 @@ public class EditarControllerPartida {
                 && vResultado.getValidationResult().getErrors().isEmpty();
 
         if (!todoOK) {
-            mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
             return;
         }
 
 
        Partida partidaSeleccionada = this.partidaSeleccionada;
         if (partidaSeleccionada == null) {
-            mostrarAlerta("Error", "No se seleccionó ninguna partida.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Error", "No se seleccionó ninguna partida.", Alert.AlertType.WARNING);
             return;
         }
 
@@ -178,13 +179,13 @@ public class EditarControllerPartida {
                 partidaSeleccionada.setKda(txtKDA.getText());
                 partidaSeleccionada.setResultado(cmbResultado.getValue());
                 tablaPartidas.refresh();
-                mostrarAlerta("Edición exitosa", "Los datos de la partida han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
+                AlertUtils.mostrarAlerta("Edición exitosa", "Los datos de la partida han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
             } else {
-                mostrarAlerta("Error", "No se encontró la partida en la base de datos para actualizar.", Alert.AlertType.ERROR);
+                AlertUtils.mostrarAlerta("Error", "No se encontró la partida en la base de datos para actualizar.", Alert.AlertType.ERROR);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarAlerta("Error", "Ocurrió un error al actualizar la partida: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertUtils.mostrarAlerta("Error", "Ocurrió un error al actualizar la partida: " + e.getMessage(), Alert.AlertType.ERROR);
         }
 
         Stage stage = (Stage) btnGuardar.getScene().getWindow();
@@ -197,21 +198,4 @@ public class EditarControllerPartida {
         stage.close();
     }
 
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-
-        alerta.setOnShown(event -> {
-            Platform.runLater(() -> {
-                Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
-                Screen screen = Screen.getPrimary();
-                Rectangle2D bounds = screen.getVisualBounds();
-                stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-                stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
-            });
-        });
-        alerta.showAndWait();
-    }
 }

@@ -23,6 +23,7 @@ import org.controlsfx.validation.ValidationMessage;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+import utils.AlertUtils;
 
 /**
  *
@@ -130,7 +131,7 @@ public class ListaControllerPartida {
     @FXML
     private void aplicarFiltros() {
         if (listaOriginal == null || listaOriginal.isEmpty()) {
-            mostrarAlerta("Sin datos", "No hay partidas disponibles para filtrar.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Sin datos", "No hay partidas disponibles para filtrar.", Alert.AlertType.WARNING);
             return;
         }
 
@@ -142,13 +143,13 @@ public class ListaControllerPartida {
 
         boolean algunFiltro = !jugador.isEmpty() || !campeon.isEmpty() || fecha != null || !kda.isEmpty() || !resultado.isEmpty();
         if (!algunFiltro) {
-            mostrarAlerta("Sin filtros", "Rellena al menos un campo para filtrar.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Sin filtros", "Rellena al menos un campo para filtrar.", Alert.AlertType.WARNING);
             return;
         }
 
         // (Opcional) validar KDA solo si se ha escrito algo:
         if (!kda.isEmpty() && !kda.matches("\\d+/\\d+/\\d+")) {
-            mostrarAlerta("KDA inválido", "Formato debe ser n/n/n (Ej: 10/3/5).", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("KDA inválido", "Formato debe ser n/n/n (Ej: 10/3/5).", Alert.AlertType.WARNING);
             return;
         }
 
@@ -165,7 +166,7 @@ public class ListaControllerPartida {
             .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
         if (filtradas.isEmpty()) {
-            mostrarAlerta("Sin resultados", "No se encontraron partidas con esos filtros.", Alert.AlertType.INFORMATION);
+            AlertUtils.mostrarAlerta("Sin resultados", "No se encontraron partidas con esos filtros.", Alert.AlertType.INFORMATION);
             return;
         }
 
@@ -183,7 +184,7 @@ public class ListaControllerPartida {
     @FXML
 public void borrarFiltrosPartida() {
     if (listaOriginal == null || listaOriginal.isEmpty()) {
-        mostrarAlerta("Error", "No hay datos originales disponibles para restaurar.", Alert.AlertType.WARNING);
+        AlertUtils.mostrarAlerta("Error", "No hay datos originales disponibles para restaurar.", Alert.AlertType.WARNING);
         return;
     }
 
@@ -193,7 +194,7 @@ public void borrarFiltrosPartida() {
     tablaPartidas.setItems(FXCollections.observableArrayList(listaOriginal));
     tablaPartidas.refresh();
 
-    mostrarAlerta("Filtros eliminados", "Se han eliminado los filtros y restaurado todas las partidas.", Alert.AlertType.INFORMATION);
+    AlertUtils.mostrarAlerta("Filtros eliminados", "Se han eliminado los filtros y restaurado todas las partidas.", Alert.AlertType.INFORMATION);
 }
 
     /**
@@ -208,33 +209,6 @@ public void borrarFiltrosPartida() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
     }
-
-    /**
-     * Mostrar una alerta
-     */
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Platform.runLater(() -> {
-            Alert alerta = new Alert(tipo);
-            alerta.setTitle(titulo);
-            alerta.setHeaderText(null);
-            alerta.setContentText(mensaje);
-
-            alerta.setOnShown(event -> {
-                Platform.runLater(() -> {
-                    Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
-                    if (stage != null) {
-                        Screen screen = Screen.getPrimary();
-                        Rectangle2D bounds = screen.getVisualBounds();
-                        stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-                        stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
-                    }
-                });
-            });
-
-            alerta.showAndWait();
-        });
-    }
-
     /**
      * Setter para listaOriginal
      */

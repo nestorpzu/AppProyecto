@@ -48,7 +48,7 @@ import partidas.EditarControllerPartida;
 import partidas.AddControllerPartida;
 
 
-public class Controller extends Application {
+public class Controller {
 
    // -------------------- CONTROLADORES SECUNDARIOS --------------------
     private ListaControllerJugadores listaControllerJugadores;
@@ -105,22 +105,7 @@ public class Controller extends Application {
     // -------------------- BANDERAS --------------------
     private boolean jugadoresCargados = false;
 
-    // -------------------- MÉTODO MAIN --------------------
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-  // -------------------- INICIALIZAR STAGE PRINCIPAL --------------------
-    @Override
-    public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/Main.fxml"));
-        Parent root = loader.load();
-
-        Scene scene = new Scene(root);
-        stage.setTitle("Conexión a la Base de Datos");
-        stage.setScene(scene);
-        stage.show();
-    }
+    
 
     
     @FXML
@@ -155,7 +140,6 @@ public class Controller extends Application {
 
 
      txtBuscarCampeon.textProperty().addListener((observable, oldValue, newValue) -> buscarCampeon(newValue));
-    // Configurar búsqueda en tiempo real
      txtBuscarJugador.textProperty().addListener((observable, oldValue, newValue) -> buscarJugador(newValue));
      txtBuscarPartida.textProperty().addListener((observable, oldValue, newValue) -> buscarPartida(newValue));
 
@@ -172,8 +156,7 @@ public class Controller extends Application {
          tablaCampeones.refresh();
      });
 
-
-     // Evitar que se puedan seleccionar varias filas a la vez
+     // Evitar que se puedan seleccionar varias filas a la vez en Jugadores
      tablaJugadores.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
          if (newSelection != null) {
              newSelection.setSeleccionado(true);
@@ -462,9 +445,15 @@ private void editarPartida(Partida partida) {
 
         Stage stage = new Stage();
         stage.setTitle("Editar Partida");
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+
+        scene.getStylesheets().add(getClass().getResource("/estilos/editarPartida.css").toExternalForm());
+
+        stage.setScene(scene);
+
         stage.setWidth(350);
-        stage.setHeight(400);
+        stage.setHeight(470);
+
 
         // Centrar ventana
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -512,13 +501,12 @@ private void eliminarPartida(Partida partida) {
             int filasEliminadas = stmt.executeUpdate();
 
             if (filasEliminadas > 0) {
-                System.out.println("✅ Partida eliminada correctamente.");
-                Platform.runLater(() -> {
-                    partidasList.remove(partida);
-                    listaOriginalPartidas.remove(partida);
+                    partidasList.remove(partida);  //Quita de la lista
+                    listaOriginalPartidas.remove(partida); //Quita de la lista original
                     tablaPartidas.getSelectionModel().clearSelection();
-                    cargarPartidas(); // 🔄 Recargar la tabla
-                });
+                    tablaPartidas.setItems(FXCollections.observableArrayList(listaOriginalPartidas)); 
+                    tablaPartidas.refresh();   
+                
                 mostrarAlerta("Éxito", "La partida ha sido eliminada correctamente.", Alert.AlertType.INFORMATION);
             } else {
                 mostrarAlerta("Error", "No se encontró la partida en la base de datos.", Alert.AlertType.ERROR);
@@ -586,9 +574,15 @@ private void editarCampeonC(Campeon campeon) {
 
         Stage stage = new Stage();
         stage.setTitle("Editar Campeón");
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+
+        scene.getStylesheets().add(getClass().getResource("/estilos/editarCampeon.css").toExternalForm());
+
+        stage.setScene(scene);
+
         stage.setWidth(350);
-        stage.setHeight(410);
+        stage.setHeight(470);
+
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         double centerX = (screenBounds.getWidth() - stage.getWidth()) / 2;
@@ -626,22 +620,19 @@ private void eliminarCampeon(Campeon campeon) {
     if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
         // Intentar eliminar de la base de datos
         try (Connection connection = baseDatos.DataBaseMain.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM campeones WHERE nombre_campeon = ?")) {
-
-            preparedStatement.setString(1, campeon.getNombre());
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM campeones WHERE idCampeones = ?")) {
+            preparedStatement.setInt(1, campeon.getId());
             int filasEliminadas = preparedStatement.executeUpdate();
 
             if (filasEliminadas > 0) {
                 System.out.println("Campeón eliminado de la base de datos correctamente.");
 
-                //  Asegurar que el campeón se elimina de todas las listas y refrescar la tabla
-                Platform.runLater(() -> {
                     campeonesList.remove(campeon);
                     listaOriginalCampeones.remove(campeon);
                     tablaCampeones.getSelectionModel().clearSelection();
                     tablaCampeones.setItems(FXCollections.observableArrayList(campeonesList)); // ⚠️ Forzar actualización
                     tablaCampeones.refresh();
-                });
+                
 
                 mostrarAlerta("Éxito", "El campeón ha sido eliminado correctamente.", Alert.AlertType.INFORMATION);
             } else {
@@ -701,9 +692,10 @@ private void borrarFiltros3() {
          ResultSet resultSet = preparedStatement.executeQuery()) {
 
         jugadoresList.clear(); // Asegúrate de limpiar la lista antes de cargar nuevos datos
-        
+        listaOriginal.clear();
 
         while (resultSet.next()) {
+            int id = resultSet.getInt("idJugadores");
             String nombre = resultSet.getString("nombre_jugador");
             String descripcion = resultSet.getString("descripcion_jugador");
             int edad = resultSet.getInt("edad");
@@ -711,14 +703,14 @@ private void borrarFiltros3() {
             String nacionalidad = resultSet.getString("nacionalidad");
             String posicion = resultSet.getString("posicion_jugador");
 
-            Jugador jugador = new Jugador(nombre, descripcion, edad, email, nacionalidad, posicion, false);
+            Jugador jugador = new Jugador(id, nombre, descripcion, edad, email, nacionalidad, posicion, false);
             jugadoresList.add(jugador);
         }
         
       
 
         listaOriginal = FXCollections.observableArrayList(jugadoresList);
-        tablaJugadores.setItems(jugadoresList); // Establece los datos iniciales en la tabla
+        tablaJugadores.setItems(listaOriginal); // Establece los datos iniciales en la tabla
         tablaJugadores.refresh(); // Refrescar la tabla para ver la fila de estado
         
         System.out.println("Datos iniciales cargados en listaOriginal: " + listaOriginal);
@@ -739,12 +731,13 @@ private void borrarFiltros3() {
         listaOriginalCampeones.clear(); // También limpia la lista original
 
         while (resultSet.next()) {
+            int id = resultSet.getInt("idCampeones");
             String nombre = resultSet.getString("nombre_campeon");
             String descripcion = resultSet.getString("descripcion_campeon");
             String rol = resultSet.getString("rol_mapa");
             String dificultad = resultSet.getString("dificultad");
 
-            Campeon campeon = new Campeon(nombre, descripcion, rol, dificultad, false);
+            Campeon campeon = new Campeon(id, nombre, descripcion, rol, dificultad, false);
             campeonesList.add(campeon);
             listaOriginalCampeones.add(campeon);
         }
@@ -763,11 +756,11 @@ private void borrarFiltros3() {
 
     // Método para cargar las partidas desde la base de datos
     private void cargarPartidas() {
-    if (listaOriginalPartidas == null) {
-        listaOriginalPartidas = FXCollections.observableArrayList();
-    } else {
-        listaOriginalPartidas.clear(); 
-    }
+        if (listaOriginalPartidas == null) {
+            listaOriginalPartidas = FXCollections.observableArrayList();
+        } else {
+            listaOriginalPartidas.clear(); 
+        }
 
     tablaPartidas.getItems().clear(); // Limpiar la tabla antes de cargar nuevas partidas
 
@@ -776,7 +769,7 @@ private void borrarFiltros3() {
     try (Connection connection = baseDatos.DataBaseMain.getConnection();
          PreparedStatement stmt = connection.prepareStatement(query);
          ResultSet rs = stmt.executeQuery()) {
-        
+        //Lee los ids
         while (rs.next()) {
             int idJuegan = rs.getInt("ID_juegan");
             String nombreJugador = (rs.getObject("ID_Jugador") != null) 
@@ -865,9 +858,19 @@ private String obtenerNombreCampeon(int idCampeon) {
             // Configurar la ventana modal
             Stage stage = new Stage();
             stage.setTitle("Filtrar Jugadores");
-            stage.setScene(new Scene(root));
+
+            // ANTES: stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+
+           
+            scene.getStylesheets().add(getClass().getResource("/estilos/filtroJugador.css").toExternalForm()); 
+
+            stage.setScene(scene);
+
+            stage.setTitle("Filtrar Jugadores");
+            
             stage.setWidth(350); // Ancho de la ventana (ajústalo a tus necesidades)
-            stage.setHeight(470); // Altura de la ventana (ajústalo a tus necesidades)
+            stage.setHeight(520); // Altura de la ventana (ajústalo a tus necesidades)
 
             // Obtener las dimensiones de la pantalla
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -887,6 +890,52 @@ private String obtenerNombreCampeon(int idCampeon) {
         }
     }
 
+    
+    private void editarJugadorC(Jugador jugador) {
+    if (jugador == null) {
+        mostrarAlerta("Error", "No se ha seleccionado ningún jugador para editar.", Alert.AlertType.WARNING);
+        return;
+    }
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/EditarJugador.fxml"));
+        Parent root = loader.load();
+
+        // Obtener el controlador y pasarle el jugador
+        EditarControllerJugador controladorEdicion = loader.getController();
+        controladorEdicion.setJugador(jugador); // Método para pasar el jugador
+        controladorEdicion.setTablaJugadores(tablaJugadores); 
+
+        // Configurar la ventana modal
+            Stage stage = new Stage();
+            stage.setTitle("Editar Jugador");
+            Scene scene = new Scene(root);
+
+
+            scene.getStylesheets().add(getClass().getResource("/estilos/editarJugador.css").toExternalForm());
+
+            stage.setScene(scene);
+
+            stage.setWidth(350); 
+            stage.setHeight(540);
+
+            // Obtener las dimensiones de la pantalla
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+            // Calcular la posición centrada después de que el tamaño del Stage se haya inicializado
+            double centerX = (screenBounds.getWidth() - stage.getWidth()) / 2;
+            double centerY = (screenBounds.getHeight() - stage.getHeight()) / 2;
+
+            // Configurar la posición centrada
+            stage.setX(centerX);
+            stage.setY(centerY);
+
+            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana principal hasta que se cierre
+            stage.showAndWait();
+             System.out.println("Jugador editado: " + jugador.getNombre());
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    }
     
     // Método para buscar jugadores en la lista
     private void buscarJugador(String filtro) {
@@ -1061,47 +1110,6 @@ private void mostrarAlertaFilaMarcadaBorrar(Jugador jugadorMarcado) {
     alerta.showAndWait();
 }
 
-
-  private void editarJugadorC(Jugador jugador) {
-    if (jugador == null) {
-        mostrarAlerta("Error", "No se ha seleccionado ningún jugador para editar.", Alert.AlertType.WARNING);
-        return;
-    }
-    try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/EditarJugador.fxml"));
-        Parent root = loader.load();
-
-        // Obtener el controlador y pasarle el jugador
-        EditarControllerJugador controladorEdicion = loader.getController();
-        controladorEdicion.setJugador(jugador); // Método para pasar el jugador
-        controladorEdicion.setTablaJugadores(tablaJugadores); 
-
-        // Configurar la ventana modal
-            Stage stage = new Stage();
-            stage.setTitle("Editar Jugador");
-            stage.setScene(new Scene(root));
-            stage.setWidth(350); // Ancho de la ventana (ajústalo a tus necesidades)
-            stage.setHeight(470); // Altura de la ventana (ajústalo a tus necesidades)
-
-            // Obtener las dimensiones de la pantalla
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-
-            // Calcular la posición centrada después de que el tamaño del Stage se haya inicializado
-            double centerX = (screenBounds.getWidth() - stage.getWidth()) / 2;
-            double centerY = (screenBounds.getHeight() - stage.getHeight()) / 2;
-
-            // Configurar la posición centrada
-            stage.setX(centerX);
-            stage.setY(centerY);
-
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana principal hasta que se cierre
-            stage.showAndWait();
-             System.out.println("Jugador editado: " + jugador.getNombre());
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-
   private void eliminarJugador(Jugador jugador) {
     if (jugador == null) {
         mostrarAlerta("Selección requerida", "Por favor, selecciona un jugador antes de eliminar.", Alert.AlertType.WARNING);
@@ -1123,22 +1131,19 @@ private void mostrarAlertaFilaMarcadaBorrar(Jugador jugadorMarcado) {
     if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
         // Intentar eliminar de la base de datos
         try (Connection connection = baseDatos.DataBaseMain.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM jugadores WHERE nombre_jugador = ?")) {
-
-            preparedStatement.setString(1, jugador.getNombre());
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM jugadores WHERE idJugadores = ?")) {
+             preparedStatement.setInt(1, jugador.getId());
+            
             int filasEliminadas = preparedStatement.executeUpdate();
 
             if (filasEliminadas > 0) {
                 System.out.println("Jugador eliminado de la base de datos correctamente.");
 
-                //  Asegurar que el jugador se elimina de todas las listas y refrescar la tabla
-                Platform.runLater(() -> {
                     jugadoresList.remove(jugador);
                     listaOriginal.remove(jugador);
                     tablaJugadores.getSelectionModel().clearSelection();
                     tablaJugadores.setItems(FXCollections.observableArrayList(jugadoresList)); // Actualizar el TableView correctamente
                     tablaJugadores.refresh();
-                });
 
                 mostrarAlerta("Éxito", "El jugador ha sido eliminado correctamente.", Alert.AlertType.INFORMATION);
             } else {
@@ -1212,9 +1217,15 @@ private void mostrarAlertaFilaMarcadaBorrar(Jugador jugadorMarcado) {
         // Configurar la ventana modal
         Stage stage = new Stage();
         stage.setTitle("Filtrar Campeones");
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+
+        scene.getStylesheets().add(getClass().getResource("/estilos/filtroCampeon.css").toExternalForm());
+
+        stage.setScene(scene);
+
         stage.setWidth(350);
-        stage.setHeight(410);
+        stage.setHeight(470);
+
 
         // Centrar la ventana en la pantalla
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -1258,9 +1269,15 @@ private void abrirListaDeFiltros3() {
         // Configurar la ventana modal
         Stage stage = new Stage();
         stage.setTitle("Filtrar Partidas");
-        stage.setScene(new Scene(root));
-        stage.setWidth(350); // Ancho de la ventana (ajústalo a tus necesidades)
-        stage.setHeight(410); // Altura de la ventana (ajústalo a tus necesidades)
+        Scene scene = new Scene(root);
+
+        scene.getStylesheets().add(getClass().getResource("/estilos/filtroPartida.css").toExternalForm());
+
+        stage.setScene(scene);
+
+        stage.setWidth(350);
+        stage.setHeight(470);
+
 
         // Obtener las dimensiones de la pantalla
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -1297,9 +1314,14 @@ private void abrirListaDeFiltros3() {
         // Configurar la ventana modal
         Stage stage = new Stage();
         stage.setTitle("Añadir Jugador");
-        stage.setScene(new Scene(root));
-        stage.setWidth(350); // Ancho de la ventana (ajústalo a tus necesidades)
-        stage.setHeight(470); // Altura de la ventana (ajústalo a tus necesidades)
+        Scene scene = new Scene(root);
+
+        scene.getStylesheets().add(getClass().getResource("/estilos/añadirJugador.css").toExternalForm());
+
+        stage.setScene(scene);
+        
+        stage.setWidth(350);
+        stage.setHeight(540);
         
         
         // Obtener las dimensiones de la pantalla
@@ -1342,9 +1364,14 @@ private void abrirBtnAnadirCampeon() throws IOException {
         // Configurar la ventana modal
         Stage stage = new Stage();
         stage.setTitle("Añadir Campeón");
-        stage.setScene(new Scene(root));
-        stage.setWidth(350); // Ancho de la ventana (ajústalo a tus necesidades)
-        stage.setHeight(400); // Altura de la ventana (ajústalo a tus necesidades)
+        Scene scene = new Scene(root);
+
+        scene.getStylesheets().add(getClass().getResource("/estilos/añadirCampeon.css").toExternalForm());
+
+        stage.setScene(scene);
+
+        stage.setWidth(350);
+        stage.setHeight(470);
 
         // Obtener las dimensiones de la pantalla
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -1388,9 +1415,15 @@ private void abrirBtnAnadirPartida() throws IOException {
         // Configurar la ventana modal
         Stage stage = new Stage();
         stage.setTitle("Añadir Partida");
-        stage.setScene(new Scene(root));
-        stage.setWidth(350); // Ancho de la ventana (ajústalo a tus necesidades)
-        stage.setHeight(410); // Altura de la ventana (ajústalo a tus necesidades)
+        Scene scene = new Scene(root);
+
+        scene.getStylesheets().add(getClass().getResource("/estilos/añadirPartida.css").toExternalForm());
+
+        stage.setScene(scene);
+
+        stage.setWidth(350);
+        stage.setHeight(470);
+
 
         // Obtener las dimensiones de la pantalla
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();

@@ -9,6 +9,7 @@ import javafx.beans.property.StringProperty;
 
 public class Jugador {
 
+    private IntegerProperty id;
     private final StringProperty nombre;
     private final StringProperty descripcion;
     private final IntegerProperty edad;
@@ -17,7 +18,8 @@ public class Jugador {
     private final StringProperty posicion;
     private final BooleanProperty seleccionado;
     
-    public Jugador(String nombre, String descripcion, int edad, String email, String nacionalidad, String posicion, Boolean seleccionado) {
+    public Jugador(int id, String nombre, String descripcion, int edad, String email, String nacionalidad, String posicion, Boolean seleccionado) {
+        this.id = new SimpleIntegerProperty(id);
         this.seleccionado = new SimpleBooleanProperty(seleccionado);
         this.nombre = new SimpleStringProperty(nombre);
         this.descripcion = new SimpleStringProperty(descripcion);
@@ -121,4 +123,16 @@ public class Jugador {
     public void setPosicion(String posicion) {
         this.posicion.set(posicion);
     }
+    
+    //IDs de nombre a ids
+    public int getId() { 
+        return id.get(); 
+    }
+    public void setId(int id) { 
+        this.id.set(id); 
+    }
+    public IntegerProperty idProperty() { 
+        return id; 
+    }
+
 }

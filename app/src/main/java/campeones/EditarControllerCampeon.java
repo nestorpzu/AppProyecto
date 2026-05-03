@@ -28,6 +28,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+import utils.AlertUtils;
 
 /**
  *
@@ -149,12 +150,9 @@ private void inicializarValidaciones() {
                 && vDificultad.getValidationResult().getErrors().isEmpty();
 
         if (!todoOk) {
-            mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
             return;
         }
-
-        // Obtener el nombre anterior para actualizar en la base de datos
-        String nombreAnterior = campeonSeleccionado.getNombre();
 
         // Actualizar los datos del objeto en memoria
         campeonSeleccionado.setNombre(txtNombre.getText());
@@ -165,48 +163,29 @@ private void inicializarValidaciones() {
 
         // **Actualizar en la base de datos**
         try (Connection connection = baseDatos.DataBaseMain.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(
-                     "UPDATE campeones SET nombre_campeon=?, descripcion_campeon=?, rol_mapa=?, dificultad=? WHERE nombre_campeon=?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE campeones SET nombre_campeon=?, descripcion_campeon=?, rol_mapa=?, dificultad=? WHERE idCampeones=?")) {
 
-            stmt.setString(1, campeonSeleccionado.getNombre());
-            stmt.setString(2, campeonSeleccionado.getDescripcion());
-            stmt.setString(3, campeonSeleccionado.getRol());
-            stmt.setString(4, campeonSeleccionado.getDificultad());
-            stmt.setString(5, nombreAnterior);
+            preparedStatement.setString(1, campeonSeleccionado.getNombre());
+            preparedStatement.setString(2, campeonSeleccionado.getDescripcion());
+            preparedStatement.setString(3, campeonSeleccionado.getRol());
+            preparedStatement.setString(4, campeonSeleccionado.getDificultad());
+            preparedStatement.setInt(5, campeonSeleccionado.getId());
 
-            int filasAfectadas = stmt.executeUpdate();
+            int filasAfectadas = preparedStatement.executeUpdate();
 
             if (filasAfectadas > 0) {
                 tablaCampeones.refresh(); // Actualizar la vista
-                mostrarAlerta("Edición exitosa", "Los datos del campeón han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
+                AlertUtils.mostrarAlerta("Edición exitosa", "Los datos del campeón han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
             } else {
-                mostrarAlerta("Error", "No se encontró el campeón en la base de datos para actualizar.", Alert.AlertType.ERROR);
+                AlertUtils.mostrarAlerta("Error", "No se encontró el campeón en la base de datos para actualizar.", Alert.AlertType.ERROR);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarAlerta("Error", "Ocurrió un error al actualizar el campeón: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertUtils.mostrarAlerta("Error", "Ocurrió un error al actualizar el campeón: " + e.getMessage(), Alert.AlertType.ERROR);
         }
 
         cerrarVentana();
-    }
-
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-
-        alerta.setOnShown(event -> {
-            Platform.runLater(() -> {
-                Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
-                Screen screen = Screen.getPrimary();
-                Rectangle2D bounds = screen.getVisualBounds();
-                stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-                stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
-            });
-        });
-
-        alerta.showAndWait();
     }
 
     @FXML

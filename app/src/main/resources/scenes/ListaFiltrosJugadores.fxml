@@ -64,7 +64,7 @@
             
             <!-- Botones -->
             <HBox spacing="10" alignment="CENTER">
-                <Button text="Aplicar Filtros" fx:id="btnListaFiltros" onAction="#aplicarFiltros" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+                <Button text="Aplicar Filtros" fx:id="btnAplicarFiltros" onAction="#aplicarFiltros" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
                 <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
             </HBox>
         </VBox>

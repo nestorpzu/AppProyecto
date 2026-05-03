@@ -30,6 +30,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+import utils.AlertUtils;
 
 /**
  *
@@ -184,16 +185,16 @@ public class EditarControllerJugador {
                 && vPosicion.getValidationResult().getErrors().isEmpty();
 
         if (!todoOK) {
-            mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
             return;
         }
 
         if (jugadorSeleccionado == null) {
-            mostrarAlerta("Error", "No se seleccionó ningún jugador para editar.", Alert.AlertType.WARNING);
+            AlertUtils.mostrarAlerta("Error", "No se seleccionó ningún jugador para editar.", Alert.AlertType.WARNING);
             return;
         }
 
-        String nombreAnterior = jugadorSeleccionado.getNombre();
+        
 
         //  Actualizar siempre desde los campos
         jugadorSeleccionado.setNombre(txtNombree.getText().trim());
@@ -207,28 +208,28 @@ public class EditarControllerJugador {
 
         // **Actualizar en la base de datos**
         try (Connection connection = baseDatos.DataBaseMain.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(
-                     "UPDATE jugadores SET nombre_jugador=?, descripcion_jugador=?, edad=?, email=?, nacionalidad=?, posicion_jugador=? WHERE nombre_jugador=?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE jugadores SET nombre_jugador=?, descripcion_jugador=?, edad=?, email=?, nacionalidad=?, posicion_jugador=? WHERE idJugadores=?")) {
 
-            stmt.setString(1, jugadorSeleccionado.getNombre());
-            stmt.setString(2, jugadorSeleccionado.getDescripcion());
-            stmt.setInt(3, jugadorSeleccionado.getEdad());
-            stmt.setString(4, jugadorSeleccionado.getEmail());
-            stmt.setString(5, jugadorSeleccionado.getNacionalidad());
-            stmt.setString(6, jugadorSeleccionado.getPosicion());
-            stmt.setString(7, nombreAnterior); // Buscar por el nombre antiguo
+            preparedStatement.setString(1, jugadorSeleccionado.getNombre());
+            preparedStatement.setString(2, jugadorSeleccionado.getDescripcion());
+            preparedStatement.setInt(3, jugadorSeleccionado.getEdad());
+            preparedStatement.setString(4, jugadorSeleccionado.getEmail());
+            preparedStatement.setString(5, jugadorSeleccionado.getNacionalidad());
+            preparedStatement.setString(6, jugadorSeleccionado.getPosicion());
+            preparedStatement.setInt(7, jugadorSeleccionado.getId()); // Buscar por el nombre antiguo
 
-            int filasAfectadas = stmt.executeUpdate();
+            int filasAfectadas = preparedStatement.executeUpdate();
 
             if (filasAfectadas > 0) {
                 tablaJugadores.refresh(); // Actualizar la vista
-                mostrarAlerta("Edición exitosa", "Los datos del jugador han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
+                AlertUtils.mostrarAlerta("Edición exitosa", "Los datos del jugador han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
             } else {
-                mostrarAlerta("Error", "No se encontró el jugador en la base de datos para actualizar.", Alert.AlertType.ERROR);
+                AlertUtils.mostrarAlerta("Error", "No se encontró el jugador en la base de datos para actualizar.", Alert.AlertType.ERROR);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarAlerta("Error", "Ocurrió un error al actualizar el jugador: " + e.getMessage(), Alert.AlertType.ERROR);
+            AlertUtils.mostrarAlerta("Error", "Ocurrió un error al actualizar el jugador: " + e.getMessage(), Alert.AlertType.ERROR);
         }
 
         // Cerrar la ventana después de la edición
@@ -236,28 +237,6 @@ public class EditarControllerJugador {
         stage.close();
 }
 
-    
-private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-    
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-       
-        
-        // Centrar la alerta en la pantalla después de mostrarla
-    alerta.setOnShown(event -> {
-        Platform.runLater(() -> {
-            Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
-            Screen screen = Screen.getPrimary();
-            Rectangle2D bounds = screen.getVisualBounds();
-            stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-            stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
-        });
-    });
-    alerta.showAndWait();
-        
-    }
     
     @FXML
     private void cancelar() {

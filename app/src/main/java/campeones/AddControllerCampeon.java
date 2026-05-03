@@ -6,6 +6,8 @@ package campeones;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +31,7 @@ import org.controlsfx.validation.ValidationMessage;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
+import utils.AlertUtils;
 
 
 /**
@@ -145,26 +148,30 @@ public class AddControllerCampeon {
 
         // Inserción en la base de datos
         try (Connection connection = baseDatos.DataBaseMain.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO campeones (nombre_campeon, descripcion_campeon, rol_mapa, dificultad) VALUES (?, ?, ?, ?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT INTO campeones (nombre_campeon, descripcion_campeon, rol_mapa, dificultad) VALUES (?, ?, ?, ?)",
+                     Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, nombre);
-            stmt.setString(2, descripcion);
-            stmt.setString(3, rol);
-            stmt.setString(4, dificultad);
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setString(2, descripcion);
+            preparedStatement.setString(3, rol);
+            preparedStatement.setString(4, dificultad);
+            
 
-            if (stmt.executeUpdate() > 0) {
-                mostrarAlerta("Éxito", "Campeón añadido correctamente.", Alert.AlertType.INFORMATION);
+            if (preparedStatement.executeUpdate() > 0) {
+                AlertUtils.mostrarAlerta("Éxito", "Campeón añadido correctamente.", Alert.AlertType.INFORMATION);
             }
+            //Cada objeto que creas sabe cuál es su ID único en la base de datos.
+            int idNuevo = 0;                             
+            ResultSet rs = preparedStatement.getGeneratedKeys();       
+            if (rs.next()) {                               
+                idNuevo = rs.getInt(1);                    
+            } 
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            mostrarAlerta("Error", "No se pudo añadir el campeón: " + e.getMessage(), Alert.AlertType.ERROR);
-            return;
-        }
+        
 
         // Añadir a lista y refrescar tabla
-        Campeon nuevoCampeon = new Campeon(nombre, descripcion, rol, dificultad, false);
+        Campeon nuevoCampeon = new Campeon(idNuevo, nombre, descripcion, rol, dificultad, false);
 
         if (listaOriginalCampeones != null) {
             listaOriginalCampeones.add(nuevoCampeon);
@@ -173,6 +180,12 @@ public class AddControllerCampeon {
         if (tablaCampeones != null) {
             tablaCampeones.setItems(FXCollections.observableArrayList(listaOriginalCampeones));
             tablaCampeones.refresh();
+        }
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+           AlertUtils.mostrarAlerta("Error", "No se pudo añadir el campeón: " + e.getMessage(), Alert.AlertType.ERROR);
+            return;
         }
 
         // Estado y cierre
@@ -198,7 +211,7 @@ public class AddControllerCampeon {
             valido &= vDificultad.getValidationResult().getErrors().isEmpty();
 
             if (!valido) {
-                mostrarAlerta("Error de validación", "Revisa los campos marcados con errores.", Alert.AlertType.WARNING);
+                AlertUtils.mostrarAlerta("Error de validación", "Revisa los campos marcados con errores.", Alert.AlertType.WARNING);
             }
 
             return valido;
@@ -213,22 +226,6 @@ public class AddControllerCampeon {
     private void cerrarVentana() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
-    }
-
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-
-        alerta.setOnShown(event -> Platform.runLater(() -> {
-            Stage stage = (Stage) alerta.getDialogPane().getScene().getWindow();
-            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-            stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-            stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
-        }));
-
-        alerta.showAndWait();
     }
 
     // Setters y getters
