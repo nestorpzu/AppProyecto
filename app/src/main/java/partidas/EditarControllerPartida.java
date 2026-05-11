@@ -4,10 +4,10 @@
  */
 package partidas;
 
+import dao.PartidaDAO;
+import modelos.Partida;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDate;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -15,21 +15,12 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import java.time.LocalDate;
 import javafx.application.Platform;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.Screen;
-import org.controlsfx.validation.Severity;
-import org.controlsfx.validation.ValidationMessage;
-import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 import utils.AlertUtils;
+import utils.ValidationUtils;
 /**
  *
  * @author nestor
@@ -42,17 +33,18 @@ public class EditarControllerPartida {
     @FXML private DatePicker dateFecha;
     @FXML private ComboBox<String> cmbResultado;
     @FXML private Button btnGuardar, btnCancelar;
-    @FXML private TableView<Partida> tablaPartidas;
+    private TableView<Partida> tablaPartidas;
 
     private Partida partidaSeleccionada;
     private String jugadorOriginal, campeonOriginal;
     private ValidationSupport vFecha, vKDA, vResultado;
-    private ImageView iconoOk, iconoErr;
+    
+    private final PartidaDAO partidaDAO = new PartidaDAO();
+    private Connection connection;
 
 
     @FXML
     public void initialize() {
-        // Inicializar ComboBox con valores predefinidos
         cmbResultado.getItems().addAll("Victoria", "Derrota", "Empate");
         cmbResultado.setPromptText("Selecciona un resultado");
 
@@ -63,56 +55,21 @@ public class EditarControllerPartida {
     }
 
     private void inicializarValidaciones() {
-    iconoOk = new ImageView(new Image(getClass().getResourceAsStream("/icons/ok_icon.png")));
-    iconoErr = new ImageView(new Image(getClass().getResourceAsStream("/icons/error_icon.png")));
-    iconoOk.setFitWidth(16); iconoOk.setFitHeight(16);
-    iconoErr.setFitWidth(16); iconoErr.setFitHeight(16);
+    GraphicValidationDecoration decorador = ValidationUtils.crearDecorador();
 
     vFecha = new ValidationSupport();
     vKDA = new ValidationSupport();
     vResultado = new ValidationSupport();
 
-    GraphicValidationDecoration decorador = new GraphicValidationDecoration() {
-        @Override
-        public void applyValidationDecoration(ValidationMessage message) {
-            super.applyValidationDecoration(message);
-            message.getTarget().setStyle(
-                message.getSeverity() == Severity.ERROR ?
-                "-fx-border-color: red;" :
-                "-fx-border-color: green;"
-            );
-        }
-    };
-
     vFecha.setValidationDecorator(decorador);
     vKDA.setValidationDecorator(decorador);
     vResultado.setValidationDecorator(decorador);
 
-    vFecha.registerValidator(dateFecha, true, Validator.createEmptyValidator("La fecha es obligatoria"));
-
-    vResultado.registerValidator(cmbResultado, true, Validator.createEmptyValidator("Selecciona un resultado"));
-
-    // Validación de KDA como texto con formato tipo "2/1/3"
-    vKDA.registerValidator(txtKDA, true, (control, value) -> {
-    if (!(value instanceof String)) {
-        return ValidationResult.fromError(control, "Entrada no válida");
-    }
-
-    String texto = (String) value;
-
-    if (texto.trim().isEmpty()) {
-        return ValidationResult.fromError(control, "El KDA es obligatorio");
-    }
-
-    if (!texto.matches("\\d+/\\d+/\\d+")) {
-        return ValidationResult.fromError(control, "Formato debe ser x/y/z (ej: 3/1/2)");
-    }
-
-    return ValidationResult.fromInfo(control, "Formato correcto");
-});
-
-
+    vFecha.registerValidator(dateFecha, true, ValidationUtils.obligatorio("La fecha es obligatoria"));
+    vKDA.registerValidator(txtKDA, true, ValidationUtils.kda("El KDA es obligatorio", "Formato debe ser x/y/z (ej: 3/1/2)"));
+    vResultado.registerValidator(cmbResultado, true, ValidationUtils.obligatorio("Selecciona un resultado"));
 }
+
 
     
    public void setPartida(Partida partida) {
@@ -138,6 +95,10 @@ public class EditarControllerPartida {
         this.tablaPartidas = tablaPartidas;
     }
 
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
     @FXML
         private void editarPartida() {
         vFecha.revalidate();
@@ -160,24 +121,19 @@ public class EditarControllerPartida {
             return;
         }
 
-        int idJuegan = partidaSeleccionada.getIdJuegan();  // ✅ Ahora obtenemos directamente el ID_juegan
+        int idJuegan = partidaSeleccionada.getIdJuegan();
+        try {
+            LocalDate fecha = dateFecha.getValue();
+            String kda = txtKDA.getText();
+            String resultado = cmbResultado.getValue();
 
-        try (Connection connection = baseDatos.DataBaseMain.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(
-                     "UPDATE juegan SET Fecha_jugada=?, KDA=?, Resultado=? WHERE ID_juegan=?")) {
+            Partida partidaActualizada = new Partida(idJuegan, "", "", fecha, kda, resultado);
+            boolean exito = partidaDAO.actualizar(partidaActualizada, connection);
 
-            stmt.setObject(1, dateFecha.getValue() != null ? dateFecha.getValue() : null);
-            stmt.setString(2, txtKDA.getText());
-            stmt.setString(3, cmbResultado.getValue());
-            stmt.setInt(4, idJuegan);  // ✅ Se usa ID único
-
-            int filasAfectadas = stmt.executeUpdate();
-
-            if (filasAfectadas > 0) {
-                // ✅ Actualizamos los valores en el TableView
-                partidaSeleccionada.setFecha(dateFecha.getValue());
-                partidaSeleccionada.setKda(txtKDA.getText());
-                partidaSeleccionada.setResultado(cmbResultado.getValue());
+            if (exito) {
+                partidaSeleccionada.setFecha(fecha);
+                partidaSeleccionada.setKda(kda);
+                partidaSeleccionada.setResultado(resultado);
                 tablaPartidas.refresh();
                 AlertUtils.mostrarAlerta("Edición exitosa", "Los datos de la partida han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
             } else {

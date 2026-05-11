@@ -2,6 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Tooltip?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="jugadores.ListaControllerJugadores" >
     <children>
@@ -24,7 +25,7 @@
                    
                     <Label text="Descripción" />
                 </HBox>
-                <TextField promptText="Descripción" fx:id="txtDescripcion" />
+                <TextField  promptText="Descripción" fx:id="txtDescripcion" />
             </VBox>
 
             <!-- Edad -->
@@ -64,8 +65,18 @@
             
             <!-- Botones -->
             <HBox spacing="10" alignment="CENTER">
-                <Button text="Aplicar Filtros" fx:id="btnAplicarFiltros" onAction="#aplicarFiltros" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+                <Button text="Aplicar Filtros" fx:id="btnAplicarFiltros" onAction="#aplicarFiltros" 
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white;">
+                     <tooltip>
+                        <Tooltip text="Aplica los filtros seleccionados"/>
+                    </tooltip>
+                </Button>
+                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" 
+                        style="-fx-background-color: #f44336; -fx-text-fill: white;" >
+                     <tooltip>
+                        <Tooltip text="Cancela y cierra la ventana"/>
+                    </tooltip>
+                </Button>
             </HBox>
         </VBox>
     </children>

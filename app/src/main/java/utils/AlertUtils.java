@@ -4,11 +4,13 @@
  */
 package utils;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Alert;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
@@ -30,6 +32,14 @@ public class AlertUtils {
                 stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
             });
         });
-        alerta.showAndWait();
+
+        if (tipo == Alert.AlertType.INFORMATION) {
+            alerta.show();
+            PauseTransition pause = new PauseTransition(Duration.seconds(2));
+            pause.setOnFinished(e -> alerta.close());
+            pause.play();
+        } else {
+            alerta.showAndWait();
+        }
     }
 }

@@ -1,8 +1,6 @@
-package jugadores;
+package modelos;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -16,11 +14,10 @@ public class Jugador {
     private final StringProperty email;
     private final StringProperty nacionalidad;
     private final StringProperty posicion;
-    private final BooleanProperty seleccionado;
+
     
-    public Jugador(int id, String nombre, String descripcion, int edad, String email, String nacionalidad, String posicion, Boolean seleccionado) {
+    public Jugador(int id, String nombre, String descripcion, int edad, String email, String nacionalidad, String posicion) {
         this.id = new SimpleIntegerProperty(id);
-        this.seleccionado = new SimpleBooleanProperty(seleccionado);
         this.nombre = new SimpleStringProperty(nombre);
         this.descripcion = new SimpleStringProperty(descripcion);
         this.edad = new SimpleIntegerProperty(edad);
@@ -29,29 +26,8 @@ public class Jugador {
         this.posicion = new SimpleStringProperty(posicion);
         
     }
-    
-    public Jugador(Jugador otro) {
-    this.nombre = new SimpleStringProperty(otro.getNombre());
-    this.descripcion = new SimpleStringProperty(otro.getDescripcion());
-    this.edad = new SimpleIntegerProperty(otro.getEdad());
-    this.email = new SimpleStringProperty(otro.getEmail());
-    this.nacionalidad = new SimpleStringProperty(otro.getNacionalidad());
-    this.posicion = new SimpleStringProperty(otro.getPosicion());
-    this.seleccionado = new SimpleBooleanProperty(false);
-}
+     
 
-    public BooleanProperty seleccionadoProperty() {
-        return seleccionado;
-    }
-    
-    public boolean isSeleccionado() {
-        return seleccionado.get();
-    }
-
-    public void setSeleccionado(boolean seleccionado) {
-        this.seleccionado.set(seleccionado);
-    }
-    
     public StringProperty nombreProperty() {
         return nombre;
     }
@@ -124,7 +100,6 @@ public class Jugador {
         this.posicion.set(posicion);
     }
     
-    //IDs de nombre a ids
     public int getId() { 
         return id.get(); 
     }

@@ -2,11 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package campeones;
+package modelos;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,16 +19,16 @@ public class Campeon {
     private final StringProperty descripcion;
     private final StringProperty rol;
     private final StringProperty dificultad;
-    private final BooleanProperty seleccionado; // Nueva propiedad para selección
+
 
     // Constructor
-    public Campeon(int id, String nombre, String descripcion, String rol, String dificultad, boolean seleccionado) {
+    public Campeon(int id, String nombre, String descripcion, String rol, String dificultad) {
         this.id = new SimpleIntegerProperty(id);
         this.nombre = new SimpleStringProperty(nombre);
         this.descripcion = new SimpleStringProperty(descripcion);
         this.rol = new SimpleStringProperty(rol);
         this.dificultad = new SimpleStringProperty(dificultad);
-        this.seleccionado = new SimpleBooleanProperty(seleccionado); // Inicializar selección
+
     }
 
     // Getters para propiedades (devuelven String)
@@ -50,7 +48,6 @@ public class Campeon {
         return dificultad.get();
     }
 
-    // Getters para las propiedades (devuelven StringProperty o BooleanProperty)
     public StringProperty nombreProperty() {
         return nombre;
     }
@@ -67,19 +64,6 @@ public class Campeon {
         return dificultad;
     }
 
-    public BooleanProperty seleccionadoProperty() {
-        return seleccionado;
-    }
-
-    // Método para obtener el estado de seleccionado (devuelve boolean)
-    public boolean isSeleccionado() {
-        return seleccionado.get();
-    }
-
-    // Método para establecer la selección
-    public void setSeleccionado(boolean seleccionado) {
-        this.seleccionado.set(seleccionado);
-    }
 
     // Setters para modificar los valores
     public void setNombre(String nombre) {
@@ -97,7 +81,6 @@ public class Campeon {
     public void setDificultad(String dificultad) {
         this.dificultad.set(dificultad);
     }
-    //ids de nombre a ids
     public int getId() { 
         return id.get(); 
     }

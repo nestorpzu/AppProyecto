@@ -7,15 +7,17 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Tooltip?>
 
-<TabPane prefHeight="550.0" prefWidth="668.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.appProyecto.Controller">
+<TabPane prefHeight="550.0" prefWidth="668.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <tabs>
         <!-- Tab: Jugadores -->
-        <Tab closable="close" text="Jugadores">      
+        <Tab closable="false" text="Jugadores">      
             <AnchorPane>  
                 <children>
                     <VBox spacing="10" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
@@ -24,15 +26,27 @@
                         <HBox spacing="10">
                             <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Lista de Jugadores" />
                             <Region fx:id="spacer" HBox.hgrow="ALWAYS" /> <!-- Espaciador que empuja el botón hacia la derecha -->
-                            <Button text="Añadir Jugador" fx:id="btnAnadir" onAction="#abrirBtnAnadir" />
+                            <Button fx:id="btnAnadir" onAction="#abrirBtnAnadir" text="Añadir Jugador">
+                                <tooltip>
+                                    <Tooltip text="Añadir nuevo jugador" style="-fx-background-color: #FFFFFF" />
+                                </tooltip> 
+                            </Button>
                         </HBox>
 
                         <!-- HBox con los botones de filtros y campo de búsqueda -->
                         <HBox spacing="10">
-                            <Button text="Lista de filtros" fx:id="btnListaFiltros" onAction="#abrirListaDeFiltros1" />
-                            <Button text="Borrar filtros" fx:id="btnBorrar" onAction="#borrarFiltros1" />
+                            <Button fx:id="btnListaFiltros" onAction="#abrirListaDeFiltros1" text="Lista de filtros"  >
+                                <tooltip>
+                                    <Tooltip text="Abrir filtros de búsqueda de jugadores" style="-fx-background-color: #FFFFFF"/>
+                                </tooltip> 
+                            </Button>
+                        <Button fx:id="btnBorrar" onAction="#borrarFiltros1" text="Borrar filtros" >
+                             <tooltip>
+                                    <Tooltip text="Borrar todos los filtros de jugadores" style="-fx-background-color: #FFFFFF" />
+                                </tooltip> 
+                        </Button>
                             <Region fx:id="spacer2" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
-                            <TextField promptText="Buscar jugador..." fx:id="txtBuscarJugador"/>
+                            <TextField fx:id="txtBuscarJugador" promptText="Buscar jugador..." />
                         </HBox>
                         
                         <!-- Tabla de jugadores -->
@@ -44,7 +58,7 @@
                                 <TableColumn fx:id="colEmailJugador" text="Email" />
                                 <TableColumn fx:id="colNacionalidadJugador" text="Nacionalidad" />
                                 <TableColumn fx:id="colPosicionJugador" text="Posición" />
-                                <TableColumn fx:id="columnaAcciones1" text="Acciones">
+                                <TableColumn fx:id="columnaAccionesJugadores" text="Acciones">
                                     <!-- Columna para acciones como editar o borrar -->
                                 </TableColumn>
                             </columns>
@@ -67,14 +81,26 @@
                         <HBox spacing="10">
                             <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Lista de Campeones" />
                             <Region fx:id="spacer3" HBox.hgrow="ALWAYS" /> <!-- Espaciador que empuja el botón hacia la derecha -->
-                            <Button text="Añadir Campeon" fx:id="btnAnadir2" onAction="#abrirBtnAnadirCampeon"/>
+                            <Button fx:id="btnAnadir2" onAction="#abrirBtnAnadirCampeon" text="Añadir Campeon" >
+                                <tooltip>
+                                     <Tooltip text="Añadir nuevo campeón" style="-fx-background-color: #FFFFFF"/>
+                                 </tooltip> 
+                            </Button>
                         </HBox>
                          
                         <HBox spacing="10">
-                            <Button text="Lista de filtros" fx:id="btnListaFiltro2" onAction="#abrirListaDeFiltros2" />
-                            <Button text="Borrar filtros" fx:id="btnBorrar2" onAction="#borrarFiltros2"/>
+                            <Button fx:id="btnListaFiltro2" onAction="#abrirListaDeFiltros2" text="Lista de filtros" > 
+                                <tooltip>
+                                    <Tooltip text="Abrir filtros de búsqueda de campeones" style="-fx-background-color: #FFFFFF"/>
+                                </tooltip> 
+                            </Button>
+                            <Button fx:id="btnBorrar2" onAction="#borrarFiltros2" text="Borrar filtros" >
+                                <tooltip>
+                                     <Tooltip text="Borrar todos los filtros de campeones" style="-fx-background-color: #FFFFFF"/>
+                                 </tooltip> 
+                            </Button>
                             <Region fx:id="spacer4" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
-                            <TextField promptText="Buscar campeón..." fx:id="txtBuscarCampeon"/>
+                            <TextField fx:id="txtBuscarCampeon" promptText="Buscar campeón..." />
                         </HBox>
 
                         <!-- Tabla de jugadores -->
@@ -84,7 +110,7 @@
                                 <TableColumn fx:id="colDescripcionCampeon" text="Descripción" />
                                 <TableColumn fx:id="colRolCampeon" text="Rol" />
                                 <TableColumn fx:id="colDificultadCampeon" text="Dificultad" />
-                                <TableColumn fx:id="columnaAccionesCampeones" text="Acciones"/>
+                                <TableColumn fx:id="columnaAccionesCampeones" text="Acciones" />
                             </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -107,13 +133,25 @@
                         <HBox spacing="10">
                             <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Lista de Partidas" />
                             <Region fx:id="spacer6" HBox.hgrow="ALWAYS" /> <!-- Espaciador que empuja el botón hacia la derecha -->
-                            <Button text="Añadir Partida" fx:id="btnAnadir3" onAction="#abrirBtnAnadirPartida"/>
+                            <Button fx:id="btnAnadir3" onAction="#abrirBtnAnadirPartida" text="Añadir Partida" >
+                                <tooltip>
+                                     <Tooltip text="Añadir nueva partida" style="-fx-background-color: #FFFFFF"/>
+                                 </tooltip>
+                            </Button>
                         </HBox>
                         <HBox spacing="10">
-                             <Button text="Lista de filtros" fx:id="btnListaFiltros3" onAction="#abrirListaDeFiltros3" />
-                            <Button text="Borrar filtros"  fx:id="btnBorrar3" onAction="#borrarFiltros3"/>
+                             <Button fx:id="btnListaFiltros3" onAction="#abrirListaDeFiltros3" text="Lista de filtros"> 
+                                 <tooltip>
+                                     <Tooltip text="Abrir filtros de búsqueda de partidas" style="-fx-background-color: #FFFFFF"/>
+                                 </tooltip> 
+                             </Button>
+                            <Button fx:id="btnBorrar3" onAction="#borrarFiltros3" text="Borrar filtros" >
+                                <tooltip>
+                                     <Tooltip text="Borrar todos los filtros de partidas" style="-fx-background-color: #FFFFFF"/>
+                                 </tooltip>
+                            </Button>
                             <Region fx:id="spacer5" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
-                            <TextField promptText="Buscar partidas..." fx:id="txtBuscarPartida"/>
+                            <TextField fx:id="txtBuscarPartida" promptText="Buscar partidas..." />
                         </HBox>
 
                         <!-- Tabla de jugadores -->
@@ -124,7 +162,7 @@
                                 <TableColumn fx:id="colFechaPartida" text="Fecha" />
                                 <TableColumn fx:id="colKDA" text="KDA" />
                                 <TableColumn fx:id="colResultadoPartida" text="Resultado" />                                
-                                <TableColumn fx:id="columnaAccionesPartida" text="Acciones"/>
+                                <TableColumn fx:id="columnaAccionesPartida" text="Acciones" />
                             </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

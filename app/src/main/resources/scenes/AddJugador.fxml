@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Tooltip?>
 
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="jugadores.AddControllerJugador">
@@ -26,7 +27,8 @@
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Nombre del Jugador" />
                 </HBox>
-                <TextField fx:id="txtNombre" promptText="Ej. Juan" />
+                <TextField fx:id="txtNombre" accessibleText = "Campo de texto para nombre" accessibleHelp = "Escribe el nombre del jugador"/> 
+               
             </VBox>
 
             <!-- Descripción -->
@@ -34,7 +36,9 @@
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Descripción" />
                 </HBox>
-                <TextArea fx:id="txtDescripcion" promptText="Descripción" prefRowCount="2" />
+                <TextField  fx:id="txtDescripcion" promptText="Descripción" >
+                    <tooltip><Tooltip text = "Describe al jugador"/></tooltip>
+                </TextField >
             </VBox>
 
             <!-- Edad -->
@@ -72,8 +76,14 @@
 
             <!-- Botones -->
             <HBox spacing="10" alignment="CENTER">
-                <Button text="Aplicar Filtros" fx:id="btnAplicarFiltros" onAction="#anadirJugador" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
-                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+                <Button text="Añadir Jugador" fx:id="btnAnadirJugador" onAction="#anadirJugador" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" >
+                   <tooltip><Tooltip text="Guarda el nuevo jugador en la base de datos" /></tooltip> 
+                </Button>
+                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;">
+                <tooltip>
+                    <Tooltip text="Cancela y cierra la ventana" />
+                </tooltip>
+                </Button>
             </HBox>
         </VBox>
     </children>

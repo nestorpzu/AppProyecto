@@ -4,26 +4,18 @@
  */
 package partidas;
 
+import modelos.Partida;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.controlsfx.validation.Severity;
-import org.controlsfx.validation.Validator;
-import org.controlsfx.validation.ValidationMessage;
-import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 import utils.AlertUtils;
+import utils.ValidationUtils;
 
 /**
  *
@@ -40,7 +32,7 @@ public class ListaControllerPartida {
     @FXML
     private DatePicker dateFecha;
     @FXML
-    private TextField txtKDA; // Ahora es un campo de texto en lugar de un ComboBox
+    private TextField txtKDA;
     @FXML
     private ComboBox<String> cmbResultado;
     @FXML
@@ -49,31 +41,22 @@ public class ListaControllerPartida {
     private Button btnCancelar;
 
     private ObservableList<Partida> listaOriginal = FXCollections.observableArrayList();
-    private TableView<Partida> tablaPartidas; // Referencia a la tabla principal
+    private TableView<Partida> tablaPartidas;
     
     private ValidationSupport vJugador, vCampeon, vFecha, vKDA, vResultado;
-    private ImageView iconoOk, iconoErr;
 
 
-    /**
-     * Inicialización de la ventana
-     */
     @FXML
     public void initialize() {
-        // Llenar el ComboBox de Resultado
         cmbResultado.getItems().addAll("Victoria", "Derrota", "Empate");
         dateFecha.getEditor().setDisable(true);
 
-        // Configurar la lógica de los CheckBox
         inicializarValidaciones();
 
     }
 
-    private void inicializarValidaciones() {
-    iconoOk = new ImageView(new Image(getClass().getResourceAsStream("/icons/ok_icon.png")));
-    iconoErr = new ImageView(new Image(getClass().getResourceAsStream("/icons/error_icon.png")));
-    iconoOk.setFitHeight(16); iconoOk.setFitWidth(16);
-    iconoErr.setFitHeight(16); iconoErr.setFitWidth(16);
+   private void inicializarValidaciones() {
+    GraphicValidationDecoration decorador = ValidationUtils.crearDecorador();
 
     vJugador = new ValidationSupport();
     vCampeon = new ValidationSupport();
@@ -81,54 +64,20 @@ public class ListaControllerPartida {
     vKDA = new ValidationSupport();
     vResultado = new ValidationSupport();
 
-    GraphicValidationDecoration decorador = new GraphicValidationDecoration() {
-        @Override
-        public void applyValidationDecoration(ValidationMessage message) {
-            super.applyValidationDecoration(message);
-            message.getTarget().setStyle(
-                message.getSeverity() == Severity.ERROR ?
-                "-fx-border-color: red;" :
-                "-fx-border-color: green;"
-            );
-        }
-    };
-
     vJugador.setValidationDecorator(decorador);
     vCampeon.setValidationDecorator(decorador);
     vFecha.setValidationDecorator(decorador);
     vKDA.setValidationDecorator(decorador);
     vResultado.setValidationDecorator(decorador);
 
-    vJugador.registerValidator(txtJugador, true, (Control c, String valor) -> {
-        if (valor == null || valor.trim().isEmpty()) return ValidationResult.fromError(c, "Jugador vacío");
-        if (!valor.matches("^[a-zA-ZÁÉÍÓÚáéíóúñÑ ]+$")) return ValidationResult.fromError(c, "Solo letras");
-        return ValidationResult.fromInfo(c, "Correcto");
-    });
-
-    vCampeon.registerValidator(txtCampeon, true, (Control c, String valor) -> {
-        if (valor == null || valor.trim().isEmpty()) return ValidationResult.fromError(c, "Campeón vacío");
-        if (!valor.matches("^[a-zA-ZÁÉÍÓÚáéíóúñÑ ]+$")) return ValidationResult.fromError(c, "Solo letras");
-        return ValidationResult.fromInfo(c, "Correcto");
-    });
-
-    vFecha.registerValidator(dateFecha, true,
-        Validator.createEmptyValidator("Debes seleccionar una fecha"));
-
-    vKDA.registerValidator(txtKDA, true, (Control c, String valor) -> {
-        if (valor == null || valor.trim().isEmpty()) return ValidationResult.fromError(c, "KDA vacío");
-        if (!valor.matches("\\d+/\\d+/\\d+")) return ValidationResult.fromError(c, "Formato inválido (Ej: 3/1/2)");
-        return ValidationResult.fromInfo(c, "Formato correcto");
-    });
-
-    vResultado.registerValidator(cmbResultado, true,
-        Validator.createEmptyValidator("Selecciona un resultado"));
+    vJugador.registerValidator(txtJugador, true, ValidationUtils.soloLetrasFiltro("Solo letras permitidas"));
+    vCampeon.registerValidator(txtCampeon, true, ValidationUtils.soloLetrasFiltro("Solo letras permitidas"));
+    vFecha.registerValidator(dateFecha, true, ValidationUtils.obligatorio("Debes seleccionar una fecha"));
+    vKDA.registerValidator(txtKDA, true, ValidationUtils.kdaFiltro("Formato inválido (Ej: 3/1/2)"));
+    vResultado.registerValidator(cmbResultado, true, ValidationUtils.obligatorio("Selecciona un resultado"));
 }
-
     
-    /**
-     * Método para aplicar filtros
-     */
-    @FXML
+@FXML
     private void aplicarFiltros() {
         if (listaOriginal == null || listaOriginal.isEmpty()) {
             AlertUtils.mostrarAlerta("Sin datos", "No hay partidas disponibles para filtrar.", Alert.AlertType.WARNING);
@@ -137,7 +86,7 @@ public class ListaControllerPartida {
 
         String jugador = txtJugador.getText() == null ? "" : txtJugador.getText().trim();
         String campeon = txtCampeon.getText() == null ? "" : txtCampeon.getText().trim();
-        LocalDate fecha = dateFecha.getValue();              // null = no filtra por fecha
+        LocalDate fecha = dateFecha.getValue();
         String kda = txtKDA.getText() == null ? "" : txtKDA.getText().trim();
         String resultado = cmbResultado.getValue() == null ? "" : cmbResultado.getValue().trim();
 
@@ -147,7 +96,6 @@ public class ListaControllerPartida {
             return;
         }
 
-        // (Opcional) validar KDA solo si se ha escrito algo:
         if (!kda.isEmpty() && !kda.matches("\\d+/\\d+/\\d+")) {
             AlertUtils.mostrarAlerta("KDA inválido", "Formato debe ser n/n/n (Ej: 10/3/5).", Alert.AlertType.WARNING);
             return;
@@ -174,33 +122,21 @@ public class ListaControllerPartida {
         tablaPartidas.refresh();
         cerrarVentana();
     }
-
-
-
-    /**
-     * Método para borrar los filtros y restaurar la tabla con los datos originales.
-     */
-    
+ 
     @FXML
 public void borrarFiltrosPartida() {
-    if (listaOriginal == null || listaOriginal.isEmpty()) {
-        AlertUtils.mostrarAlerta("Error", "No hay datos originales disponibles para restaurar.", Alert.AlertType.WARNING);
+    if (tablaPartidas.getItems().size() == listaOriginal.size()) {
+        AlertUtils.mostrarAlerta("Filtros no aplicados", "No hay filtros activos para borrar.", Alert.AlertType.INFORMATION);
         return;
     }
 
-    System.out.println("🔄 Restaurando la tabla con todas las partidas...");
-    
-    // Restaurar la tabla con la lista original
     tablaPartidas.setItems(FXCollections.observableArrayList(listaOriginal));
     tablaPartidas.refresh();
 
     AlertUtils.mostrarAlerta("Filtros eliminados", "Se han eliminado los filtros y restaurado todas las partidas.", Alert.AlertType.INFORMATION);
 }
 
-    /**
-     * Método para cerrar la ventana sin aplicar filtros
-     */
-    @FXML
+@FXML
     private void cancelar() {
         cerrarVentana();
     }
@@ -209,24 +145,12 @@ public void borrarFiltrosPartida() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
     }
-    /**
-     * Setter para listaOriginal
-     */
-    public void setListaOriginal(ObservableList<Partida> listaOriginal) {
-    if (listaOriginal == null || listaOriginal.isEmpty()) {
-        System.out.println("⚠️ Error: Intentando asignar una lista vacía o nula a listaOriginal.");
-    } else {
-        System.out.println("✅ listaOriginal asignada con " + listaOriginal.size() + " partidas.");
-    }
+public void setListaOriginal(ObservableList<Partida> listaOriginal) {
     this.listaOriginal = listaOriginal;
 }
 
 
-    /**
-     * Setter para la tabla principal
-     */
-    public void setTablaPartidas(TableView<Partida> tablaPartidas) {
+public void setTablaPartidas(TableView<Partida> tablaPartidas) {
         this.tablaPartidas = tablaPartidas;
-        System.out.println("tablaPartidas configurada correctamente.");
     }
 }

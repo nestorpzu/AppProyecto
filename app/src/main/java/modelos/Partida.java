@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package partidas;
+package modelos;
 
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -10,9 +10,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import java.sql.Date;
 import java.time.LocalDate;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
@@ -28,7 +26,6 @@ public class Partida {
     private final ObjectProperty<LocalDate> fecha;
     private final StringProperty kda;
     private final StringProperty resultado;
-    private final SimpleBooleanProperty seleccionado;
 
     // Constructor
     public Partida(int idJuegan,String jugador, String campeon, LocalDate fecha, String kda, String resultado) {
@@ -38,7 +35,6 @@ public class Partida {
         this.fecha = new SimpleObjectProperty<>(fecha);
         this.kda = new SimpleStringProperty(kda);
         this.resultado = new SimpleStringProperty(resultado);
-        this.seleccionado = new SimpleBooleanProperty(false);
     }
 
     public Partida(String jugador, String campeon, LocalDate fecha, String kda, String resultado) {
@@ -56,19 +52,6 @@ public class Partida {
 
     public void setIdJuegan(int idJuegan) {
         this.idJuegan.set(idJuegan);
-    }
-    
-    // Getters y Setters
-    public BooleanProperty seleccionadoProperty() {
-        return seleccionado;
-    }
-
-    public boolean isSeleccionado() {
-        return seleccionado.get();
-    }
-
-    public void setSeleccionado(boolean seleccionado) {
-        this.seleccionado.set(seleccionado);
     }
     
     // Getters y Setters con Property para JavaFX

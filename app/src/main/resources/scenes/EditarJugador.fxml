@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.control.Tooltip?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="jugadores.EditarControllerJugador">
     
@@ -35,7 +35,7 @@
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Descripción" />
                 </HBox>
-                <TextArea fx:id="txtDescripcion" promptText="Descripción" prefRowCount="2" />
+                <TextField  fx:id="txtDescripcion" promptText="Descripción" />
             </VBox>
 
             <!-- Edad -->
@@ -73,8 +73,16 @@
 
             <!-- Botones -->
             <HBox spacing="10" alignment="CENTER">
-                <Button text="Aplicar Filtros" fx:id="btnEditar" onAction="#editarJugador" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
-                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+                <Button text="Guardar Cambios" fx:id="btnEditar" onAction="#editarJugador" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" >
+                    <tooltip>
+                        <Tooltip text="Guarda los cambios del jugador" />
+                    </tooltip>
+                </Button>
+                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" >
+                    <tooltip>
+                        <Tooltip text=	"Cancela y cierra la ventana" />
+                    </tooltip>
+                </Button>
             </HBox>
         </VBox>
     </children>

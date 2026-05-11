@@ -42,7 +42,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'com.example.appProyecto.main'
+    mainClass = 'app.App'
 }
 
 tasks.named('test') {
@@ -56,4 +56,12 @@ tasks.named("run") {
     ]
 }
 
+sourceSets {
+main {
+resources {
+srcDirs = ["src/main/java","src/main/resources"]
+includes = ["**/*.fxml","**/*.css","**/*.png","**/*.html"] //Incluir cualquier fichero de recurso
+}
+}
+}
 

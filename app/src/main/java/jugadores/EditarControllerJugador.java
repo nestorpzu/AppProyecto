@@ -4,33 +4,25 @@
  */
 package jugadores;
 
+import dao.JugadorDAO;
+import modelos.Jugador;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.controlsfx.validation.Severity;
-import org.controlsfx.validation.ValidationMessage;
-import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 import utils.AlertUtils;
+import utils.ValidationUtils;
 
 /**
  *
@@ -41,7 +33,7 @@ public class EditarControllerJugador {
     private TextField txtNombree, txtEmail, txtNacionalidad;
 
     @FXML
-    private TextArea txtDescripcion;
+    private TextField  txtDescripcion;
 
     @FXML
     private Spinner<Integer> spinnerEdad;
@@ -51,22 +43,19 @@ public class EditarControllerJugador {
 
     @FXML
     private Button btnEditar, btnCancelar;
-
-    private Jugador jugador; // Referencia al jugador que se está editando
-    @FXML
-    private TableView<Jugador> tablaJugadores;
     
+    private TableView<Jugador> tablaJugadores;
+    private Connection connection;
+    private final JugadorDAO jugadorDAO = new JugadorDAO();
     private ValidationSupport vNombre, vDescripcion, vEdad, vEmail, vNacionalidad, vPosicion;
-    private ImageView iconoOk, iconoErr;
 
     
     private Jugador jugadorSeleccionado;
     
-    private String nombreOriginal;
+
 
     @FXML
     public void initialize() {
-        // Inicializar el Spinner para que tenga un rango de valores y un valor predeterminado
         spinnerEdad.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(18, 99, 18));
 
         comboPosicion.getItems().addAll("Top", "Jungla", "Mid", "ADC", "Soporte");
@@ -75,13 +64,8 @@ public class EditarControllerJugador {
     }
 
     private void inicializarValidaciones() {
-    // Cargar iconos desde /resources/img/
-    iconoOk = new ImageView(new Image(getClass().getResourceAsStream("/icons/ok_icon.png")));
-    iconoErr = new ImageView(new Image(getClass().getResourceAsStream("/icons/error_icon.png")));
-    iconoOk.setFitWidth(16); iconoOk.setFitHeight(16);
-    iconoErr.setFitWidth(16); iconoErr.setFitHeight(16);
+   GraphicValidationDecoration decorador = ValidationUtils.crearDecorador();
 
-    // Crear los ValidationSupport
     vNombre = new ValidationSupport();
     vDescripcion = new ValidationSupport();
     vEdad = new ValidationSupport();
@@ -89,21 +73,6 @@ public class EditarControllerJugador {
     vNacionalidad = new ValidationSupport();
     vPosicion = new ValidationSupport();
 
-    // Decorador visual personalizado
-    GraphicValidationDecoration decorador = new GraphicValidationDecoration() {
-        @Override
-        public void applyValidationDecoration(ValidationMessage message) {
-            super.applyValidationDecoration(message);
-            Control c = message.getTarget();
-            if (message.getSeverity() == Severity.ERROR) {
-                c.setStyle("-fx-border-color: red;");
-            } else if (message.getSeverity() == Severity.INFO) {
-                c.setStyle("-fx-border-color: green;");
-            }
-        }
-    };
-
-    // Aplicar decorador a todos
     vNombre.setValidationDecorator(decorador);
     vDescripcion.setValidationDecorator(decorador);
     vEdad.setValidationDecorator(decorador);
@@ -111,45 +80,19 @@ public class EditarControllerJugador {
     vNacionalidad.setValidationDecorator(decorador);
     vPosicion.setValidationDecorator(decorador);
 
-    // Validaciones
-    vNombre.registerValidator(txtNombree, true,
-            Validator.createEmptyValidator("El nombre no puede estar vacío"));
-
-    vDescripcion.registerValidator(txtDescripcion, true,
-            Validator.createEmptyValidator("La descripción es obligatoria"));
-
-    vEmail.registerValidator(txtEmail, true,
-            Validator.createRegexValidator("Formato de email inválido", "^(.+)@(.+)\\.(.+)$", Severity.ERROR));
-
-    vNacionalidad.registerValidator(txtNacionalidad, true,
-            Validator.createEmptyValidator("La nacionalidad es obligatoria"));
-
-    vEdad.registerValidator(spinnerEdad.getEditor(), true, (c, value) -> {
-        try {
-            int edad = Integer.parseInt(spinnerEdad.getEditor().getText());
-            if (edad < 18 || edad > 99) {
-                return ValidationResult.fromError(c, "Edad fuera de rango (18-99)");
-            }
-        } catch (NumberFormatException e) {
-            return ValidationResult.fromError(c, "Edad debe ser un número");
-        }
-        return ValidationResult.fromInfo(c, "OK");
-    });
-
-    vPosicion.registerValidator(comboPosicion, true,
-            Validator.createEmptyValidator("Selecciona una posición"));
+    vNombre.registerValidator(txtNombree, true, ValidationUtils.soloLetras("El nombre no puede estar vacío", "Solo letras permitidas"));
+    vDescripcion.registerValidator(txtDescripcion, true, ValidationUtils.obligatorio("La descripción es obligatoria"));
+    vEdad.registerValidator(spinnerEdad.getEditor(), true, ValidationUtils.edad(18, 99, "Edad fuera de rango (18-99)", "Introduce un número válido"));
+    vEmail.registerValidator(txtEmail, true, ValidationUtils.email("Formato de email inválido"));
+    vNacionalidad.registerValidator(txtNacionalidad, true, ValidationUtils.soloLetras("La nacionalidad es obligatoria", "Solo letras permitidas"));
+    vPosicion.registerValidator(comboPosicion, true, ValidationUtils.obligatorio("Selecciona una posición"));
 }
-    
-    // Otros métodos del controlador
+
     public void setJugador(Jugador jugador) {
-        // Configurar los valores del jugador en los campos
         this.jugadorSeleccionado = jugador;
-        this.nombreOriginal = jugador.getNombre();
         spinnerEdad.getValueFactory().setValue(jugador.getEdad());
         comboPosicion.setValue(jugador.getPosicion());
-        this.jugador = jugador; // Asignar el jugador a una variable de clase
         
-    // Actualizar los campos con los datos del jugador
     Platform.runLater(() -> {
         txtNombree.setText(jugador.getNombre());
         txtDescripcion.setText(jugador.getDescripcion());
@@ -165,16 +108,14 @@ public class EditarControllerJugador {
     this.tablaJugadores = tablaJugadores;
    
 }
+
+public void setConnection(Connection connection) {
+    this.connection = connection;
+}
     
     @FXML
     private void editarJugador() {
 
-        // Revalidar y cortar si hay errores
-        vNombre.revalidate();
-        vDescripcion.revalidate();
-        vEdad.revalidate();
-        vEmail.revalidate();
-        vNacionalidad.revalidate();
         vPosicion.revalidate();
 
         boolean todoOK = vNombre.getValidationResult().getErrors().isEmpty()
@@ -196,7 +137,6 @@ public class EditarControllerJugador {
 
         
 
-        //  Actualizar siempre desde los campos
         jugadorSeleccionado.setNombre(txtNombree.getText().trim());
         jugadorSeleccionado.setDescripcion(txtDescripcion.getText().trim());
         jugadorSeleccionado.setEdad(spinnerEdad.getValue());
@@ -206,23 +146,11 @@ public class EditarControllerJugador {
 
 
 
-        // **Actualizar en la base de datos**
-        try (Connection connection = baseDatos.DataBaseMain.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "UPDATE jugadores SET nombre_jugador=?, descripcion_jugador=?, edad=?, email=?, nacionalidad=?, posicion_jugador=? WHERE idJugadores=?")) {
+        try {
+            boolean exito = jugadorDAO.actualizar(jugadorSeleccionado, connection);
 
-            preparedStatement.setString(1, jugadorSeleccionado.getNombre());
-            preparedStatement.setString(2, jugadorSeleccionado.getDescripcion());
-            preparedStatement.setInt(3, jugadorSeleccionado.getEdad());
-            preparedStatement.setString(4, jugadorSeleccionado.getEmail());
-            preparedStatement.setString(5, jugadorSeleccionado.getNacionalidad());
-            preparedStatement.setString(6, jugadorSeleccionado.getPosicion());
-            preparedStatement.setInt(7, jugadorSeleccionado.getId()); // Buscar por el nombre antiguo
-
-            int filasAfectadas = preparedStatement.executeUpdate();
-
-            if (filasAfectadas > 0) {
-                tablaJugadores.refresh(); // Actualizar la vista
+            if (exito) {
+                tablaJugadores.refresh();
                 AlertUtils.mostrarAlerta("Edición exitosa", "Los datos del jugador han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
             } else {
                 AlertUtils.mostrarAlerta("Error", "No se encontró el jugador en la base de datos para actualizar.", Alert.AlertType.ERROR);
@@ -232,7 +160,6 @@ public class EditarControllerJugador {
             AlertUtils.mostrarAlerta("Error", "Ocurrió un error al actualizar el jugador: " + e.getMessage(), Alert.AlertType.ERROR);
         }
 
-        // Cerrar la ventana después de la edición
         Stage stage = (Stage) btnEditar.getScene().getWindow();
         stage.close();
 }
@@ -240,7 +167,6 @@ public class EditarControllerJugador {
     
     @FXML
     private void cancelar() {
-        // Cerrar la ventana sin realizar cambios
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
     }

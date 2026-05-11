@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Tooltip?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="partidas.AddControllerPartida">
 
@@ -51,8 +52,16 @@
 
             <!-- Botones -->
             <HBox spacing="10" alignment="CENTER">
-                <Button text="Añadir Partida" fx:id="btnAnadir" onAction="#anadirPartida" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
-                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+                <Button text="Añadir Partida" fx:id="btnAnadir" onAction="#anadirPartida" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" >
+                    <tooltip>
+                        <Tooltip text="Guarda la nueva partida en la base de datos" />
+                    </tooltip>
+                </Button>
+                <Button text="Cancelar" fx:id="btnCancelar" onAction="#cancelar" style="-fx-background-color: #f44336; -fx-text-fill: white;" >
+                    <tooltip>
+                        <Tooltip text="Cancela y cierra la ventana" />
+                    </tooltip>
+                </Button>
             </HBox>
         </VBox>
     </children>

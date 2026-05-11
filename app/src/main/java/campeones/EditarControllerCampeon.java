@@ -4,31 +4,21 @@
  */
 package campeones;
 
+import dao.CampeonDAO;
+import modelos.Campeon;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.controlsfx.validation.Severity;
-import org.controlsfx.validation.ValidationMessage;
-import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 import utils.AlertUtils;
+import utils.ValidationUtils;
 
 /**
  *
@@ -36,98 +26,59 @@ import utils.AlertUtils;
  */
 public class EditarControllerCampeon {
 
-    @FXML private TextField txtNombre, txtRol;
-    @FXML private TextArea txtDescripcion;
+    @FXML private TextField txtNombre;
+    @FXML private TextField  txtDescripcion;
+     @FXML private ComboBox<String> comboRol;
     @FXML private ComboBox<String> comboDificultad;
     @FXML private Button btnEditar, btnCancelar;
 
     private Campeon campeonSeleccionado;
     private TableView<Campeon> tablaCampeones;
     private String nombreOriginal;
+    private Connection connection;
+    private final CampeonDAO campeonDAO = new CampeonDAO();
 
     @FXML
     public void initialize() {
-        // Inicializar ComboBox
-       comboDificultad.getItems().addAll("Baja", "Media", "Alta");
+    comboDificultad.getItems().addAll("Baja", "Media", "Alta");
     comboDificultad.setPromptText("Selecciona una Dificultad");
-
+    comboRol.getItems().addAll("Asesino", "Tanque", "Mago", "Tirador", "Luchador", "Soporte");
+    comboRol.setPromptText("Selecciona un Rol");
   
     inicializarValidaciones();
     }
 
     private ValidationSupport vNombre, vDescripcion, vRol, vDificultad;
-    private ImageView iconoOk, iconoError;
 
-private void inicializarValidaciones() {
-    // Cargar imágenes de recursos
-    iconoOk = new ImageView(new Image(getClass().getResourceAsStream("/icons/ok_icon.png")));
-    iconoError = new ImageView(new Image(getClass().getResourceAsStream("/icons/error_icon.png")));
-    iconoOk.setFitHeight(16); iconoOk.setFitWidth(16);
-    iconoError.setFitHeight(16); iconoError.setFitWidth(16);
 
-    vNombre = new ValidationSupport();
-    vDescripcion = new ValidationSupport();
-    vRol = new ValidationSupport();
-    vDificultad = new ValidationSupport();
+    private void inicializarValidaciones() {
+        GraphicValidationDecoration decorador = ValidationUtils.crearDecorador();
 
-    // Decorador personalizado
-    GraphicValidationDecoration decorador = new GraphicValidationDecoration() {
-        @Override
-        public void applyValidationDecoration(ValidationMessage message) {
-            super.applyValidationDecoration(message);
-            Control c = message.getTarget();
+        vNombre = new ValidationSupport();
+        vDescripcion = new ValidationSupport();
+        vRol = new ValidationSupport();
+        vDificultad = new ValidationSupport();
 
-            if (message.getSeverity() == Severity.ERROR) {
-                c.setStyle("-fx-border-color: red;");
-            } else if (message.getSeverity() == Severity.INFO) {
-                c.setStyle("-fx-border-color: green;");
-            }
-        }
-    };
+        vNombre.setValidationDecorator(decorador);
+        vDescripcion.setValidationDecorator(decorador);
+        vRol.setValidationDecorator(decorador);
+        vDificultad.setValidationDecorator(decorador);
 
-    vNombre.setValidationDecorator(decorador);
-    vDescripcion.setValidationDecorator(decorador);
-    vRol.setValidationDecorator(decorador);
-    vDificultad.setValidationDecorator(decorador);
-       
-    // registerValidator
-    
-    vNombre.registerValidator(txtNombre, true, (Control c, String text) -> {
-        if (text == null || text.trim().isEmpty()) {
-            return ValidationResult.fromError(c, "Nombre vacío");
-        }
-        return ValidationResult.fromInfo(c, "OK");
-    });
-
-    vDescripcion.registerValidator(txtDescripcion, true, (Control c, String text) -> {
-        if (text == null || text.trim().isEmpty()) {
-            return ValidationResult.fromError(c, "Descripción vacía");
-        }
-        return ValidationResult.fromInfo(c, "OK");
-    });
-
-    vRol.registerValidator(txtRol,  true,(Control c, String text) -> {
-        if (text == null || text.trim().isEmpty()) {
-            return ValidationResult.fromError(c, "Rol vacío");
-        }
-        return ValidationResult.fromInfo(c, "OK");
-    });
-
-    vDificultad.registerValidator(comboDificultad, true,
-        Validator.createEmptyValidator("Debes seleccionar dificultad"));
-}
-
+        vNombre.registerValidator(txtNombre, true, ValidationUtils.soloLetras("El nombre no puede estar vacío", "Solo letras permitidas"));
+        vDescripcion.registerValidator(txtDescripcion, true, ValidationUtils.obligatorio("La descripción es obligatoria"));
+        vRol.registerValidator(comboRol, true, ValidationUtils.obligatorio("El rol es obligatorio"));
+        vDificultad.registerValidator(comboDificultad, true, ValidationUtils.obligatorio("Debes seleccionar dificultad"));
+    }
     
 
     public void setCampeon(Campeon campeon) {
         this.campeonSeleccionado = campeon;
         this.nombreOriginal = campeon.getNombre();
 
-        // Actualizar los campos con los datos del campeón
         Platform.runLater(() -> {
             txtNombre.setText(campeon.getNombre());
             txtDescripcion.setText(campeon.getDescripcion());
-            txtRol.setText(campeon.getRol());
+            comboRol.setValue(campeon.getRol());
             comboDificultad.setValue(campeon.getDificultad());
         });
     }
@@ -136,46 +87,33 @@ private void inicializarValidaciones() {
         this.tablaCampeones = tablaCampeones;
     }
 
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
     @FXML
     private void editarCampeon() {
      
-        vNombre.revalidate();
-        vDescripcion.revalidate();
-        vRol.revalidate();
-        vDificultad.revalidate();
+        ValidationUtils.revalidar(vNombre, vDescripcion, vRol, vDificultad);
 
-        boolean todoOk = vNombre.getValidationResult().getErrors().isEmpty()
-                && vDescripcion.getValidationResult().getErrors().isEmpty()
-                && vRol.getValidationResult().getErrors().isEmpty()
-                && vDificultad.getValidationResult().getErrors().isEmpty();
+        boolean todoOk = ValidationUtils.todoValido(vNombre, vDescripcion, vRol, vDificultad);
 
         if (!todoOk) {
             AlertUtils.mostrarAlerta("Error de validación", "Revisa los campos marcados con error.", Alert.AlertType.WARNING);
             return;
         }
 
-        // Actualizar los datos del objeto en memoria
         campeonSeleccionado.setNombre(txtNombre.getText());
         campeonSeleccionado.setDescripcion(txtDescripcion.getText());
-        campeonSeleccionado.setRol(txtRol.getText());
+        campeonSeleccionado.setRol(comboRol.getValue());
         campeonSeleccionado.setDificultad(comboDificultad.getValue());       
 
 
-        // **Actualizar en la base de datos**
-        try (Connection connection = baseDatos.DataBaseMain.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "UPDATE campeones SET nombre_campeon=?, descripcion_campeon=?, rol_mapa=?, dificultad=? WHERE idCampeones=?")) {
+        try {
+            boolean exito = campeonDAO.actualizar(campeonSeleccionado, connection);
 
-            preparedStatement.setString(1, campeonSeleccionado.getNombre());
-            preparedStatement.setString(2, campeonSeleccionado.getDescripcion());
-            preparedStatement.setString(3, campeonSeleccionado.getRol());
-            preparedStatement.setString(4, campeonSeleccionado.getDificultad());
-            preparedStatement.setInt(5, campeonSeleccionado.getId());
-
-            int filasAfectadas = preparedStatement.executeUpdate();
-
-            if (filasAfectadas > 0) {
-                tablaCampeones.refresh(); // Actualizar la vista
+            if (exito) {
+                tablaCampeones.refresh();
                 AlertUtils.mostrarAlerta("Edición exitosa", "Los datos del campeón han sido actualizados correctamente.", Alert.AlertType.INFORMATION);
             } else {
                 AlertUtils.mostrarAlerta("Error", "No se encontró el campeón en la base de datos para actualizar.", Alert.AlertType.ERROR);
@@ -184,7 +122,6 @@ private void inicializarValidaciones() {
             e.printStackTrace();
             AlertUtils.mostrarAlerta("Error", "Ocurrió un error al actualizar el campeón: " + e.getMessage(), Alert.AlertType.ERROR);
         }
-
         cerrarVentana();
     }
 
