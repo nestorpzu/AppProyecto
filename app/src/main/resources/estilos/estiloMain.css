@@ -20,6 +20,16 @@
 }
 
 /* =========================
+   tooltip main.fxml
+   ========================= */
+.tooltip {
+    -fx-background-color: #333;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 8 12;
+}
+
+/* =========================
    TEXTOS
    ========================= */
 .label{
@@ -196,4 +206,67 @@
     -fx-background-color: transparent;
 }
 
-    
+/* =========================
+   MENU BUTTON (Importar/Exportar) - mismo estilo que .button
+   ========================= */
+.menu-button {
+    -fx-background-color: white;
+    -fx-text-fill: #0F172A;
+    -fx-font-weight: 600;
+
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #D7DCE7;
+
+    -fx-padding: 4 9 4 9;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: #F1F5FF;
+    -fx-border-color: rgba(59,130,246,0.55);
+}
+
+.menu-button:pressed {
+    -fx-background-color: #E8EEFF;
+}
+
+.menu-button .arrow {
+    -fx-background-color: #0F172A;
+}
+
+/* =========================
+   CONTEXT MENU (popup desplegable)
+   ========================= */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #E6EAF2;
+    -fx-padding: 4;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);
+}
+
+/* =========================
+   MENU ITEMS
+   ========================= */
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 4 13 4 13;
+    -fx-background-radius: 8;
+}
+
+.menu-item .label {
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 13px;
+}
+
+.menu-item:focused {
+    -fx-background-color: rgba(59,130,246,0.12);
+    -fx-background-radius: 8;
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: #3B82F6;
+    -fx-font-weight: 600;
+}

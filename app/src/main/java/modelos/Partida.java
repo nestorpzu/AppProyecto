@@ -14,18 +14,23 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
+ * Modelo de datos para la tabla juegan (partidas) de la BD.
+ * Esta tabla es la intermedia que relaciona jugadores con campeones.
+ * 
+ * IMPORTANTE: en la interfaz guardamos nombres (jugador, campeon) en vez de IDs
+ * porque asi se muestra en la tabla. Pero en la BD se guardan los IDs numericos.
+ * PartidaDAO se encarga de hacer la conversion nombre↔ID.
  *
  * @author nestor
  */
-
 public class Partida {
 
-    private final IntegerProperty idJuegan; 
-    private final StringProperty jugador;
-    private final StringProperty campeon;
-    private final ObjectProperty<LocalDate> fecha;
-    private final StringProperty kda;
-    private final StringProperty resultado;
+    private final IntegerProperty idJuegan;      // ID de la partida (PK)
+    private final StringProperty jugador;        // nombre del jugador (no el ID)
+    private final StringProperty campeon;         // nombre del campeon (no el ID)
+    private final ObjectProperty<LocalDate> fecha; // fecha en que se jugo
+    private final StringProperty kda;             // kills/deaths/assists ej: "5/2/8"
+    private final StringProperty resultado;       // Victoria, Derrota o Empate
 
     // Constructor
     public Partida(int idJuegan,String jugador, String campeon, LocalDate fecha, String kda, String resultado) {

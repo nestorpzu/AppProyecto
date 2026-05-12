@@ -5,15 +5,21 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * Modelo de datos para la tabla jugadores de la BD.
+ * Usa JavaFX Properties (StringProperty, IntegerProperty) en vez de String e int
+ * normales porque asi la TableView puede escuchar los cambios y actualizarse sola.
+ * Si usaramos String normales, la tabla no se enteraria de los cambios.
+ */
 public class Jugador {
 
     private IntegerProperty id;
-    private final StringProperty nombre;
-    private final StringProperty descripcion;
-    private final IntegerProperty edad;
-    private final StringProperty email;
-    private final StringProperty nacionalidad;
-    private final StringProperty posicion;
+    private final StringProperty nombre;       // nombre_jugador
+    private final StringProperty descripcion;  // descripcion_jugador
+    private final IntegerProperty edad;         // edad
+    private final StringProperty email;         // email
+    private final StringProperty nacionalidad;   // nacionalidad
+    private final StringProperty posicion;      // posicion_jugador
 
     
     public Jugador(int id, String nombre, String descripcion, int edad, String email, String nacionalidad, String posicion) {

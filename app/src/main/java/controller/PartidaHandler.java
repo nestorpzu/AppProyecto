@@ -1,15 +1,13 @@
- /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package controller;
+ package controller;
 
 import dao.DataBaseMain;
 import dao.PartidaDAO;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -41,13 +39,19 @@ import partidas.AddControllerPartida;
 import partidas.EditarControllerPartida;
 import partidas.ListaControllerPartida;
 import utils.AlertUtils;
+import utils.ImportExportService;
 import utils.TooltipUtils;
 
 /**
- *
+ * Handler (controlador) de la tabla de partidas (juegan).
+ * Igual que JugadorHandler y CampeonHandler pero con la particularidad
+ * de que las partidas usan nombres en la interfaz que se convierten
+ * a IDs cuando se guardan en la BD.
+ * 
  * @author npauc
  */
 public class PartidaHandler {
+     // Componentes FXML de la tabla de partidas
      private TableView<Partida> tablaPartidas;
     private TextField txtBuscarPartida;
     private TableColumn<Partida, String> colJugadorPartida;
@@ -57,14 +61,20 @@ public class PartidaHandler {
     private TableColumn<Partida, String> colResultadoPartida;
     private TableColumn<Partida, Void> columnaAccionesPartida;
          
+    // Referencia al controlador de filtros para poder borrarlos
     private ListaControllerPartida listaControllerPartida;
     
+    // Conexion compartida a la BD
     private Connection connection;
     
+    // Lista completa y copia para filtrar
     private ObservableList<Partida> partidasList = FXCollections.observableArrayList();
     private ObservableList<Partida> listaOriginalPartidas = FXCollections.observableArrayList();
     
     
+    /**
+     * Inicializa la tabla: carga datos, vincula columnas, configura buscador y botones.
+     */
     public void initialize(){
 
     cargarPartidas();
@@ -83,6 +93,9 @@ colJugadorPartida.setCellValueFactory(
          configurarColumnaAccionesPartida();  
 }
     
+    /**
+     * Recibe los componentes FXML desde MainController. Saca la conexion e inicializa.
+     */
     public void configurar(
             
     TableView<Partida> tablaPartidas,
@@ -113,6 +126,10 @@ colJugadorPartida.setCellValueFactory(
     initialize();
     }
     
+    /**
+     * Carga (o recarga) todas las partidas desde la BD usando LEFT JOIN
+     * para obtener los nombres de jugador y campeon en vez de IDs.
+     */
     public void cargarPartidas() {
     PartidaDAO partidaDAO = new PartidaDAO();
     
@@ -126,6 +143,9 @@ colJugadorPartida.setCellValueFactory(
     
 }
 
+    /**
+     * Filtra la tabla de partidas buscando por nombre de jugador.
+     */
     private void buscarPartida(String filtro) {
     if (filtro == null || filtro.isEmpty()) {
         tablaPartidas.setItems(FXCollections.observableArrayList(listaOriginalPartidas));
@@ -140,6 +160,9 @@ colJugadorPartida.setCellValueFactory(
     tablaPartidas.refresh();
 }
     
+    /**
+     * Abre la ventana modal para editar una partida.
+     */
     private void editarPartida(Partida partida) {
     if (partida == null) {
         AlertUtils.mostrarAlerta("Error", "No se ha seleccionado ninguna partida para editar.", Alert.AlertType.WARNING);
@@ -179,6 +202,10 @@ colJugadorPartida.setCellValueFactory(
 }
     
     
+    /**
+     * Pide confirmacion y elimina la partida de la BD.
+     * Verifica que el ID sea valido antes de intentar borrar.
+     */
     private void eliminarPartida(Partida partida) {
         if (partida == null) {
             AlertUtils.mostrarAlerta("Selección requerida", "Por favor, selecciona una partida antes de eliminar.", Alert.AlertType.WARNING);
@@ -221,6 +248,9 @@ colJugadorPartida.setCellValueFactory(
     }
 
 
+    /**
+     * Crea los botones de editar y eliminar en cada fila de la tabla de partidas.
+     */
     private void configurarColumnaAccionesPartida() {
         Callback<TableColumn<Partida, Void>, TableCell<Partida, Void>> cellFactory = param -> new TableCell<>() {
             private final HBox contenedor = new HBox();
@@ -331,6 +361,9 @@ colJugadorPartida.setCellValueFactory(
     }
 
 
+    /**
+     * Borra los filtros activos y vuelve a mostrar todas las partidas.
+     */
     @FXML
     public void borrarFiltroPartidas() {
         if (listaControllerPartida == null) {
@@ -355,6 +388,9 @@ colJugadorPartida.setCellValueFactory(
     }
 
 
+    /**
+     * Abre la ventana de filtros avanzados para partidas.
+     */
     @FXML
     public void abrirFiltroPartidas() {
         try {   
@@ -396,6 +432,9 @@ colJugadorPartida.setCellValueFactory(
     }
 
 
+    /**
+     * Abre la ventana modal para anadir una partida nueva.
+     */
     @FXML
     public void abrirBtnAnadirPartida() throws IOException {
         try {   
@@ -435,4 +474,80 @@ colJugadorPartida.setCellValueFactory(
             e.printStackTrace();
         }
     }
+    
+        // ===================== IMPORTAR / EXPORTAR =====================
+
+    @FXML
+    public void importarCSVPartidas() {
+        File archivo = seleccionarArchivo("CSV", "*.csv");
+        if (archivo == null) return;
+
+        try {
+            String resultado = ImportExportService.importarPartidasCSV(archivo, connection);
+            cargarPartidas();
+            AlertUtils.mostrarAlerta("Importación completada", resultado, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            AlertUtils.mostrarAlerta("Error", "Error al leer el archivo CSV: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    public void importarJSONPartidas() {
+        File archivo = seleccionarArchivo("JSON", "*.json");
+        if (archivo == null) return;
+
+        try {
+            String resultado = ImportExportService.importarPartidasJSON(archivo, connection);
+            cargarPartidas();
+            AlertUtils.mostrarAlerta("Importación completada", resultado, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            AlertUtils.mostrarAlerta("Error", "Error al leer el archivo JSON: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    public void exportarCSVPartidas() {
+        File archivo = seleccionarArchivoGuardar("partidas", ".csv");
+        if (archivo == null) return;
+
+        try {
+            String resultado = ImportExportService.exportarPartidasCSV(
+                    new ArrayList<>(listaOriginalPartidas), archivo);
+            AlertUtils.mostrarAlerta("Exportación completada", resultado, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            AlertUtils.mostrarAlerta("Error", "Error al escribir el archivo CSV: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    public void exportarJSONPartidas() {
+        File archivo = seleccionarArchivoGuardar("partidas", ".json");
+        if (archivo == null) return;
+
+        try {
+            String resultado = ImportExportService.exportarPartidasJSON(
+                    new ArrayList<>(listaOriginalPartidas), archivo);
+            AlertUtils.mostrarAlerta("Exportación completada", resultado, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            AlertUtils.mostrarAlerta("Error", "Error al escribir el archivo JSON: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private File seleccionarArchivo(String titulo, String extension) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle(titulo);
+        fileChooser.getExtensionFilters().add(
+                new javafx.stage.FileChooser.ExtensionFilter(titulo, extension));
+        return fileChooser.showOpenDialog(tablaPartidas.getScene().getWindow());
+    }
+
+    private File seleccionarArchivoGuardar(String nombrePorDefecto, String extension) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Guardar archivo");
+        fileChooser.setInitialFileName(nombrePorDefecto + extension);
+        fileChooser.getExtensionFilters().add(
+                new javafx.stage.FileChooser.ExtensionFilter("Archivos " + extension, "*" + extension));
+        return fileChooser.showSaveDialog(tablaPartidas.getScene().getWindow());
+    }
+    
     }

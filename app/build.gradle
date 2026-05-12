@@ -21,16 +21,22 @@ repositories {
 }
 
 dependencies {
+    
     // Use JUnit Jupiter for testing.
     testImplementation libs.junit.jupiter
-
+    
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // This dependency is used by the application.
     implementation libs.guava
 
-   implementation "org.controlsfx:controlsfx:11.2.2"
-   implementation "com.mysql:mysql-connector-j:8.4.0"
+    implementation "org.controlsfx:controlsfx:11.2.2"
+    implementation "com.google.code.gson:gson:2.10.1"     //JSON
+    implementation "org.apache.poi:poi-ooxml:5.2.5"        // EXCEL
+    implementation "com.mysql:mysql-connector-j:8.4.0"
+    implementation "com.opencsv:opencsv:5.9"
+
+
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -57,11 +63,13 @@ tasks.named("run") {
 }
 
 sourceSets {
-main {
-resources {
-srcDirs = ["src/main/java","src/main/resources"]
-includes = ["**/*.fxml","**/*.css","**/*.png","**/*.html"] //Incluir cualquier fichero de recurso
+        main {
+        resources {
+        srcDirs = ["src/main/java","src/main/resources"]
+        includes = ["**/*.fxml","**/*.css","**/*.png","**/*.html"] //Incluir cualquier fichero de recurso
+        }
+    }
 }
-}
-}
+
+
 

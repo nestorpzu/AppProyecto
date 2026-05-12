@@ -1,14 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controller;
 
 import dao.DataBaseMain;
 import dao.JugadorDAO;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -40,14 +38,19 @@ import jugadores.EditarControllerJugador;
 import jugadores.ListaControllerJugadores;
 import modelos.Jugador;
 import utils.AlertUtils;
+import utils.ImportExportService;
 import utils.TooltipUtils;
 
 /**
- *
+ * Handler (controlador) de la tabla de jugadores.
+ * Se encarga de cargar los datos, buscar, anadir, editar y eliminar jugadores.
+ * Tambien gestiona los botones de accion (editar/eliminar) que aparecen en cada fila.
+ * 
  * @author npauc
  */
 public class JugadorHandler {
     
+     // Componentes FXML que se enlazan desde MainController
      private TableView<Jugador> tablaJugadores;
     private TextField txtBuscarJugador;
     private TableColumn<Jugador, String> colNombreJugador;
@@ -58,17 +61,26 @@ public class JugadorHandler {
     private TableColumn<Jugador, String> colPosicionJugador;
     private TableColumn<Jugador, Void> columnaAccionesJugadores;
     
+    // Lista completa de jugadores y la copia original para poder filtrar
     private ObservableList<Jugador> jugadoresList = FXCollections.observableArrayList();
     private ObservableList<Jugador> listaOriginal = FXCollections.observableArrayList();
     
+    // Conexion a la BD compartida
     private Connection connection;
     
+    // Referencia al controlador de filtros para poder borrarlos despues
     private ListaControllerJugadores listaControllerJugadores;
     
     
+ /**
+     * Inicializa la tabla: carga los datos de la BD, vincula cada columna
+     * con su propiedad del modelo, configura el buscador en tiempo real
+     * y los botones de editar/eliminar en cada fila.
+     */
  public void initialize() {
      cargarJugadores();
      
+     // Vinculamos cada columna con la propiedad correspondiente del modelo Jugador
 colNombreJugador.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
      colDescripcionJugador.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());
      colEdadJugador.setCellValueFactory(cellData -> cellData.getValue().edadProperty().asObject());
@@ -76,6 +88,7 @@ colNombreJugador.setCellValueFactory(cellData -> cellData.getValue().nombrePrope
      colNacionalidadJugador.setCellValueFactory(cellData -> cellData.getValue().nacionalidadProperty());
      colPosicionJugador.setCellValueFactory(cellData -> cellData.getValue().posicionProperty());
      
+     // Listener para el buscador: cada vez que se escribe algo, filtra la tabla
      txtBuscarJugador.textProperty().addListener((observable, oldValue, newValue) -> buscarJugador(newValue));
      
      configurarColumnaAccionesJugadores();
@@ -83,6 +96,10 @@ colNombreJugador.setCellValueFactory(cellData -> cellData.getValue().nombrePrope
  }
  
  
+ /**
+     * Recibe los componentes FXML desde MainController y los guarda.
+     * Tambien saca la conexion a la BD e inicializa la tabla.
+     */
  public void configurar(
     TableView<Jugador> tablaJugadores,
     TextField txtBuscarJugador,
@@ -113,6 +130,10 @@ colNombreJugador.setCellValueFactory(cellData -> cellData.getValue().nombrePrope
 initialize();
     }
  
+ /**
+     * Carga (o recarga) todos los jugadores desde la BD y los pinta en la tabla.
+     * Se llama al inicio y despues de cada insert/delete para refrescar.
+     */
  private void cargarJugadores() {
     JugadorDAO jugadorDAO = new JugadorDAO();
     
@@ -125,6 +146,10 @@ initialize();
     tablaJugadores.refresh();
 }
     
+    /**
+     * Filtra la tabla de jugadores en tiempo real segun lo que se escriba
+     * en el campo de busqueda. Si el campo esta vacio, muestra todos.
+     */
     private void buscarJugador(String filtro) {
     if (filtro == null || filtro.trim().isEmpty()) {
         tablaJugadores.setItems(FXCollections.observableArrayList(listaOriginal));
@@ -139,6 +164,10 @@ initialize();
     tablaJugadores.refresh();
 }
  
+    /**
+     * Abre una ventana modal para editar los datos del jugador seleccionado.
+     * Si no hay jugador seleccionado, muestra un aviso.
+     */
     private void editarJugador(Jugador jugador) {
     if (jugador == null) {
         AlertUtils.mostrarAlerta("Error", "No se ha seleccionado ningún jugador para editar.", Alert.AlertType.WARNING);
@@ -183,6 +212,11 @@ stage.initModality(Modality.APPLICATION_MODAL);
     }
     }
     
+    /**
+     * Pide confirmacion al usuario y, si acepta, elimina al jugador de la BD.
+     * Tambien elimina sus partidas (juegan) por la foreign key.
+     * Despues actualiza la tabla.
+     */
     private void eliminarJugador(Jugador jugador) {
     if (jugador == null) {
         AlertUtils.mostrarAlerta("Selección requerida", "Por favor, selecciona un jugador antes de eliminar.", Alert.AlertType.WARNING);
@@ -216,8 +250,12 @@ stage.initModality(Modality.APPLICATION_MODAL);
     }  
 }
     
-     // Método para configurar la columna de acciones
-private void configurarColumnaAccionesJugadores() {
+     /**
+     * Crea los botones de editar y eliminar en cada fila de la tabla.
+     * Cuando se pulsa editar/eliminar, comprueba si la fila seleccionada
+     * coincide con la fila del boton para evitar ambiguedad.
+     */
+ private void configurarColumnaAccionesJugadores() {
     Callback<TableColumn<Jugador, Void>, TableCell<Jugador, Void>> cellFactory = param -> new TableCell<>() {
         private final HBox contenedor = new HBox();
         private final Button btnEditar = new Button();
@@ -338,7 +376,10 @@ private void mostrarAlertaFilaMarcadaBorrar(Jugador jugadorMarcado) {
 }
    
     
-@FXML
+/**
+     * Abre la ventana de filtros avanzados para jugadores.
+     */
+    @FXML
     public void abrirFiltroJugadores() {
         try {   
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/ListaFiltrosJugadores.fxml"));
@@ -378,6 +419,10 @@ private void mostrarAlertaFilaMarcadaBorrar(Jugador jugadorMarcado) {
     }
 
     
+    /**
+     * Borra los filtros activos y vuelve a mostrar todos los jugadores.
+     * Si no hay filtros aplicados, muestra un aviso.
+     */
     @FXML
 public void borrarFiltroJugadores() {
     if (listaControllerJugadores == null) {
@@ -388,7 +433,11 @@ public void borrarFiltroJugadores() {
     listaControllerJugadores.borrarFiltros();
 }
 
-@FXML
+/**
+     * Abre la ventana modal para anadir un jugador nuevo.
+     * Al cerrarse la ventana, refresca la tabla si se agrego correctamente.
+     */
+    @FXML
     public void abrirBtnAnadir() throws IOException {
         
      try{   
@@ -428,5 +477,78 @@ public void borrarFiltroJugadores() {
         e.printStackTrace();
     }
     } 
-   
+       // ===================== IMPORTAR / EXPORTAR =====================
+
+    @FXML
+    public void importarCSVJugadores() {
+        File archivo = seleccionarArchivo("CSV", "*.csv");
+        if (archivo == null) return;
+
+        try {
+            String resultado = ImportExportService.importarJugadoresCSV(archivo, connection);
+            cargarJugadores();
+            AlertUtils.mostrarAlerta("Importación completada", resultado, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            AlertUtils.mostrarAlerta("Error", "Error al leer el archivo CSV: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    public void importarJSONJugadores() {
+        File archivo = seleccionarArchivo("JSON", "*.json");
+        if (archivo == null) return;
+
+        try {
+            String resultado = ImportExportService.importarJugadoresJSON(archivo, connection);
+            cargarJugadores();
+            AlertUtils.mostrarAlerta("Importación completada", resultado, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            AlertUtils.mostrarAlerta("Error", "Error al leer el archivo JSON: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    public void exportarCSVJugadores() {
+        File archivo = seleccionarArchivoGuardar("jugadores", ".csv");
+        if (archivo == null) return;
+
+        try {
+            String resultado = ImportExportService.exportarJugadoresCSV(
+                    new ArrayList<>(listaOriginal), archivo);
+            AlertUtils.mostrarAlerta("Exportación completada", resultado, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            AlertUtils.mostrarAlerta("Error", "Error al escribir el archivo CSV: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    public void exportarJSONJugadores() {
+        File archivo = seleccionarArchivoGuardar("jugadores", ".json");
+        if (archivo == null) return;
+
+        try {
+            String resultado = ImportExportService.exportarJugadoresJSON(
+                    new ArrayList<>(listaOriginal), archivo);
+            AlertUtils.mostrarAlerta("Exportación completada", resultado, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            AlertUtils.mostrarAlerta("Error", "Error al escribir el archivo JSON: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private File seleccionarArchivo(String titulo, String extension) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle(titulo);
+        fileChooser.getExtensionFilters().add(
+                new javafx.stage.FileChooser.ExtensionFilter(titulo, extension));
+        return fileChooser.showOpenDialog(tablaJugadores.getScene().getWindow());
+    }
+
+    private File seleccionarArchivoGuardar(String nombrePorDefecto, String extension) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Guardar archivo");
+        fileChooser.setInitialFileName(nombrePorDefecto + extension);
+        fileChooser.getExtensionFilters().add(
+                new javafx.stage.FileChooser.ExtensionFilter("Archivos " + extension, "*" + extension));
+        return fileChooser.showSaveDialog(tablaJugadores.getScene().getWindow());
+    }
 }

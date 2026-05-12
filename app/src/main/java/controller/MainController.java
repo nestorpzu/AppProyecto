@@ -10,17 +10,27 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.util.Duration;
 import java.time.LocalDate;
+import javafx.scene.control.Button;
 import modelos.Jugador;
 import modelos.Campeon;
 import modelos.Partida;
 import javafx.scene.control.TextField;
+import utils.TooltipUtils;
 
+/**
+ * Controlador principal de la vista Main.fxml.
+ * Gestiona las tres tablas de la aplicacion (jugadores, campeones, partidas)
+ * mediante sus respectivos Handlers. Se encarga de inicializar los handlers
+ * con los componentes FXML y aplicar la animacion de carga a las tablas.
+ */
 public class MainController {
     
+    // Handlers que gestionan la logica de cada tabla
     private JugadorHandler jugadorHandler;
     private CampeonHandler campeonHandler;
     private PartidaHandler partidaHandler;
 
+    // --- Componentes FXML de la tabla de Jugadores ---
     @FXML private TableView<Jugador> tablaJugadores;
     @FXML private TextField txtBuscarJugador;
     @FXML private TableColumn<Jugador, String> colNombreJugador;
@@ -31,6 +41,7 @@ public class MainController {
     @FXML private TableColumn<Jugador, String> colPosicionJugador;
     @FXML private TableColumn<Jugador, Void> columnaAccionesJugadores;
    
+    // --- Componentes FXML de la tabla de Campeones ---
     @FXML private TableView<Campeon> tablaCampeones;
     @FXML private TextField txtBuscarCampeon;
     @FXML private TableColumn<Campeon, String> colNombreCampeon;
@@ -38,7 +49,9 @@ public class MainController {
     @FXML private TableColumn<Campeon, String> colRolCampeon;
     @FXML private TableColumn<Campeon, String> colDificultadCampeon;
     @FXML private TableColumn<Campeon, Void> columnaAccionesCampeones;
+    @FXML private TableColumn<Campeon, Void> colImagenCampeon;
    
+    // --- Componentes FXML de la tabla de Partidas ---
     @FXML private TableView<Partida> tablaPartidas;
     @FXML private TextField txtBuscarPartida;
     @FXML private TableColumn<Partida, String> colJugadorPartida;
@@ -48,7 +61,8 @@ public class MainController {
     @FXML private TableColumn<Partida, String> colResultadoPartida;
     @FXML private TableColumn<Partida, Void> columnaAccionesPartida;
     
-      @FXML private void abrirListaDeFiltros1() { jugadorHandler.abrirFiltroJugadores(); }
+      // Metodos FXML que delegan a los handlers
+    @FXML private void abrirListaDeFiltros1() { jugadorHandler.abrirFiltroJugadores(); }
     @FXML private void borrarFiltros1() { jugadorHandler.borrarFiltroJugadores(); }
     @FXML private void abrirBtnAnadir() throws IOException { jugadorHandler.abrirBtnAnadir(); }
 
@@ -60,6 +74,41 @@ public class MainController {
     @FXML private void borrarFiltros3() { partidaHandler.borrarFiltroPartidas(); }
     @FXML private void abrirBtnAnadirPartida() throws IOException { partidaHandler.abrirBtnAnadirPartida(); }
     
+        // --- Importar / Exportar Jugadores ---
+    @FXML private void importarCSVJugadores() { jugadorHandler.importarCSVJugadores(); }
+    @FXML private void importarJSONJugadores() { jugadorHandler.importarJSONJugadores(); }
+    @FXML private void exportarCSVJugadores() { jugadorHandler.exportarCSVJugadores(); }
+    @FXML private void exportarJSONJugadores() { jugadorHandler.exportarJSONJugadores(); }
+
+    // --- Importar / Exportar Campeones ---
+    @FXML private void importarCSVCampeones() { campeonHandler.importarCSVCampeones(); }
+    @FXML private void importarJSONCampeones() { campeonHandler.importarJSONCampeones(); }
+    @FXML private void exportarCSVCampeones() { campeonHandler.exportarCSVCampeones(); }
+    @FXML private void exportarJSONCampeones() { campeonHandler.exportarJSONCampeones(); }
+
+    // --- Importar / Exportar Partidas ---
+    @FXML private void importarCSVPartidas() { partidaHandler.importarCSVPartidas(); }
+    @FXML private void importarJSONPartidas() { partidaHandler.importarJSONPartidas(); }
+    @FXML private void exportarCSVPartidas() { partidaHandler.exportarCSVPartidas(); }
+    @FXML private void exportarJSONPartidas() { partidaHandler.exportarJSONPartidas(); }
+    
+    //tooltip css
+    
+    @FXML private Button btnAnadir;
+    @FXML private Button btnListaFiltros;
+    @FXML private Button btnBorrar;
+    @FXML private Button btnAnadir2;
+    @FXML private Button btnListaFiltro2;
+    @FXML private Button btnBorrar2;
+    @FXML private Button btnAnadir3;
+    @FXML private Button btnListaFiltros3;
+    @FXML private Button btnBorrar3;
+    
+    /**
+     * Metodo que se ejecuta al cargar la vista FXML. Inicializa los tres handlers
+     * (uno por tabla) y les pasa los componentes FXML que necesitan para funcionar.
+     * Tambien aplica la animacion de fade-in a las tablas.
+     */
     @FXML
  public void initialize() {
 
@@ -67,7 +116,8 @@ public class MainController {
      campeonHandler = new CampeonHandler();
      partidaHandler = new PartidaHandler();
      
-    jugadorHandler.configurar(
+    // Pasamos los componentes FXML a cada handler para que los gestione
+     jugadorHandler.configurar(
         tablaJugadores, txtBuscarJugador,
         colNombreJugador, colDescripcionJugador,
         colEdadJugador, colEmailJugador,
@@ -78,7 +128,8 @@ public class MainController {
      campeonHandler.configurar(
         tablaCampeones,txtBuscarCampeon,
         colNombreCampeon, colDescripcionCampeon, 
-        colRolCampeon,colDificultadCampeon,
+        colImagenCampeon,
+        colRolCampeon,colDificultadCampeon, 
         columnaAccionesCampeones
      );
      
@@ -89,11 +140,24 @@ public class MainController {
         colResultadoPartida, columnaAccionesPartida
      );
 
+     //tooltip css
+     
+     btnAnadir.setTooltip(TooltipUtils.crear("Añadir nuevo jugador"));
+    btnListaFiltros.setTooltip(TooltipUtils.crear("Abrir filtros de búsqueda de jugadores"));
+    btnBorrar.setTooltip(TooltipUtils.crear("Borrar todos los filtros de jugadores"));
+    btnAnadir2.setTooltip(TooltipUtils.crear("Añadir nuevo campeón"));
+    btnListaFiltro2.setTooltip(TooltipUtils.crear("Abrir filtros de búsqueda de campeones"));
+    btnBorrar2.setTooltip(TooltipUtils.crear("Borrar todos los filtros de campeones"));
+    btnAnadir3.setTooltip(TooltipUtils.crear("Añadir nueva partida"));
+    btnListaFiltros3.setTooltip(TooltipUtils.crear("Abrir filtros de búsqueda de partidas"));
+    btnBorrar3.setTooltip(TooltipUtils.crear("Borrar todos los filtros de partidas"));
+     
      animarTabla(tablaJugadores);
      animarTabla(tablaCampeones);
      animarTabla(tablaPartidas);
  }   
 
+    // Animacion: cuando se anade una fila nueva a la tabla, aparece con fade-in
     private void animarTabla(TableView<?> tabla) {
         tabla.getItems().addListener((ListChangeListener<Object>) change -> {
             tabla.layout(); 

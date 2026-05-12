@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import java.sql.Connection;
@@ -15,12 +11,24 @@ import java.util.List;
 import modelos.Partida;
 
 /**
- *
+ * DAO para la tabla juegan (partidas). Esta es la tabla intermedia que relaciona
+ * jugadores con campeones: registra que jugador uso que campeon en que fecha,
+ * con que resultado y KDA.
+ * 
+ * A diferencia de JugadorDAO y CampeonDAO, aqui usamos JOINs al hacer select
+ * porque en la interfaz queremos mostrar los nombres, no los IDs numericos.
+ * Y al insertar, hacemos lo contrario: el usuario elige nombres en los ComboBox
+ * pero nosotros los convertimos a IDs para guardarlos en la BD.
+ * 
  * @author npauc
  */
 public class PartidaDAO {
 
-    // Obtener todas las partidas con JOIN (nombres en vez de IDs)
+    /**
+     * Obtiene todas las partidas haciendo LEFT JOIN con jugadores y campeones
+     * para mostrar los nombres en vez de los IDs. Si un jugador o campeon fue
+     * borrado y la partida quedo huerfana, LEFT JOIN evita que desaparezca.
+     */
     public List<Partida> obtenerTodos(Connection connection) {
         List<Partida> partidas = new ArrayList<>();
         String query = "SELECT j.ID_juegan, jug.nombre_jugador, c.nombre_campeon, "
@@ -33,13 +41,16 @@ public class PartidaDAO {
              ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
+                // Con el JOIN ya tenemos los nombres directamente, no los IDs
                 int idJuegan = rs.getInt("ID_juegan");
                 String nombreJugador = rs.getString("nombre_jugador");
                 String nombreCampeon = rs.getString("nombre_campeon");
 
+                // La fecha puede ser null en la BD, hay que controlar eso
                 LocalDate fecha = rs.getDate("Fecha_jugada") != null
                         ? rs.getDate("Fecha_jugada").toLocalDate() : null;
 
+                // Si el KDA o resultado son null, ponemos valores por defecto
                 String kda = rs.getString("KDA") != null ? rs.getString("KDA") : "0/0/0";
                 String resultado = rs.getString("Resultado") != null ? rs.getString("Resultado") : "Desconocido";
 
@@ -54,8 +65,13 @@ public class PartidaDAO {
     }
 
 
-    // Insertar una partida (convierte nombres a IDs internamente)
+    /**
+     * Insertar una partida. Conversion de nombres a IDs:
+     * la interfaz trabaja con nombres (ComboBox) pero la BD necesita IDs.
+     * Si el jugador o campeon no existen, lanza SQLException.
+     */
     public int insertar(Partida partida, Connection connection) throws SQLException {
+        // Convertimos los nombres seleccionados en ComboBox a IDs para la BD
         JugadorDAO jugadorDAO = new JugadorDAO();
         CampeonDAO campeonDAO = new CampeonDAO();
         int idJugador = jugadorDAO.obtenerIDPorNombre(partida.getJugador(), connection);
@@ -68,6 +84,7 @@ public class PartidaDAO {
 
             stmt.setInt(1, idJugador);
             stmt.setInt(2, idCampeon);
+            // La fecha puede ser null si el usuario no la rellena
             if (partida.getFecha() != null) {
                 stmt.setDate(3, java.sql.Date.valueOf(partida.getFecha()));
             } else {
@@ -87,7 +104,10 @@ public class PartidaDAO {
         return -1;
     }
 
-    // Actualizar partida (solo fecha, KDA y resultado)
+    /**
+     * Actualiza los datos de una partida. Solo se pueden modificar
+     * la fecha, el KDA y el resultado. No se puede cambiar el jugador o campeon.
+     */
     public boolean actualizar(Partida partida, Connection connection) {
         String query = "UPDATE juegan SET Fecha_jugada=?, KDA=?, Resultado=? WHERE ID_juegan=?";
 
@@ -112,7 +132,10 @@ public class PartidaDAO {
         return false;
     }
 
-    // Eliminar partida por ID
+    /**
+     * Elimina una partida por su ID. No necesita transaccion porque no hay
+     * ninguna tabla que dependa de juegan (es la ultima en la cadena de FK).
+     */
     public boolean eliminar(int id, Connection connection) {
         String query = "DELETE FROM juegan WHERE ID_juegan = ?";
 
