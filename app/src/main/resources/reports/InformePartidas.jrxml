@@ -1,0 +1,143 @@
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
+<jasperReport name="InformePartidas" language="java" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="13acf49e-4913-4d1b-bccc-113817ad15d1">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="bdNueva"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50.0" bold="false"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18.0" bold="false"/>
+	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14.0" bold="true"/>
+	<style name="Detail" mode="Transparent" fontName="Times New Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle mode="Opaque" backcolor="#F0EFEF">
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+		</conditionalStyle>
+	</style>
+	<parameter name="ResultadoFiltro" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<query language="sql"><![CDATA[SELECT 
+    j.nombre_jugador,
+    c.nombre_campeon,
+    p.Fecha_jugada,
+    p.KDA,
+    p.Resultado,
+    c.rol_mapa,
+    j.nacionalidad
+FROM juegan p
+JOIN jugadores j ON p.ID_Jugador = j.idJugadores
+JOIN campeones c ON p.ID_Campeon = c.idCampeones
+WHERE $P{ResultadoFiltro} = '' OR p.Resultado = $P{ResultadoFiltro}
+ORDER BY p.Fecha_jugada DESC]]></query>
+	<field name="nombre_jugador" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_jugador"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_jugador"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="jugadores"/>
+	</field>
+	<field name="nombre_campeon" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_campeon"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_campeon"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="campeones"/>
+	</field>
+	<field name="Fecha_jugada" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="Fecha_jugada"/>
+		<property name="com.jaspersoft.studio.field.label" value="Fecha_jugada"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="juegan"/>
+	</field>
+	<field name="KDA" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="KDA"/>
+		<property name="com.jaspersoft.studio.field.label" value="KDA"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="juegan"/>
+	</field>
+	<field name="Resultado" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Resultado"/>
+		<property name="com.jaspersoft.studio.field.label" value="Resultado"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="juegan"/>
+	</field>
+	<field name="rol_mapa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="rol_mapa"/>
+		<property name="com.jaspersoft.studio.field.label" value="rol_mapa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="campeones"/>
+	</field>
+	<field name="nacionalidad" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nacionalidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="nacionalidad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="jugadores"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="140" splitType="Stretch">
+		<element kind="image" uuid="97705585-a0b5-4ec7-86f3-ae10c220e6af" x="456" y="0" width="99" height="132">
+			<expression><![CDATA["C:/Users/npauc/Documents/NetBeansProjects/appProyecto/app/src/main/resources/icons/icon.png"]]></expression>
+		</element>
+		<element kind="frame" uuid="6c6ca4e1-17cd-4913-93d6-5e670ea9ae8a" mode="Opaque" x="0" y="0" width="451" height="95" backcolor="#000000">
+			<element kind="staticText" uuid="a2a2cac8-5a7d-4487-8c54-dab235ce4e21" x="0" y="0" width="450" height="66" fontName="Segoe UI Black" fontSize="37.0" bold="false" hTextAlign="Center" vTextAlign="Middle" style="Title">
+				<text><![CDATA[INFORME DE PARTIDAS]]></text>
+			</element>
+			<element kind="textField" uuid="c1f03284-c9ea-42ac-a125-fce272e2ebaf" x="10" y="60" width="422" height="30" forecolor="#FFFFFF" fontName="Comic Sans MS" blankWhenNull="false" vTextAlign="Middle">
+				<expression><![CDATA[$P{ResultadoFiltro}.equals("") ? "Todas las partidas" : "Filtro: " + $P{ResultadoFiltro}]]></expression>
+			</element>
+		</element>
+		<element kind="frame" uuid="e3c14156-5b51-4201-918b-97fdc012e5d4" mode="Opaque" x="0" y="100" width="451" height="32" forecolor="#000000" backcolor="#CC0000">
+			<element kind="textField" uuid="5c3301e7-a737-4c59-8a2f-a6c79fd1adb8" x="300" y="6" width="144" height="20" forecolor="#FFFFFF" fontSize="12.0" pattern="EEEEE dd MMMMM yyyy" hTextAlign="Right">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+		</element>
+	</title>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader height="229" splitType="Stretch">
+		<element kind="line" uuid="1133a906-5b71-476e-9f3e-bc97c97058c1" positionType="FixRelativeToBottom" x="1" y="0" width="555" height="1">
+			<pen lineWidth="0.5" lineColor="#999999"/>
+		</element>
+		<element kind="staticText" uuid="4290a3b6-b929-46a7-b841-aa7d69927dd1" x="14" y="10" width="106" height="30" fontSize="15.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[JUGADOR]]></text>
+		</element>
+		<element kind="staticText" uuid="119f4b55-2808-4a43-a7fc-a41779343f7b" x="120" y="10" width="119" height="30" fontSize="15.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[CAMPEON]]></text>
+		</element>
+		<element kind="staticText" uuid="711a5f79-3118-4717-805c-fa0e871bbf51" x="240" y="10" width="99" height="30" fontSize="15.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[FECHA]]></text>
+		</element>
+		<element kind="staticText" uuid="053a0132-c335-407f-98bf-74634fe9a319" x="340" y="10" width="99" height="30" fontSize="15.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[KDA]]></text>
+		</element>
+		<element kind="staticText" uuid="56e8227e-172d-41ef-95b0-29d087187f36" x="440" y="10" width="116" height="30" fontSize="15.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[RESULTADO]]></text>
+		</element>
+		<element kind="frame" uuid="b50221b5-8254-440b-8c6f-1f0b138c9259" mode="Opaque" x="0" y="50" width="556" height="39" style="Row">
+			<element kind="textField" uuid="55e6af74-739c-4fee-9e3c-f58813a4ec5a" x="14" y="0" width="106" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{nombre_jugador}]]></expression>
+			</element>
+			<element kind="textField" uuid="c30c3b4a-ec83-46f8-8daf-336a72c0cd7b" x="120" y="0" width="119" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{nombre_campeon}]]></expression>
+			</element>
+			<element kind="textField" uuid="aea31d15-ba71-4ae3-ad53-15fda1402c8e" x="239" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{Fecha_jugada}]]></expression>
+			</element>
+			<element kind="textField" uuid="2c26650e-5d43-4829-9114-869b58a4ca8f" x="339" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{KDA}]]></expression>
+			</element>
+			<element kind="textField" uuid="b55fa48b-c3da-4dc5-88c6-77e97682b311" x="440" y="0" width="116" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{Resultado}]]></expression>
+			</element>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
+	</columnHeader>
+	<detail>
+		<band height="260" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</detail>
+	<columnFooter height="288" splitType="Stretch"/>
+	<pageFooter height="25" splitType="Stretch">
+		<element kind="frame" uuid="729c3539-f946-4d0e-a0a7-bda2815ea1b0" mode="Opaque" x="0" y="1" width="555" height="24" forecolor="#D0B48E" backcolor="#000000">
+			<element kind="textField" uuid="4834e99c-7f6c-485a-b098-50e5187f2ab4" x="513" y="0" width="40" height="20" forecolor="#FFFFFF" fontSize="10.0" evaluationTime="Report" bold="false" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+			</element>
+			<element kind="textField" uuid="9825b46e-76f1-469a-abb8-a1cc27aad685" x="433" y="0" width="80" height="20" forecolor="#FFFFFF" fontSize="10.0" bold="false" hTextAlign="Right" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+			</element>
+			<element kind="textField" uuid="137d38c7-1a83-4fc5-b156-9d5f1b1a0ddc" x="2" y="1" width="197" height="20" forecolor="#FFFFFF" fontSize="10.0" pattern="EEEEE dd MMMMM yyyy" bold="false" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+		</element>
+	</pageFooter>
+	<summary splitType="Stretch"/>
+</jasperReport>

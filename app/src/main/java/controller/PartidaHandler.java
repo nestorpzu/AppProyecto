@@ -1,6 +1,7 @@
  package controller;
 
 import dao.DataBaseMain;
+import dao.InformeDAO;
 import dao.PartidaDAO;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -549,5 +551,20 @@ colJugadorPartida.setCellValueFactory(
                 new javafx.stage.FileChooser.ExtensionFilter("Archivos " + extension, "*" + extension));
         return fileChooser.showSaveDialog(tablaPartidas.getScene().getWindow());
     }
+    
+    public void abrirInformePartidas() {
+    ChoiceDialog<String> dialogo = new ChoiceDialog<>("Todos", 
+        FXCollections.observableArrayList("Todos", "Victoria", "Derrota", "Empate"));
+    dialogo.setTitle("Filtro de partidas");
+    dialogo.setHeaderText("Selecciona el filtro para el informe");
+    dialogo.setContentText("Resultado:");
+    
+    Optional<String> resultado = dialogo.showAndWait();
+    if (resultado.isPresent()) {
+        String filtro = resultado.get().equals("Todos") ? "" : resultado.get();
+        InformeDAO informeDAO = new InformeDAO();
+        informeDAO.generarInformePartidas(connection, filtro);
+    }
+}
     
     }

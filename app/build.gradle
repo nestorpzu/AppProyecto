@@ -12,7 +12,7 @@ plugins {
 
 javafx {
     version = '21'
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    modules = [ 'javafx.controls', 'javafx.fxml']
 }
 
 repositories {
@@ -29,13 +29,18 @@ dependencies {
 
     // This dependency is used by the application.
     implementation libs.guava
+    implementation "net.sf.jasperreports:jasperreports:7.0.1"
+    implementation "net.sf.jasperreports:jasperreports-pdf:7.0.1" //Exportar PDF
+
 
     implementation "org.controlsfx:controlsfx:11.2.2"
     implementation "com.google.code.gson:gson:2.10.1"     //JSON
     implementation "org.apache.poi:poi-ooxml:5.2.5"        // EXCEL
     implementation "com.mysql:mysql-connector-j:8.4.0"
     implementation "com.opencsv:opencsv:5.9"
-
+    implementation "net.sf.jasperreports:jasperreports-charts:7.0.1"
+    implementation "net.sf.jasperreports:jasperreports-chart-themes:7.0.1"
+    
 
 }
 
@@ -58,18 +63,17 @@ tasks.named('test') {
 
 tasks.named("run") {
     jvmArgs += [
-        "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED"
+       "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
     ]
 }
 
 sourceSets {
         main {
         resources {
-        srcDirs = ["src/main/java","src/main/resources"]
-        includes = ["**/*.fxml","**/*.css","**/*.png","**/*.html"] //Incluir cualquier fichero de recurso
+        srcDirs = ["src/main/resources"]
+        includes = ["**/*.fxml","**/*.css","**/*.png","**/*.html","**/*.jasper","**/*.jrxml"] //Incluir cualquier fichero de recurso
         }
     }
 }
-
 
 

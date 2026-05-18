@@ -50,6 +50,8 @@ public class MainController {
     @FXML private TableColumn<Campeon, String> colDificultadCampeon;
     @FXML private TableColumn<Campeon, Void> columnaAccionesCampeones;
     @FXML private TableColumn<Campeon, Void> colImagenCampeon;
+    //Informes campeon no incrustado
+    @FXML private Button btnInformeCampeones;
    
     // --- Componentes FXML de la tabla de Partidas ---
     @FXML private TableView<Partida> tablaPartidas;
@@ -60,6 +62,8 @@ public class MainController {
     @FXML private TableColumn<Partida, String> colKDA;
     @FXML private TableColumn<Partida, String> colResultadoPartida;
     @FXML private TableColumn<Partida, Void> columnaAccionesPartida;
+    //Informes partidas
+    @FXML private Button btnInformePartidas;
     
       // Metodos FXML que delegan a los handlers
     @FXML private void abrirListaDeFiltros1() { jugadorHandler.abrirFiltroJugadores(); }
@@ -169,4 +173,15 @@ public class MainController {
             }
         });
     }
+    
+    @FXML
+    private void abrirInformeCampeones() {
+        campeonHandler.abrirInformeCampeones();
+    }
+    
+    @FXML
+    private void abrirInformePartidas() {
+        partidaHandler.abrirInformePartidas();
+    }
+    
 }

@@ -55,7 +55,7 @@ public class ImportExportService {
 
     public static String importarJugadoresJSON(File archivo, Connection conn) throws IOException {
         Type tipo = new TypeToken<List<Jugador>>() {}.getType();
-        List<Jugador> jugadores = JSONUtils.importarJSON(archivo, tipo);
+        List<Jugador> jugadores = JSONUtils.importarJSON(archivo,Jugador.class);
 
         List<String[]> filas = new ArrayList<>();
         for (Jugador j : jugadores) {
@@ -145,7 +145,7 @@ public class ImportExportService {
 
     public static String importarCampeonesJSON(File archivo, Connection conn) throws IOException {
         Type tipo = new TypeToken<List<Campeon>>() {}.getType();
-        List<Campeon> campeones = JSONUtils.importarJSON(archivo, tipo);
+        List<Campeon> campeones = JSONUtils.importarJSON(archivo, Campeon.class);
 
         List<String[]> filas = new ArrayList<>();
         for (Campeon c : campeones) {
@@ -231,7 +231,7 @@ public class ImportExportService {
 
     public static String importarPartidasJSON(File archivo, Connection conn) throws IOException {
         Type tipo = new TypeToken<List<Partida>>() {}.getType();
-        List<Partida> partidas = JSONUtils.importarJSON(archivo, tipo);
+        List<Partida> partidas = JSONUtils.importarJSON(archivo, Partida.class);
 
         List<String[]> filas = new ArrayList<>();
         for (Partida p : partidas) {

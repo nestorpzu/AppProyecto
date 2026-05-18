@@ -5,6 +5,7 @@ import campeones.EditarControllerCampeon;
 import campeones.ListaControllerCampeones;
 import dao.CampeonDAO;
 import dao.DataBaseMain;
+import dao.InformeDAO;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -70,6 +71,21 @@ public class CampeonHandler {
     private ObservableList<Campeon> campeonesList = FXCollections.observableArrayList();
     private ObservableList<Campeon> listaOriginalCampeones = FXCollections.observableArrayList();
     
+    //Agregar las imagenes desde la URL.
+    
+    private String normalizarNombreParaURL (String nombre) {
+     if (nombre == null) return "";
+     
+     return nombre 
+                .replace("'","")
+                .replace("'","")
+                .replace("´","")
+                .replace(" \"","")
+                .replace ("&","")
+                .replace(" ","")
+                .replace(".","")
+                .replace("`","");
+     }
  
     /**
      * Inicializa la tabla: carga datos, vincula columnas, configura buscador y botones.
@@ -100,7 +116,7 @@ public class CampeonHandler {
             // Cargar en segundo plano para que no vaya tan lento.
             Thread hilo = new Thread(() -> {
                 String url = "https://ddragon.leagueoflegends.com/cdn/16.9.1/img/champion/"
-                             + c.getNombre().replace("'", "").replace(" ", "") + ".png";
+                             + normalizarNombreParaURL(c.getNombre())+ ".png";
                 Image img = new Image(url);
                 javafx.application.Platform.runLater(() -> imageView.setImage(img));
             });
@@ -116,6 +132,11 @@ public class CampeonHandler {
     configurarColumnaAccionesCampeones();
     
     } 
+    
+    public void abrirInformeCampeones() {
+        InformeDAO informeDAO = new InformeDAO();
+        informeDAO.generarInformeCampeones(connection);
+    }
     
     public void configurar(
     TableView<Campeon> tablaCampeones,
@@ -180,7 +201,7 @@ public class CampeonHandler {
     }
     tablaCampeones.refresh();
 }
-    
+   
 /**
      * Muestra una alerta si el usuario intenta editar una fila distinta a la que tiene seleccionada.
      */
@@ -253,7 +274,7 @@ private void mostrarAlertaFilaMarcadaBorrarCampeon(Campeon campeonMarcado) {
         stage.setScene(scene);
 
         stage.setWidth(350);
-        stage.setHeight(470);
+        stage.setHeight(400);
 
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -415,7 +436,7 @@ private void configurarColumnaAccionesCampeones() {
         stage.setScene(scene);
 
         stage.setWidth(350);
-        stage.setHeight(470);
+        stage.setHeight(400);
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
@@ -465,7 +486,7 @@ public void abrirBtnAnadirCampeon() throws IOException {
         stage.setScene(scene);
 
         stage.setWidth(350);
-        stage.setHeight(470);
+        stage.setHeight(400);
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         double centerX = (screenBounds.getWidth() - stage.getWidth()) / 2;

@@ -1,0 +1,163 @@
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
+<jasperReport name="informeCampeones" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="13acf49e-4913-4d1b-bccc-113817ad15d1">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="bdNueva"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="Lista de campeones" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50.0" bold="false"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18.0" bold="false"/>
+	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14.0" bold="true"/>
+	<style name="Detail" mode="Transparent" fontName="Times New Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle mode="Opaque" backcolor="#F0EFEF">
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+		</conditionalStyle>
+	</style>
+	<query language="sql"><![CDATA[SELECT idCampeones, nombre_campeon, descripcion_campeon, rol_mapa, dificultad, imagen_campeon 
+FROM campeones 
+ORDER BY rol_mapa, nombre_campeon]]></query>
+	<field name="idCampeones" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="idCampeones"/>
+		<property name="com.jaspersoft.studio.field.label" value="idCampeones"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="campeones"/>
+	</field>
+	<field name="nombre_campeon" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_campeon"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_campeon"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="campeones"/>
+	</field>
+	<field name="descripcion_campeon" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="descripcion_campeon"/>
+		<property name="com.jaspersoft.studio.field.label" value="descripcion_campeon"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="campeones"/>
+	</field>
+	<field name="rol_mapa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="rol_mapa"/>
+		<property name="com.jaspersoft.studio.field.label" value="rol_mapa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="campeones"/>
+	</field>
+	<field name="dificultad" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="dificultad"/>
+		<property name="com.jaspersoft.studio.field.label" value="dificultad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="campeones"/>
+	</field>
+	<field name="imagen_campeon" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="imagen_campeon"/>
+		<property name="com.jaspersoft.studio.field.label" value="imagen_campeon"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="campeones"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="144" splitType="Stretch">
+		<element kind="image" uuid="97705585-a0b5-4ec7-86f3-ae10c220e6af" x="449" y="0" width="119" height="116" onErrorType="Icon">
+			<expression><![CDATA["C:/Users/npauc/Documents/NetBeansProjects/appProyecto/app/src/main/resources/icons/icon.png"]]></expression>
+		</element>
+		<element kind="frame" uuid="6c6ca4e1-17cd-4913-93d6-5e670ea9ae8a" mode="Opaque" x="0" y="0" width="451" height="95" backcolor="#000000">
+			<element kind="staticText" uuid="a2a2cac8-5a7d-4487-8c54-dab235ce4e21" x="0" y="10" width="451" height="50" fontName="Segoe UI Black" fontSize="35.0" bold="false" hTextAlign="Center" style="Lista de campeones">
+				<text><![CDATA[LISTADO DE CAMPEONES]]></text>
+			</element>
+			<element kind="staticText" uuid="8978eac3-c578-41c9-837e-48d2b0184642" x="150" y="60" width="163" height="29" fontName="Trebuchet MS" fontSize="22.0" bold="false" hTextAlign="Center" style="SubTitle">
+				<text><![CDATA[appProyecto]]></text>
+			</element>
+		</element>
+		<element kind="frame" uuid="e3c14156-5b51-4201-918b-97fdc012e5d4" mode="Opaque" x="0" y="100" width="451" height="32" forecolor="#000000" backcolor="#CC0000">
+			<element kind="textField" uuid="5c3301e7-a737-4c59-8a2f-a6c79fd1adb8" x="300" y="6" width="144" height="20" forecolor="#FFFFFF" fontSize="12.0" pattern="EEEEE dd MMMMM yyyy" hTextAlign="Right">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+		</element>
+	</title>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader height="43" splitType="Stretch">
+		<element kind="line" uuid="1133a906-5b71-476e-9f3e-bc97c97058c1" positionType="FixRelativeToBottom" x="0" y="0" width="551" height="1">
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<pen lineWidth="0.5" lineColor="#999999"/>
+		</element>
+		<element kind="staticText" uuid="0c3dd000-ba53-499a-9c86-e080017b7387" x="0" y="0" width="110" height="30" fontSize="17.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[NOMBRE]]></text>
+		</element>
+		<element kind="staticText" uuid="9b4a578f-fd31-444d-883c-65fb49ea9501" x="110" y="1" width="170" height="30" fontSize="17.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[DESCRIPCION]]></text>
+		</element>
+		<element kind="staticText" uuid="b4239774-c83a-46b3-8c88-0a0024f120b8" x="280" y="1" width="66" height="30" backcolor="#B3B3B3" fontSize="17.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[ROL]]></text>
+		</element>
+		<element kind="staticText" uuid="a9c8d985-9ce7-42c0-b186-cc237764938f" x="346" y="1" width="116" height="30" fontSize="17.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[DIFICULTAD]]></text>
+		</element>
+		<element kind="staticText" uuid="90ab39bf-c372-48e4-9bd5-86689c627d25" x="462" y="1" width="92" height="30" fontSize="17.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[IMAGEN]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="56" splitType="Stretch">
+			<element kind="frame" uuid="20880c45-8bb8-4a80-905b-56f65430cc9d" mode="Opaque" x="0" y="0" width="555" height="50">
+				<element kind="textField" uuid="00a3a697-752d-47f9-9d54-0875d26dd565" x="0" y="0" width="110" height="30" hTextAlign="Left" vTextAlign="Middle">
+					<paragraph leftIndent="20"/>
+					<expression><![CDATA[$F{nombre_campeon}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="596a2a60-d8fb-40d9-bc84-409ab40acd34"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</element>
+				<element kind="textField" uuid="bac4f492-1b5a-4b24-ac73-20c01b2a368a" x="110" y="0" width="160" height="30" vTextAlign="Middle">
+					<paragraph rightIndent="10"/>
+					<expression><![CDATA[$F{descripcion_campeon}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7aaecb07-de4a-46c6-9257-227a4ee70808"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+				</element>
+				<element kind="textField" uuid="88d2f771-4daa-4ec1-9ce6-222e5e4fac80" x="270" y="0" width="74" height="30" hTextAlign="Left" vTextAlign="Middle">
+					<paragraph leftIndent="10"/>
+					<expression><![CDATA[$F{rol_mapa}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="94421601-8869-4443-82ba-d7c7c11f11f7"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</element>
+				<element kind="textField" uuid="100fa5c2-9b38-4127-ae8e-fb21f22708d1" x="345" y="0" width="117" height="30" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{dificultad}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7be3e410-cd7d-4f8d-b26f-46ae4b2dae8b"/>
+				</element>
+				<element kind="image" uuid="de2126d6-9bba-4f64-8ee3-40fa8bcd4390" x="480" y="0" width="40" height="40" onErrorType="Icon">
+					<expression><![CDATA[$F{imagen_campeon}]]></expression>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</element>
+			</element>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</detail>
+	<columnFooter height="7" splitType="Stretch"/>
+	<pageFooter height="35" splitType="Stretch">
+		<element kind="frame" uuid="729c3539-f946-4d0e-a0a7-bda2815ea1b0" mode="Opaque" x="0" y="1" width="555" height="24" forecolor="#D0B48E" backcolor="#000000">
+			<element kind="textField" uuid="4834e99c-7f6c-485a-b098-50e5187f2ab4" x="513" y="0" width="40" height="20" forecolor="#FFFFFF" fontSize="10.0" evaluationTime="Report" bold="false" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+			</element>
+			<element kind="textField" uuid="9825b46e-76f1-469a-abb8-a1cc27aad685" x="433" y="0" width="80" height="20" forecolor="#FFFFFF" fontSize="10.0" bold="false" hTextAlign="Right" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+			</element>
+			<element kind="textField" uuid="137d38c7-1a83-4fc5-b156-9d5f1b1a0ddc" x="2" y="1" width="197" height="20" forecolor="#FFFFFF" fontSize="10.0" pattern="EEEEE dd MMMMM yyyy" bold="false" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+		</element>
+	</pageFooter>
+	<summary height="205" splitType="Stretch">
+		<element kind="chart" chartType="bar" uuid="6e5b0e14-b052-4aa7-bb6c-91de2560923d" positionType="Float" mode="Transparent" x="30" y="5" width="494" height="200" evaluationTime="Report" linkType="None" linkTarget="Self" legendBackgroundColor="rgba(255, 255, 255, 0.0)" theme="eye.candy.sixties">
+			<legendFont fontName="Arial Black" italic="true"/>
+			<dataset kind="category">
+				<series>
+					<seriesExpression><![CDATA["Campeones por Rol"]]></seriesExpression>
+					<categoryExpression><![CDATA[$F{rol_mapa}]]></categoryExpression>
+					<valueExpression><![CDATA[$V{REPORT_COUNT}]]></valueExpression>
+				</series>
+			</dataset>
+			<plot orientation="Horizontal" backgroundAlpha="1.0" foregroundAlpha="1.0" labelRotation="360.0" categoryAxisLabelColor="#000000" categoryAxisTickLabelColor="#000000" categoryAxisLineColor="#000000" valueAxisLabelColor="#000000" valueAxisTickLabelColor="#000000" valueAxisLineColor="#000000" categoryAxisTickLabelRotation="360.0">
+				<itemLabel/>
+				<seriesColor order="0" color="#5AF540"/>
+				<seriesColor order="1" color="#0C4826"/>
+				<seriesColor order="2" color="#9B638B"/>
+				<seriesColor order="3" color="#521305"/>
+				<seriesColor order="4" color="#B142B8"/>
+				<seriesColor order="5" color="#F5B125"/>
+				<seriesColor order="6" color="#91AC34"/>
+			</plot>
+			<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+			<box>
+				<pen lineWidth="1.0" lineStyle="Double"/>
+			</box>
+		</element>
+	</summary>
+</jasperReport>

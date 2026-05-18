@@ -25,7 +25,7 @@ public class App extends Application {
         // Cargamos la vista principal desde el FXML
         Parent root = FXMLLoader.load(getClass().getResource("/scenes/Main.fxml"));
        
-// Aplicamos la hoja de estilos CSS a la escena
+        // Aplicamos la hoja de estilos CSS a la escena
         Scene scene = new Scene(root);
         scene.getStylesheets().add(
             getClass().getResource("/estilos/estiloMain.css").toExternalForm()
