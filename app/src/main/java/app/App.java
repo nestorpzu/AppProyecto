@@ -12,6 +12,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.animation.FadeTransition;
@@ -37,6 +39,11 @@ public class App extends Application {
         
         primaryStage.setTitle("Prototipo App");
         primaryStage.setScene(scene);
+
+        scene.getAccelerators().put(
+            KeyCombination.valueOf("F1"),
+            () -> abrirManual(primaryStage)
+        );
         
         // Ancho fijo de la ventana
         primaryStage.setWidth(1400);
@@ -66,6 +73,27 @@ public class App extends Application {
     
    
         
+    }
+
+    private void abrirManual(Stage owner) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/Ayuda.fxml"));
+            Parent root = loader.load();
+
+            Stage ayudaStage = new Stage();
+            ayudaStage.setTitle("Manual de Usuario - Prototipo App");
+            ayudaStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/icon.png")));
+            ayudaStage.setScene(new Scene(root, 1100, 750));
+            ayudaStage.initOwner(owner);
+            
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            ayudaStage.setX((screenBounds.getWidth() - 1100) / 2);
+            ayudaStage.setY((screenBounds.getHeight() - 750) / 2);
+            
+            ayudaStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

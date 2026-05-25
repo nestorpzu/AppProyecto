@@ -45,7 +45,7 @@ public class ValidationUtils {
             if (valor == null || valor.trim().isEmpty()) {
                 return ValidationResult.fromError(c, mensajeVacio);
             }
-            if (!valor.matches("^[a-zA-ZÁÉÍÓÚáéíóúñÑ ]+$")) {
+            if (!valor.matches("^[a-zA-ZÁÉÍÓÚáéíóúñÑ `]+$")) {
                 return ValidationResult.fromError(c, mensajeFormato);
             }
             return ValidationResult.fromInfo(c, "Correcto");

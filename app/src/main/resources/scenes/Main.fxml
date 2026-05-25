@@ -17,14 +17,17 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Tooltip?>
 
-<TabPane prefHeight="600" prefWidth="680" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+    <TabPane prefHeight="600" prefWidth="680">
    <tabs>
         <!-- Tab: Jugadores -->
         <Tab closable="false">  
             <graphic>
                 <HBox alignment="CENTER_LEFT" spacing="5">
-                    <ImageView fitHeight="30" fitWidth="30" focusTraversable="true" pickOnBounds="true" preserveRatio="true" smooth="true">
+                    <ImageView fitHeight="23" fitWidth="23" focusTraversable="true" pickOnBounds="true" preserveRatio="true" smooth="true">
                         <image>
                             <Image url="@../icons/usuarios.png" />
                         </image>
@@ -48,23 +51,38 @@
                             <MenuItem mnemonicParsing="false" onAction="#exportarCSVJugadores" text="Exportar CSV" />
                             <MenuItem mnemonicParsing="false" onAction="#exportarJSONJugadores" text="Exportar JSON" />
                        </items>
-                        <contextMenu>
-                           <ContextMenu>
-                             <items>
-                               <MenuItem mnemonicParsing="false" text="Unspecified Action" />
-                             </items>
-                           </ContextMenu>
-                        </contextMenu>
                      </MenuButton> <!-- Espaciador que empuja el botón hacia la derecha -->
-                            <Button fx:id="btnAnadir" onAction="#abrirBtnAnadir" text="Añadir Jugador" />                                
+                            <Button fx:id="btnAnadir" onAction="#abrirBtnAnadir" text="Añadir Jugador">
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/anadir.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>                               
                         </HBox>
 
                         <!-- HBox con los botones de filtros y campo de búsqueda -->
                         <HBox spacing="10">
-                            <Button fx:id="btnListaFiltros" onAction="#abrirListaDeFiltros1" text="Lista de filtros" />
-                                
-                        <Button fx:id="btnBorrar" onAction="#borrarFiltros1" text="Borrar filtros" />
-                             
+                            <Button fx:id="btnListaFiltros" onAction="#abrirListaDeFiltros1" text="Lista de filtros">
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/filtrar.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>      
+                            <Button fx:id="btnBorrar" onAction="#borrarFiltros1" text="Borrar filtros" >
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/basura.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>    
                             <Region fx:id="spacer2" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
                             <!-- lupa al lado de Buscar Jugador-->
                             <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #D7DCE7; -fx-border-radius: 8; -fx-padding: 0 12 0 12;">
@@ -104,7 +122,18 @@
         </Tab>
 
         <!-- Tab: Campeones -->
-        <Tab closable="close" text="Campeones">
+        <Tab closable="false">  
+            <graphic>
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <ImageView fitHeight="20" fitWidth="20" focusTraversable="true" pickOnBounds="true" preserveRatio="true" smooth="true">
+                        <image>
+                            <Image url="@../icons/trofeo.png" />
+                        </image>
+                    </ImageView>
+                    <Label style="-fx-font-weight: 800; -fx-text-fill: #0F172A;" text="Campeones" />
+                </HBox>
+            </graphic>
+            <content> 
             <AnchorPane>
                 <children>
                     <VBox spacing="10" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
@@ -122,14 +151,48 @@
                             <MenuItem mnemonicParsing="false" onAction="#exportarJSONCampeones" text="Exportar JSON" />
                        </items>
                      </MenuButton> <!-- Espaciador que empuja el botón hacia la derecha -->
-                            <Button fx:id="btnAnadir2" onAction="#abrirBtnAnadirCampeon" text="Añadir Campeon" />                          
+                            <Button fx:id="btnAnadir2" onAction="#abrirBtnAnadirCampeon" text="Añadir Campeon">
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/anadir.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>                          
                         </HBox>
                          
                         <HBox spacing="10">
-                            <Button fx:id="btnListaFiltro2" onAction="#abrirListaDeFiltros2" text="Lista de filtros" />                                 
-                            <Button fx:id="btnBorrar2" onAction="#borrarFiltros2" text="Borrar filtros" />                               
+                            <Button fx:id="btnListaFiltro2" onAction="#abrirListaDeFiltros2" text="Lista de filtros">
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/filtrar.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>                                 
+                            <Button fx:id="btnBorrar2" onAction="#borrarFiltros2" text="Borrar filtros" >
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/basura.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>                                   
                             <Region fx:id="spacer4" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
-                            <TextField fx:id="txtBuscarCampeon" promptText="Buscar campeón..." />
+                            <!-- lupa al lado de Buscar Campeon-->
+                            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #D7DCE7; -fx-border-radius: 8; -fx-padding: 0 12 0 12;">
+                                <children>
+                                    <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/lupa.png" />
+                                        </image>
+                                    </ImageView>
+                                    <TextField fx:id="txtBuscarCampeon" promptText="Buscar campeon..." style="-fx-border-color: transparent; -fx-background-color: transparent;" HBox.hgrow="ALWAYS" />
+                                </children>
+                            </HBox>
                         </HBox>
 
                         <!-- Tabla de jugadores -->
@@ -152,10 +215,22 @@
                     </VBox>
                 </children>
             </AnchorPane>
+             </content> 
         </Tab>
 
         <!-- Tab: Partidas -->
-        <Tab closable="close" text="Partidas">
+        <Tab closable="false">  
+        <graphic>
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <ImageView fitHeight="20" fitWidth="20" focusTraversable="true" pickOnBounds="true" preserveRatio="true" smooth="true">
+                        <image>
+                            <Image url="@../icons/calendario.png" />
+                        </image>
+                    </ImageView>
+                    <Label style="-fx-font-weight: 800; -fx-text-fill: #0F172A;" text="Partidas" />
+                </HBox>
+            </graphic>
+            <content>
             <AnchorPane>
                 <children>
                     <VBox spacing="10" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
@@ -172,13 +247,46 @@
                             <MenuItem mnemonicParsing="false" onAction="#exportarJSONPartidas" text="Exportar JSON" />
                        </items>
                      </MenuButton> <!-- Espaciador que empuja el botón hacia la derecha -->
-                            <Button fx:id="btnAnadir3" onAction="#abrirBtnAnadirPartida" text="Añadir Partida" />                              
+                            <Button fx:id="btnAnadir3" onAction="#abrirBtnAnadirPartida" text="Añadir Partida">
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/anadir.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>                             
                         </HBox>
                         <HBox spacing="10">
-                             <Button fx:id="btnListaFiltros3" onAction="#abrirListaDeFiltros3" text="Lista de filtros" />                                  
-                            <Button fx:id="btnBorrar3" onAction="#borrarFiltros3" text="Borrar filtros" />                              
+                             <Button fx:id="btnListaFiltros3" onAction="#abrirListaDeFiltros3" text="Lista de filtros">
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/filtrar.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>                                  
+                            <Button fx:id="btnBorrar3" onAction="#borrarFiltros3" text="Borrar filtros" >
+                                <graphic>
+                                    <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/basura.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>                                 
                             <Region fx:id="spacer5" HBox.hgrow="ALWAYS" /> <!-- Espaciador para empujar el botón hacia la derecha -->
-                            <TextField fx:id="txtBuscarPartida" promptText="Buscar partidas..." />
+                            <HBox alignment="CENTER_LEFT" spacing="0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #D7DCE7; -fx-border-radius: 8; -fx-padding: 0 12 0 12;">
+                                <children>
+                                    <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" smooth="true">
+                                        <image>
+                                            <Image url="@../icons/lupa.png" />
+                                        </image>
+                                    </ImageView>
+                                    <TextField fx:id="txtBuscarPartida" promptText="Buscar partida..." style="-fx-border-color: transparent; -fx-background-color: transparent;" HBox.hgrow="ALWAYS" />
+                                </children>
+                            </HBox>
                         </HBox>
 
                         <!-- Tabla de jugadores -->
@@ -200,9 +308,23 @@
                     </VBox>
                 </children>
             </AnchorPane>
+            </content>
         </Tab>
     </tabs>
    <padding>
       <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
    </padding>
 </TabPane>
+<Button fx:id="btnAyuda" onAction="#abrirAyuda" style="-fx-background-color: transparent; -fx-cursor: hand;" StackPane.alignment="TOP_RIGHT">
+    <StackPane.margin>
+        <Insets bottom="0" left="0" right="20" top="10" />
+    </StackPane.margin>
+        <graphic>
+            <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" smooth="true">
+                <image>
+                    <Image url="@../icons/pregunta.png" />
+                </image>
+            </ImageView>
+        </graphic>
+    </Button>
+</StackPane>

@@ -10,11 +10,18 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.util.Duration;
 import java.time.LocalDate;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import modelos.Jugador;
 import modelos.Campeon;
 import modelos.Partida;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import utils.TooltipUtils;
 
 /**
@@ -64,6 +71,8 @@ public class MainController {
     @FXML private TableColumn<Partida, Void> columnaAccionesPartida;
     //Informes partidas
     @FXML private Button btnInformePartidas;
+    
+    @FXML private Button btnAyuda;
     
       // Metodos FXML que delegan a los handlers
     @FXML private void abrirListaDeFiltros1() { jugadorHandler.abrirFiltroJugadores(); }
@@ -159,6 +168,8 @@ public class MainController {
      animarTabla(tablaJugadores);
      animarTabla(tablaCampeones);
      animarTabla(tablaPartidas);
+     
+     btnAyuda.setTooltip(TooltipUtils.crear("Pulse F1 para abrir el manual de ayuda"));
  }   
 
     // Animacion: cuando se anade una fila nueva a la tabla, aparece con fade-in
@@ -182,6 +193,27 @@ public class MainController {
     @FXML
     private void abrirInformePartidas() {
         partidaHandler.abrirInformePartidas();
+    }
+    
+     @FXML
+    private void abrirAyuda() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/Ayuda.fxml"));
+            Parent root = loader.load();
+
+            Stage ayudaStage = new Stage();
+            ayudaStage.setTitle("Manual de Usuario - Prototipo App");
+            ayudaStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/icon.png")));
+            ayudaStage.setScene(new Scene(root, 1100, 750));
+
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            ayudaStage.setX((screenBounds.getWidth() - 1100) / 2);
+            ayudaStage.setY((screenBounds.getHeight() - 750) / 2);
+
+            ayudaStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
 }

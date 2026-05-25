@@ -8,11 +8,12 @@
 plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 javafx {
     version = '21'
-    modules = [ 'javafx.controls', 'javafx.fxml']
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web']
 }
 
 repositories {
@@ -39,9 +40,7 @@ dependencies {
     implementation "com.mysql:mysql-connector-j:8.4.0"
     implementation "com.opencsv:opencsv:5.9"
     implementation "net.sf.jasperreports:jasperreports-charts:7.0.1"
-    implementation "net.sf.jasperreports:jasperreports-chart-themes:7.0.1"
-    
-
+    implementation "net.sf.jasperreports:jasperreports-chart-themes:7.0.1"    
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -76,4 +75,42 @@ sourceSets {
     }
 }
 
+shadowJar {
+    mergeServiceFiles()
+    archiveClassifier = 'all'
+}
 
+task jpackageWindows(type: Exec) {
+    dependsOn shadowJar
+    workingDir projectDir
+    commandLine 'jpackage',
+        '--name', 'AppProyecto',
+        '--input', "${buildDir}/libs",
+        '--main-jar', "app-all.jar",
+        '--main-class', 'app.App',
+        '--type', 'exe',
+        '--icon', "${projectDir}/installer/windows/icon.ico",
+        '--app-version', '1.0',
+        '--dest', "${buildDir}/dist/windows",
+        '--win-menu',
+        '--win-shortcut',
+        '--java-options', '--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED'
+}
+
+task jpackageLinux(type: Exec) {
+    dependsOn shadowJar
+    workingDir projectDir
+    commandLine 'jpackage',
+        '--name', 'AppProyecto',
+        '--input', "${buildDir}/libs",
+        '--main-jar', "app-all.jar",
+        '--main-class', 'app.App',
+        '--type', 'deb',
+        '--icon', "${projectDir}/installer/linux/icon.png",
+        '--app-version', '1.0',
+        '--dest', "${buildDir}/dist/linux",
+        '--linux-menu-group', 'Game',
+        '--linux-shortcut',
+        '--resource-dir', "${projectDir}/installer/linux",
+        '--java-options', '--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED'
+}

@@ -42,6 +42,7 @@ public class InformeDAO {
             JasperPrint print = JasperFillManager.fillReport(jasper, new HashMap<>(), connection);
             JasperViewer viewer = new JasperViewer(print, false);
             viewer.setTitle("Informe de Campeones");
+            viewer.setLocationRelativeTo(null);
             viewer.setVisible(true);
         } catch (Exception e) {
             mostrarError("Error al generar el informe:\n" + e.getMessage());
@@ -71,6 +72,7 @@ public class InformeDAO {
             JasperPrint print = JasperFillManager.fillReport(jasper, parametros, connection);
             JasperViewer viewer = new JasperViewer(print, false);
             viewer.setTitle("Informe de Partidas - Filtro: " + (resultadoFiltro.isEmpty() ? "Todos" : resultadoFiltro));
+            viewer.setLocationRelativeTo(null);
             viewer.setVisible(true);
         } catch (Exception e) {
             mostrarError("Error al generar el informe:\n" + e.getMessage());

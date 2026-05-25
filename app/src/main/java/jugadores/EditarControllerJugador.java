@@ -17,6 +17,7 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.controlsfx.validation.ValidationSupport;
@@ -57,7 +58,10 @@ public class EditarControllerJugador {
     @FXML
     public void initialize() {
         spinnerEdad.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(18, 99, 18));
-
+        spinnerEdad.getEditor().setTextFormatter(new TextFormatter<>(change -> {
+            String newText = change.getControlNewText();
+            return newText.matches("\\d{0,2}") ? change : null;
+        }));
         comboPosicion.getItems().addAll("Top", "Jungla", "Mid", "ADC", "Soporte");
         comboPosicion.setPromptText("Selecciona una Posición");
         inicializarValidaciones();
@@ -116,7 +120,7 @@ public void setConnection(Connection connection) {
     @FXML
     private void editarJugador() {
 
-        vPosicion.revalidate();
+        ValidationUtils.revalidar(vNombre, vDescripcion, vEdad, vEmail, vNacionalidad, vPosicion);
 
         boolean todoOK = vNombre.getValidationResult().getErrors().isEmpty()
                 && vDescripcion.getValidationResult().getErrors().isEmpty()

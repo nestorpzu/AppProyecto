@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Prototipo App</title>
+    <link rel="stylesheet" href="estiloManual.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- ===== BARRA LATERAL ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Prototipo App</h2>
+            <div class="version">Manual de Usuario v1.0</div>
+        </div>
+        <nav>
+            <div class="nav-section">
+                <div class="nav-section-title">Secciones</div>
+                <a href="#objetivos">1. Objetivos</a>
+                <a href="#contenidos">2. Contenidos</a>
+                <a href="#funcionamiento">3. Funcionamiento</a>
+                <a href="#jugadores">3.1 Jugadores</a>
+                <a href="#campeones">3.2 Campeones</a>
+                <a href="#partidas">3.3 Partidas</a>
+                <a href="#informes">3.4 Informes</a>
+                <a href="#importexport">3.5 Importar/Exportar</a>
+                <a href="#problemas">4. Soluci&oacute;n de Problemas</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <main class="main-content">
+
+        <!-- CABECERA -->
+        <div class="manual-header">
+            <h1>Manual de Usuario</h1>
+            <div class="subtitle">Prototipo App &mdash; Gestor de datos de League of Legends</div>
+            <div class="meta">Plataforma: Windows / Linux &nbsp;|&nbsp; Versi&oacute;n: 1.0 &nbsp;|&nbsp; Fecha: Mayo 2026</div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- SECCION 1: OBJETIVOS                                             -->
+        <!-- ================================================================ -->
+        <section id="objetivos" class="seccion">
+            <h2 class="seccion-titulo">1. Objetivos</h2>
+
+            <h3 class="subseccion-titulo">1.1 Objetivo General</h3>
+            <p>
+                La aplicaci&oacute;n <strong>Prototipo App</strong> se ha dise&ntilde;ado como una herramienta de gesti&oacute;n integral
+                para la organizaci&oacute;n y seguimiento de datos relacionados con partidas de League of Legends. Se pretende
+                ofrecer una interfaz intuitiva que permita al usuario administrar de forma eficiente la informaci&oacute;n
+                de jugadores, campeones y partidas, as&iacute; como generar informes y realizar operaciones de
+                importaci&oacute;n y exportaci&oacute;n de datos.
+            </p>
+
+            <h3 class="subseccion-titulo">1.2 Objetivos Espec&iacute;ficos</h3>
+            <ul>
+                <li>Centralizar el registro y la gesti&oacute;n de <strong>jugadores</strong>, incluyendo datos personales, posici&oacute;n y nacionalidad.</li>
+                <li>Mantener un cat&aacute;logo actualizado de <strong>campeones</strong> con su rol, dificultad e imagen asociada.</li>
+                <li>Registrar <strong>partidas</strong> vinculando jugadores y campeones, almacenando fecha, resultado y estad&iacute;sticas KDA.</li>
+                <li>Facilitar la b&uacute;squeda y filtrado avanzado de registros en cada una de las tres entidades.</li>
+                <li>Generar <strong>informes</strong> en formato PDF mediante JasperReports, tanto de campeones como de partidas filtradas por resultado.</li>
+                <li>Permitir la <strong>importaci&oacute;n y exportaci&oacute;n</strong> de datos en formatos CSV y JSON para garantizar la interoperabilidad con otros sistemas.</li>
+                <li>Garantizar la <strong>validaci&oacute;n</strong> de los datos introducidos por el usuario, minimizando errores y asegurando la coherencia de la informaci&oacute;n almacenada.</li>
+            </ul>
+
+            <h3 class="subseccion-titulo">1.3 P&uacute;blico Objetivo</h3>
+            <p>
+                Este manual va dirigido a cualquier usuario de la aplicaci&oacute;n Prototipo App, sin necesidad de conocimientos
+                t&eacute;cnicos previos. Se asume que el usuario dispone de un equipo con el sistema operativo Windows o Linux
+                y que cuenta con acceso a una base de datos MySQL configurada correctamente.
+            </p>
+        </section>
+
+        <hr>
+
+        <!-- ================================================================ -->
+        <!-- SECCION 2: CONTENIDOS                                            -->
+        <!-- ================================================================ -->
+        <section id="contenidos" class="seccion">
+            <h2 class="seccion-titulo">2. Contenidos</h2>
+
+            <p>A continuaci&oacute;n se presenta el &iacute;ndice de contenidos del manual, organizado por secciones y funcionalidades:</p>
+
+            <div class="indice">
+                <h3>&Iacute;ndice de Contenidos</h3>
+                <ol>
+                    <li><a href="#objetivos">Objetivos</a>
+                        <ol>
+                            <li>Objetivo General</li>
+                            <li>Objetivos Espec&iacute;ficos</li>
+                            <li>P&uacute;blico Objetivo</li>
+                        </ol>
+                    </li>
+                    <li><a href="#contenidos">Contenidos</a></li>
+                    <li><a href="#funcionamiento">Funcionamiento</a>
+                        <ol>
+                            <li><a href="#jugadores">Jugadores</a>
+                                <ul>
+                                    <li>Vista principal y b&uacute;squeda</li>
+                                    <li>A&ntilde;adir jugador</li>
+                                    <li>Editar jugador</li>
+                                    <li>Eliminar jugador</li>
+                                    <li>Filtros avanzados</li>
+                                </ul>
+                            </li>
+                            <li><a href="#campeones">Campeones</a>
+                                <ul>
+                                    <li>Vista principal y b&uacute;squeda</li>
+                                    <li>A&ntilde;adir campeon</li>
+                                    <li>Editar campeon</li>
+                                    <li>Eliminar campeon</li>
+                                    <li>Filtros avanzados</li>
+                                </ul>
+                            </li>
+                            <li><a href="#partidas">Partidas</a>
+                                <ul>
+                                    <li>Vista principal y b&uacute;squeda</li>
+                                    <li>A&ntilde;adir partida</li>
+                                    <li>Editar partida</li>
+                                    <li>Eliminar partida</li>
+                                    <li>Filtros avanzados</li>
+                                </ul>
+                            </li>
+                            <li><a href="#informes">Informes</a></li>
+                            <li><a href="#importexport">Importar/Exportar datos</a></li>
+                        </ol>
+                    </li>
+                    <li><a href="#problemas">Soluci&oacute;n de Problemas</a>
+                        <ol>
+                            <li>Error de conexi&oacute;n con la base de datos</li>
+                            <li>Errores de validaci&oacute;n</li>
+                            <li>Problemas de importaci&oacute;n/exportaci&oacute;n</li>
+                            <li>Problemas con informes JasperReports</li>
+                            <li>Problemas generales de la aplicaci&oacute;n</li>
+                        </ol>
+                    </li>
+                </ol>
+            </div>
+
+            <h3 class="subseccion-titulo">2.1 Descripci&oacute;n de la Aplicaci&oacute;n</h3>
+            <p>
+                Prototipo App es una aplicaci&oacute;n de escritorio desarrollada en JavaFX que permite gestionar tres entidades principales
+                interrelacionadas: <strong>Jugadores</strong>, <strong>Campeones</strong> y <strong>Partidas</strong>. La interfaz
+                se organiza en tres pesta&ntilde;as dentro de una ventana &uacute;nica, cada una dedicada a una entidad.
+            </p>
+            <p>
+                La persistencia de datos se realiza mediante una base de datos MySQL (esquema <span class="codigo">app_prototipo</span>),
+                con las tablas <span class="codigo">jugadores</span>, <span class="codigo">campeones</span> y <span class="codigo">juegan</span>
+                (esta &uacute;ltima act&uacute;a como tabla intermedia que relaciona jugadores y campeones con la informaci&oacute;n de la partida).
+            </p>
+
+            <h3 class="subseccion-titulo">2.2 Requisitos del Sistema</h3>
+            <table class="tabla-datos">
+                <thead>
+                    <tr>
+                        <th>Requisito</th>
+                        <th>M&iacute;nimo</th>
+                        <th>Recomendado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sistema Operativo</td>
+                        <td>Windows 10 / Linux (kernel 5.x+)</td>
+                        <td>Windows 11 / Ubuntu 22.04+</td>
+                    </tr>
+                    <tr>
+                        <td>Java (JRE/JDK)</td>
+                        <td>Java 21</td>
+                        <td>Java 21 (&uacute;ltima versi&oacute;n)</td>
+                    </tr>
+                    <tr>
+                        <td>MySQL Server</td>
+                        <td>8.0</td>
+                        <td>8.4+</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td>512 MB libres</td>
+                        <td>1 GB libres</td>
+                    </tr>
+                    <tr>
+                        <td>Espacio en disco</td>
+                        <td>100 MB</td>
+                        <td>250 MB</td>
+                    </tr>
+                    <tr>
+                        <td>Conexi&oacute;n a Internet</td>
+                        <td>Requerida solo para im&aacute;genes de campeones</td>
+                        <td>Conexi&oacute;n estable</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <hr>
+
+        <!-- ================================================================ -->
+        <!-- SECCION 3: FUNCIONAMIENTO                                        -->
+        <!-- ================================================================ -->
+        <section id="funcionamiento" class="seccion">
+            <h2 class="seccion-titulo">3. Funcionamiento</h2>
+
+            <h3 class="subseccion-titulo">3.0 Vista General de la Interfaz</h3>
+            <p>
+                Al iniciar la aplicaci&oacute;n, se muestra la ventana principal compuesta por tres pesta&ntilde;as: <strong>Jugadores</strong>,
+                <strong>Campeones</strong> y <strong>Partidas</strong>. Cada pesta&ntilde;a contiene una tabla con los registros de la entidad
+                correspondiente, as&iacute; como botones de acci&oacute;n en la parte superior.
+            </p>
+            <p>
+                La estructura com&uacute;n de cada pesta&ntilde;a incluye:
+            </p>
+            <ul>
+                <li><strong>T&iacute;tulo</strong> de la entidad (p. ej., &laquo;Lista de Jugadores&raquo;).</li>
+                <li><strong>Bot&oacute;n &laquo;A&ntilde;adir&raquo;</strong> para crear nuevos registros.</li>
+                <li><strong>Bot&oacute;n &laquo;Lista de filtros&raquo;</strong> para abrir el di&aacute;logo de filtrado avanzado.</li>
+                <li><strong>Bot&oacute;n &laquo;Borrar filtros&raquo;</strong> para restablecer la tabla a su estado original.</li>
+                <li><strong>Campo de b&uacute;squeda</strong> con icono de lupa para filtrado r&aacute;pido por nombre.</li>
+                <li><strong>Men&uacute; &laquo;Importar/Exportar&raquo;</strong> con opciones de CSV y JSON.</li>
+                <li><strong>Tabla</strong> con columnas espec&iacute;ficas de cada entidad y una columna de acciones (editar/eliminar).</li>
+            </ul>
+
+            <div class="info-caja">
+                <strong>Nota:</strong> Se puede acceder a este manual en cualquier momento pulsando la tecla <span class="codigo">F1</span> desde la ventana principal de la aplicaci&oacute;n.
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 3.1 JUGADORES                                                 -->
+            <!-- ============================================================ -->
+            <h2 id="jugadores" class="seccion-titulo">3.1 Jugadores</h2>
+
+            <h3 class="subseccion-titulo">3.1.1 Vista Principal y B&uacute;squeda</h3>
+            <p>
+                La pesta&ntilde;a <strong>Jugadores</strong> muestra una tabla con todos los jugadores registrados. Las columnas visibles son:
+            </p>
+            <table class="tabla-datos">
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Descripci&oacute;n</th>
+                        <th>Ejemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>NOMBRE</td><td>Nombre completo del jugador</td><td>Faker</td></tr>
+                    <tr><td>DESCRIPCI&Oacute;N</td><td>Descripci&oacute;n breve del jugador</td><td>Mid laner profesional</td></tr>
+                    <tr><td>EDAD</td><td>Edad del jugador (entre 18 y 99)</td><td>27</td></tr>
+                    <tr><td>EMAIL</td><td>Correo electr&oacute;nico del jugador</td><td>faker@lol.com</td></tr>
+                    <tr><td>NACIONALIDAD</td><td>Pa&iacute;s de origen</td><td>Corea del Sur</td></tr>
+                    <tr><td>POSICI&Oacute;N</td><td>Posici&oacute;n en el juego</td><td>Mid</td></tr>
+                    <tr><td>ACCIONES</td><td>Botones de editar y eliminar</td><td>&mdash;</td></tr>
+                </tbody>
+            </table>
+            <p>
+                Se puede realizar una b&uacute;squeda r&aacute;pida escribiendo en el campo de texto junto al icono de lupa.
+                La tabla se filtra de forma autom&aacute;tica mientras se escribe, mostrando &uacute;nicamente los jugadores cuyo nombre
+                contiene el texto introducido.
+            </p>
+
+            <h3 class="subseccion-titulo">3.1.2 A&ntilde;adir Jugador</h3>
+            <p>Para a&ntilde;adir un nuevo jugador se siguen los siguientes pasos:</p>
+            <div class="pasos">
+                <div class="paso">Se hace click en el bot&oacute;n <strong>&laquo;A&ntilde;adir Jugador&raquo;</strong> situado en la parte superior derecha de la pesta&ntilde;a Jugadores.</div>
+                <div class="paso">Se rellena el formulario modal con los datos del jugador:</div>
+            </div>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Campo</th><th>Obligatorio</th><th>Validaci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nombre</td><td>S&iacute;</td><td>Solo letras y espacios</td></tr>
+                    <tr><td>Descripci&oacute;n</td><td>S&iacute;</td><td>Texto libre</td></tr>
+                    <tr><td>Edad</td><td>S&iacute;</td><td>N&uacute;mero entero entre 18 y 99</td></tr>
+                    <tr><td>Email</td><td>S&iacute;</td><td>Formato de correo electr&oacute;nico v&aacute;lido</td></tr>
+                    <tr><td>Nacionalidad</td><td>S&iacute;</td><td>Solo letras y espacios</td></tr>
+                    <tr><td>Posici&oacute;n</td><td>S&iacute;</td><td>Valores posibles: Top, Jungla, Mid, ADC, Soporte</td></tr>
+                </tbody>
+            </table>
+            <div class="pasos">
+                <div class="paso">Se comprueba que los campos muestran un borde verde (v&aacute;lido) y no rojo (error de validaci&oacute;n).</div>
+                <div class="paso">Se pulsa el bot&oacute;n <strong>&laquo;Guardar&raquo;</strong> para confirmar. Si la validaci&oacute;n falla, se muestra un mensaje de error y no se procede al guardado.</div>
+                <div class="paso">Si los datos son correctos, el jugador se a&ntilde;ade a la tabla y se muestra un mensaje de confirmaci&oacute;n.</div>
+            </div>
+
+            <h3 class="subseccion-titulo">3.1.3 Editar Jugador</h3>
+            <p>Para modificar los datos de un jugador existente:</p>
+            <div class="pasos">
+                <div class="paso">Se localiza el jugador en la tabla y se hace click en el bot&oacute;n de editar (icono de l&aacute;piz) en la columna <strong>ACCIONES</strong>.</div>
+                <div class="paso">Se abre un di&aacute;logo modal con los datos actuales del jugador precargados en los campos del formulario.</div>
+                <div class="paso">Se modifican los campos deseados. Los campos se validan en tiempo real con borde verde (v&aacute;lido) o rojo (incorrecto).</div>
+                <div class="paso">Se pulsa <strong>&laquo;Guardar&raquo;</strong> para confirmar los cambios. Los datos se actualizan en la base de datos y la tabla se refresca autom&aacute;ticamente.</div>
+            </div>
+
+            <h3 class="subseccion-titulo">3.1.4 Eliminar Jugador</h3>
+            <p>Para eliminar un jugador del sistema:</p>
+            <div class="pasos">
+                <div class="paso">Se hace click en el bot&oacute;n de eliminar (icono de papelera) en la columna <strong>ACCIONES</strong> de la fila correspondiente.</div>
+                <div class="paso">Se muestra un di&aacute;logo de confirmaci&oacute;n para evitar eliminaciones accidentales.</div>
+                <div class="paso">Si se confirma la eliminaci&oacute;n, se eliminan tambi&eacute;n todas las partidas asociadas a dicho jugador (eliminaci&oacute;n en cascada).</div>
+            </div>
+
+            <div class="warning-caja">
+                <strong>Atenci&oacute;n:</strong> Al eliminar un jugador, se borran autom&aacute;ticamente todas las partidas en las que participa. Esta acci&oacute;n es irreversible.
+            </div>
+
+            <h3 class="subseccion-titulo">3.1.5 Filtros Avanzados de Jugadores</h3>
+            <p>
+                El sistema de filtros avanzados permite buscar jugadores cumpliendo m&uacute;ltiples criterios simult&aacute;neamente:
+            </p>
+            <div class="pasos">
+                <div class="paso">Se hace click en el bot&oacute;n <strong>&laquo;Lista de filtros&raquo;</strong>.</div>
+                <div class="paso">Se abre un di&aacute;logo modal donde se pueden rellenar los campos por los que se desea filtrar: nombre, descripci&oacute;n, email, nacionalidad, posici&oacute;n y edad.</div>
+                <div class="paso">Se dejan en blanco los campos que no se deseen utilizar como criterio de filtrado.</div>
+                <div class="paso">Se pulsa <strong>&laquo;Aplicar filtros&raquo;</strong> y la tabla se actualiza mostrando solo los registros que cumplen todos los criterios indicados.</div>
+                <div class="paso">Para eliminar los filtros y volver a mostrar todos los registros, se pulsa el bot&oacute;n <strong>&laquo;Borrar filtros&raquo;</strong>.</div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 3.2 CAMPEONES                                                 -->
+            <!-- ============================================================ -->
+            <h2 id="campeones" class="seccion-titulo">3.2 Campeones</h2>
+
+            <h3 class="subseccion-titulo">3.2.1 Vista Principal y B&uacute;squeda</h3>
+            <p>
+                La pesta&ntilde;a <strong>Campeones</strong> presenta la tabla de campeones con las siguientes columnas:
+            </p>
+            <table class="tabla-datos">
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Descripci&oacute;n</th>
+                        <th>Ejemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>NOMBRE</td><td>Nombre del campeon</td><td>Ahri</td></tr>
+                    <tr><td>DESCRIPCI&Oacute;N</td><td>Descripci&oacute;n del campeon</td><td>La zorra de nueve colas</td></tr>
+                    <tr><td>IMAGEN</td><td>Imagen del campeon cargada desde la API</td><td>&mdash;</td></tr>
+                    <tr><td>ROL</td><td>Rol principal del campeon</td><td>Mago</td></tr>
+                    <tr><td>DIFICULTAD</td><td>Nivel de dificultad</td><td>Alta</td></tr>
+                    <tr><td>ACCIONES</td><td>Botones de editar y eliminar</td><td>&mdash;</td></tr>
+                </tbody>
+            </table>
+            <p>
+                La b&uacute;squeda r&aacute;pida funciona de forma id&eacute;ntica a la de jugadores: se escribe en el campo de b&uacute;squeda y la tabla se filtra autom&aacute;ticamente por nombre de campeon.
+            </p>
+            <div class="info-caja">
+                <strong>Nota:</strong> Las im&aacute;genes de los campeones se cargan desde internet (API de Riot Games). Si no hay conexi&oacute;n a internet, las im&aacute;genes no se mostrar&aacute;n.
+            </div>
+
+            <h3 class="subseccion-titulo">3.2.2 A&ntilde;adir Campeon</h3>
+            <p>Para a&ntilde;adir un nuevo campeon al cat&aacute;logo:</p>
+            <div class="pasos">
+                <div class="paso">Se hace click en el bot&oacute;n <strong>&laquo;A&ntilde;adir Campeon&raquo;</strong>.</div>
+                <div class="paso">Se rellena el formulario modal con los datos del campeon:</div>
+            </div>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Campo</th><th>Obligatorio</th><th>Validaci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nombre</td><td>S&iacute;</td><td>Solo letras y espacios</td></tr>
+                    <tr><td>Descripci&oacute;n</td><td>S&iacute;</td><td>Texto libre</td></tr>
+                    <tr><td>Rol</td><td>S&iacute;</td><td>Valores posibles: Asesino, Tanque, Mago, Tirador, Luchador, Soporte</td></tr>
+                    <tr><td>Dificultad</td><td>S&iacute;</td><td>Valores posibles: Baja, Media, Alta</td></tr>
+                </tbody>
+            </table>
+            <div class="pasos">
+                <div class="paso">Se pulsa <strong>&laquo;Guardar&raquo;</strong>. Si el nombre coincide con un campeon existente en la API de Riot, se carga autom&aacute;ticamente su imagen.</div>
+            </div>
+
+            <h3 class="subseccion-titulo">3.2.3 Editar Campeon</h3>
+            <p>El proceso de edici&oacute;n de un campeon es an&aacute;logo al de un jugador:</p>
+            <div class="pasos">
+                <div class="paso">Se hace click en el bot&oacute;n de editar (icono de l&aacute;piz) en la columna <strong>ACCIONES</strong>.</div>
+                <div class="paso">Se modifican los campos deseados en el di&aacute;logo modal.</div>
+                <div class="paso">Se pulsa <strong>&laquo;Guardar&raquo;</strong> para confirmar los cambios.</div>
+            </div>
+
+            <h3 class="subseccion-titulo">3.2.4 Eliminar Campeon</h3>
+            <p>
+                Al eliminar un campeon, se sigue el mismo procedimiento que con un jugador. Se hace click en el bot&oacute;n de eliminar
+                (icono de papelera) y se confirma la acci&oacute;n en el di&aacute;logo de confirmaci&oacute;n.
+            </p>
+            <div class="warning-caja">
+                <strong>Atenci&oacute;n:</strong> Al eliminar un campeon, se eliminan en cascada todas las partidas en las que participa dicho campeon. Esta acci&oacute;n es irreversible.
+            </div>
+
+            <h3 class="subseccion-titulo">3.2.5 Filtros Avanzados de Campeones</h3>
+            <p>
+                Se accede al di&aacute;logo de filtros avanzados pulsando <strong>&laquo;Lista de filtros&raquo;</strong>. Se pueden filtrar
+                los campeones por nombre, descripci&oacute;n, rol y dificultad. Los campos vac&iacute;os se ignoran en el filtrado.
+                Para restablecer la vista completa, se pulsa <strong>&laquo;Borrar filtros&raquo;</strong>.
+            </p>
+
+            <!-- ============================================================ -->
+            <!-- 3.3 PARTIDAS                                                  -->
+            <!-- ============================================================ -->
+            <h2 id="partidas" class="seccion-titulo">3.3 Partidas</h2>
+
+            <h3 class="subseccion-titulo">3.3.1 Vista Principal y B&uacute;squeda</h3>
+            <p>
+                La pesta&ntilde;a <strong>Partidas</strong> muestra la tabla de partidas registradas con las columnas:
+            </p>
+            <table class="tabla-datos">
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Descripci&oacute;n</th>
+                        <th>Ejemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>JUGADORES</td><td>Nombre del jugador que particip&oacute;</td><td>Faker</td></tr>
+                    <tr><td>CAMPEONES</td><td>Nombre del campeon utilizado</td><td>Ahri</td></tr>
+                    <tr><td>FECHA</td><td>Fecha de la partida</td><td>15/05/2026</td></tr>
+                    <tr><td>KDA</td><td>Relaci&oacute;n Kills/Deaths/Assists</td><td>5/2/8</td></tr>
+                    <tr><td>RESULTADO</td><td>Resultado de la partida</td><td>Victoria</td></tr>
+                    <tr><td>ACCIONES</td><td>Botones de editar y eliminar</td><td>&mdash;</td></tr>
+                </tbody>
+            </table>
+            <p>
+                La b&uacute;squeda r&aacute;pida permite filtrar partidas por nombre de jugador o nombre de campeon.
+            </p>
+
+            <h3 class="subseccion-titulo">3.3.2 A&ntilde;adir Partida</h3>
+            <p>Para registrar una nueva partida:</p>
+            <div class="pasos">
+                <div class="paso">Se hace click en el bot&oacute;n <strong>&laquo;A&ntilde;adir Partida&raquo;</strong>.</div>
+                <div class="paso">Se rellena el formulario modal con los datos de la partida:</div>
+            </div>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Campo</th><th>Obligatorio</th><th>Validaci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Jugador</td><td>S&iacute;</td><td>Autocompletado con nombres existentes. Se selecciona uno de la lista.</td></tr>
+                    <tr><td>Campeon</td><td>S&iacute;</td><td>Autocompletado con nombres existentes. Se selecciona uno de la lista.</td></tr>
+                    <tr><td>Fecha</td><td>S&iacute;</td><td>Selector de fecha. No puede ser futura.</td></tr>
+                    <tr><td>KDA</td><td>S&iacute;</td><td>Formato x/y/z (kill/death/assist, n&uacute;meros enteros no negativos)</td></tr>
+                    <tr><td>Resultado</td><td>S&iacute;</td><td>Valores posibles: Victoria, Derrota, Empate</td></tr>
+                </tbody>
+            </table>
+            <div class="pasos">
+                <div class="paso">Se pulsa <strong>&laquo;Guardar&raquo;</strong>. La partida se registra en la base de datos y aparece en la tabla.</div>
+            </div>
+            <div class="info-caja">
+                <strong>Autocompletado:</strong> Los campos Jugador y Campe&oacute;n disponen de autocompletado inteligente. Al escribir, se muestran sugerencias con los nombres de jugadores y campeones existentes en la base de datos. Es obligatorio seleccionar un valor de la lista desplegable; no se pueden introducir nombres que no est&eacute;n registrados.
+            </div>
+
+            <h3 class="subseccion-titulo">3.3.3 Editar Partida</h3>
+            <p>
+                Para editar una partida existente se hace click en el bot&oacute;n de editar (icono de l&aacute;piz). Se abre un
+                di&aacute;logo modal donde se pueden modificar los siguientes campos:
+            </p>
+            <ul>
+                <li><strong>Fecha</strong></li>
+                <li><strong>KDA</strong></li>
+                <li><strong>Resultado</strong></li>
+            </ul>
+            <div class="info-caja">
+                <strong>Nota:</strong> Los campos <strong>Jugador</strong> y <strong>Campe&oacute;n</strong> no son editables una vez creada la partida, ya que constituyen la identidad de la misma. Si se necesita cambiar el jugador o campeon, se debe eliminar la partida y crear una nueva.
+            </div>
+
+            <h3 class="subseccion-titulo">3.3.4 Eliminar Partida</h3>
+            <p>
+                Se hace click en el bot&oacute;n de eliminar (icono de papelera) y se confirma la acci&oacute;n. La partida
+                se elimina &uacute;nicamente de la tabla <span class="codigo">juegan</span>, sin afectar al jugador ni al campeon asociados.
+            </p>
+
+            <h3 class="subseccion-titulo">3.3.5 Filtros Avanzados de Partidas</h3>
+            <p>
+                Se pulsa <strong>&laquo;Lista de filtros&raquo;</strong> para abrir el di&aacute;logo de filtros. Se pueden filtrar las partidas
+                por: jugador, campeon, fecha, KDA y resultado. Al igual que en las dem&aacute;s entidades,
+                los campos vac&iacute;os se ignoran. Se pulsa <strong>&laquo;Borrar filtros&raquo;</strong> para restablecer la tabla.
+            </p>
+
+            <!-- ============================================================ -->
+            <!-- 3.4 INFORMES                                                  -->
+            <!-- ============================================================ -->
+            <h2 id="informes" class="seccion-titulo">3.4 Informes</h2>
+
+            <p>
+                La aplicaci&oacute;n permite generar informes en formato PDF mediante JasperReports. Se dispone de dos tipos de informes:
+            </p>
+
+            <h3 class="subseccion-titulo">3.4.1 Informe de Campeones</h3>
+            <div class="pasos">
+                <div class="paso">Se accede a la pesta&ntilde;a <strong>Campeones</strong>.</div>
+                <div class="paso">Se hace click en el bot&oacute;n <strong>&laquo;Informes&raquo;</strong> situado en la parte superior.</div>
+                <div class="paso">Se genera autom&aacute;ticamente un informe PDF con la lista completa de campeones, incluyendo nombre, descripci&oacute;n, rol, dificultad e imagen. Adem&aacute;s, se incluye un gr&aacute;fico de barras con la distribuci&oacute;n de campeones por rol.</div>
+                <div class="paso">El informe se abre en el visor de PDF predeterminado del sistema.</div>
+            </div>
+
+            <h3 class="subseccion-titulo">3.4.2 Informe de Partidas</h3>
+            <div class="pasos">
+                <div class="paso">Se accede a la pesta&ntilde;a <strong>Partidas</strong>.</div>
+                <div class="paso">Se hace click en el bot&oacute;n <strong>&laquo;Informes&raquo;</strong>.</div>
+                <div class="paso">Se muestra un di&aacute;logo donde se selecciona el filtro de resultado:</div>
+            </div>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Opci&oacute;n</th><th>Descripci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Victoria</td><td>Se incluyen &uacute;nicamente las partidas ganadas.</td></tr>
+                    <tr><td>Derrota</td><td>Se incluyen &uacute;nicamente las partidas perdidas.</td></tr>
+                    <tr><td>Empate</td><td>Se incluyen &uacute;nicamente las partidas empatadas.</td></tr>
+                    <tr><td>Todos</td><td>Se incluyen todas las partidas sin filtrar por resultado.</td></tr>
+                </tbody>
+            </table>
+            <div class="pasos">
+                <div class="paso">Se genera el informe PDF con las partidas filtradas seg&uacute;n la opci&oacute;n seleccionada.</div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 3.5 IMPORTAR / EXPORTAR                                       -->
+            <!-- ============================================================ -->
+            <h2 id="importexport" class="seccion-titulo">3.5 Importar / Exportar Datos</h2>
+
+            <p>
+                Cada pesta&ntilde;a dispone de un men&uacute; desplegable <strong>&laquo;Importar/Exportar&raquo;</strong> con las siguientes opciones:
+            </p>
+
+            <h3 class="subseccion-titulo">3.5.1 Exportar a CSV</h3>
+            <div class="pasos">
+                <div class="paso">Se despliega el men&uacute; <strong>&laquo;Importar/Exportar&raquo;</strong> y se selecciona <strong>&laquo;Exportar CSV&raquo;</strong>.</div>
+                <div class="paso">Se abre un di&aacute;logo de selecci&oacute;n de archivo donde se elige la ubicaci&oacute;n y el nombre del archivo CSV.</div>
+                <div class="paso">Los datos de la tabla actual (incluyendo los filtros aplicados) se exportan al archivo CSV con las cabeceras correspondientes.</div>
+            </div>
+
+            <h3 class="subseccion-titulo">3.5.2 Exportar a JSON</h3>
+            <div class="pasos">
+                <div class="paso">Se selecciona <strong>&laquo;Exportar JSON&raquo;</strong> del men&uacute; desplegable.</div>
+                <div class="paso">Se elige la ubicaci&oacute;n y el nombre del archivo JSON.</div>
+                <div class="paso">Los datos se exportan en formato JSON estructurado, manteniendo la jerarqu&iacute;a de los campos.</div>
+            </div>
+
+            <h3 class="subseccion-titulo">3.5.3 Importar desde CSV</h3>
+            <div class="pasos">
+                <div class="paso">Se selecciona <strong>&laquo;Importar CSV&raquo;</strong> del men&uacute; desplegable.</div>
+                <div class="paso">Se elige el archivo CSV a importar mediante el di&aacute;logo de selecci&oacute;n de archivo.</div>
+                <div class="paso">Se leen los datos del archivo CSV. Si un registro ya existe (mismo ID), se actualiza; si no existe, se inserta como nuevo.</div>
+                <div class="paso">Al finalizar, se muestra un resumen con los registros insertados y actualizados.</div>
+            </div>
+            <div class="info-caja">
+                <strong>En partidas:</strong> Si al importar una partida el jugador o campeon referenciado no existe en la base de datos, se crean autom&aacute;ticamente registros nuevos para ambos con los datos m&iacute;nimos necesarios.
+            </div>
+
+            <h3 class="subseccion-titulo">3.5.4 Importar desde JSON</h3>
+            <p>
+                El proceso es id&eacute;ntico al de importaci&oacute;n CSV, pero seleccionando la opci&oacute;n <strong>&laquo;Importar JSON&raquo;</strong>.
+                Se elige el archivo JSON, se procesa y se insertan o actualizan los registros seg&uacute;n corresponda.
+            </p>
+        </section>
+
+        <hr>
+
+        <!-- ================================================================ -->
+        <!-- SECCION 4: SOLUCION DE PROBLEMAS                                -->
+        <!-- ================================================================ -->
+        <section id="problemas" class="seccion">
+            <h2 class="seccion-titulo">4. Soluci&oacute;n de Problemas</h2>
+
+            <p>
+                A continuaci&oacute;n se describen los problemas m&aacute;s comunes que pueden surgir durante el uso de la aplicaci&oacute;n,
+                junto con sus causas probables y las soluciones correspondientes.
+            </p>
+
+            <h3 class="subseccion-titulo">4.1 Error de Conexi&oacute;n con la Base de Datos</h3>
+            <div class="error-caja">
+                <strong>S&iacute;ntoma:</strong> Al iniciar la aplicaci&oacute;n, no se cargan datos en las tablas y se muestra un mensaje de error de conexi&oacute;n.
+            </div>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Causa posible</th><th>Soluci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>El servidor MySQL no est&aacute; ejecut&aacute;ndose</td>
+                        <td>Se inicia el servicio MySQL. En Windows: <span class="codigo">net start mysql</span>. En Linux: <span class="codigo">sudo systemctl start mysql</span></td>
+                    </tr>
+                    <tr>
+                        <td>Credenciales incorrectas</td>
+                        <td>Se comprueba que el usuario y contrase&ntilde;a en la configuraci&oacute;n de la base de datos (<span class="codigo">root/root</span> por defecto) coinciden con los de la instalaci&oacute;n de MySQL.</td>
+                    </tr>
+                    <tr>
+                        <td>La base de datos <span class="codigo">app_prototipo</span> no existe</td>
+                        <td>Se ejecuta el script SQL de creaci&oacute;n de la base de datos proporcionado con la aplicaci&oacute;n.</td>
+                    </tr>
+                    <tr>
+                        <td>El puerto 3306 est&aacute; ocupado</td>
+                        <td>Se verifica que no hay otro servicio usando el puerto 3306. Si MySQL est&aacute; en otro puerto, se ajusta la URL de conexi&oacute;n.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="subseccion-titulo">4.2 Errores de Validaci&oacute;n</h3>
+            <div class="error-caja">
+                <strong>S&iacute;ntoma:</strong> Los campos del formulario muestran borde rojo y no se permite guardar el registro.
+            </div>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Campo</th><th>Error</th><th>Soluci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nombre / Nacionalidad</td><td>Contiene n&uacute;meros o caracteres especiales</td><td>Se introduce &uacute;nicamente letras y espacios</td></tr>
+                    <tr><td>Email</td><td>Formato no v&aacute;lido</td><td>Se utiliza el formato <span class="codigo">usuario@dominio.com</span></td></tr>
+                    <tr><td>Edad</td><td>Fuera del rango permitido</td><td>Se introduce un valor entre 18 y 99</td></tr>
+                    <tr><td>KDA</td><td>Formato incorrecto</td><td>Se utiliza el formato <span class="codigo">x/y/z</span> con n&uacute;meros enteros no negativos (ej.: 5/2/8)</td></tr>
+                    <tr><td>Campo obligatorio</td><td>Campo vac&iacute;o</td><td>Se rellena el campo obligatorio</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="subseccion-titulo">4.3 Problemas de Importaci&oacute;n / Exportaci&oacute;n</h3>
+            <div class="error-caja">
+                <strong>S&iacute;ntoma:</strong> La importaci&oacute;n falla o los datos importados no se muestran correctamente.
+            </div>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Problema</th><th>Causa</th><th>Soluci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Error al importar CSV</td>
+                        <td>El archivo no tiene el formato esperado o las cabeceras no coinciden</td>
+                        <td>Se comprueba que el archivo CSV tiene las cabeceras correctas y los datos est&aacute;n separados por comas. Se puede usar un archivo exportado previamente como referencia.</td>
+                    </tr>
+                    <tr>
+                        <td>Error al importar JSON</td>
+                        <td>El archivo JSON no tiene la estructura esperada</td>
+                        <td>Se verifica que el archivo JSON respeta la estructura generada por la exportaci&oacute;n de la aplicaci&oacute;n.</td>
+                    </tr>
+                    <tr>
+                        <td>Los datos importados no aparecen</td>
+                        <td>La importaci&oacute;n se realiz&oacute; con filtros activos en la tabla</td>
+                        <td>Se borran los filtros de b&uacute;squeda para mostrar todos los registros.</td>
+                    </tr>
+                    <tr>
+                        <td>Error de codificaci&oacute;n en CSV</td>
+                        <td>El archivo CSV no est&aacute; en UTF-8</td>
+                        <td>Se guarda el archivo CSV con codificaci&oacute;n UTF-8 para evitar problemas con caracteres especiales.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="subseccion-titulo">4.4 Problemas con Informes JasperReports</h3>
+            <div class="error-caja">
+                <strong>S&iacute;ntoma:</strong> El informe no se genera o se muestra un error al intentar crear el PDF.
+            </div>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Causa posible</th><th>Soluci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No hay datos en la tabla seleccionada</td>
+                        <td>Se a&ntilde;aden registros a la entidad correspondiente antes de generar el informe.</td>
+                    </tr>
+                    <tr>
+                        <td>Las im&aacute;genes de campeones no se cargan en el informe</td>
+                        <td>Se verifica la conexi&oacute;n a internet, ya que las im&aacute;genes se obtienen desde la API de Riot Games.</td>
+                    </tr>
+                    <tr>
+                        <td>Error de Java al generar el PDF</td>
+                        <td>Se comprueba que los archivos <span class="codigo">.jasper</span> est&aacute;n en el classpath de la aplicaci&oacute;n.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="subseccion-titulo">4.5 Problemas Generales</h3>
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Problema</th><th>Soluci&oacute;n</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>La aplicaci&oacute;n no arranca</td>
+                        <td>Se verifica que Java 21 est&eacute; instalado y configurado correctamente ejecutando <span class="codigo">java -version</span> en un terminal.</td>
+                    </tr>
+                    <tr>
+                        <td>La ventana se ve mal o los estilos no se aplican</td>
+                        <td>Se comprueba que los archivos CSS se encuentran en el directorio de recursos y que el archivo <span class="codigo">estiloMain.css</span> se carga correctamente.</td>
+                    </tr>
+                    <tr>
+                        <td>Las im&aacute;genes de campeones no se muestran en la tabla</td>
+                        <td>Se verifica la conexi&oacute;n a internet. Las im&aacute;genes se cargan desde la URL de Riot Games (<span class="codigo">ddragon.leagueoflegends.com</span>).</td>
+                    </tr>
+                    <tr>
+                        <td>La b&uacute;squeda no funciona</td>
+                        <td>Se asegura de que no hay filtros avanzados activos que puedan estar restringiendo los resultados. Se pulsa &laquo;Borrar filtros&raquo; para restablecer la tabla.</td>
+                    </tr>
+                    <tr>
+                        <td>La pantalla de ayuda no se abre con F1</td>
+                        <td>Se comprueba que la ventana principal de la aplicaci&oacute;n tenga el foco. Se hace click en la ventana y se pulsa F1 de nuevo.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-caja">
+                <strong>Consejo:</strong> Si el problema persiste tras aplicar las soluciones indicadas, se recomienda reiniciar la aplicaci&oacute;n. Si el error contin&uacute;a, se verifica que la base de datos MySQL est&eacute; accesible y que los datos de conexi&oacute;n son correctos.
+            </div>
+        </section>
+
+        <div class="manual-footer">
+            <p>Prototipo App &mdash; Manual de Usuario v1.0 &nbsp;|&nbsp; Mayo 2026</p>
+            <p>Desarrollado con JavaFX 21 y MySQL 8</p>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

@@ -180,7 +180,7 @@
 
 .table-view .column-header .label{
     -fx-font-weight: 800;
-    -fx-text-fill: #1F2937;
+    -fx-text-fill: #3B82F6;
 }
 
 /* Filas */
@@ -201,6 +201,7 @@
 .table-cell{
     -fx-padding: 10 8 10 8;
     -fx-text-fill: #0F172A;
+     -fx-alignment: center-left;
 }
 
 /* =========================

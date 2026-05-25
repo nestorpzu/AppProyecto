@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=AppProyecto
+Comment=Prototipo App
+Exec=AppProyecto
+Icon=AppProyecto
+Type=Application
+Categories=Game;
+Terminal=false
+StartupNotify=true
